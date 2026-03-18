@@ -117,7 +117,111 @@ describe('Admin Server Actions', () => {
   })
 
   describe('banPlayer', () => {
-    it.todo('sets banned=1 on arena_players for given uuid')
-    it.todo('rejects non-admin user with Forbidden error')
+    beforeEach(() => {
+      vi.resetModules()
+    })
+
+    it('sets banned=1 on arena_players for given uuid', async () => {
+      const { auth } = await import('@/lib/auth')
+      const { hasPermission, logAudit } = await import('@/lib/admin/permissions')
+      const { db } = await import('@/lib/db')
+
+      const mockSession = { user: { id: '1', discordId: 'admin-123', name: 'Admin' } }
+      ;(auth as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession)
+      ;(hasPermission as ReturnType<typeof vi.fn>).mockResolvedValue(true)
+      ;(logAudit as ReturnType<typeof vi.fn>).mockResolvedValue(undefined)
+
+      const whereMock = vi.fn().mockResolvedValue(undefined)
+      const setMock = vi.fn().mockReturnValue({ where: whereMock })
+      ;(db.update as ReturnType<typeof vi.fn>).mockReturnValue({ set: setMock })
+
+      const { banPlayer } = await import('@/lib/admin/actions/leaderboard')
+      await banPlayer('player-uuid-123')
+
+      expect(db.update).toHaveBeenCalled()
+      expect(setMock).toHaveBeenCalledWith({ banned: 1 })
+      expect(whereMock).toHaveBeenCalled()
+      expect(logAudit).toHaveBeenCalledWith(mockSession, 'BAN_PLAYER', 'player-uuid-123')
+    })
+
+    it('rejects non-admin user with Forbidden error', async () => {
+      const { auth } = await import('@/lib/auth')
+      const { hasPermission } = await import('@/lib/admin/permissions')
+
+      ;(auth as ReturnType<typeof vi.fn>).mockResolvedValue({
+        user: { id: '1', discordId: 'unknown-id' },
+      })
+      ;(hasPermission as ReturnType<typeof vi.fn>).mockResolvedValue(false)
+
+      const { banPlayer } = await import('@/lib/admin/actions/leaderboard')
+      await expect(banPlayer('some-uuid')).rejects.toThrow('Forbidden')
+    })
+  })
+
+  describe('unbanPlayer', () => {
+    beforeEach(() => {
+      vi.resetModules()
+    })
+
+    it('sets banned=0 on arena_players for given uuid', async () => {
+      const { auth } = await import('@/lib/auth')
+      const { hasPermission, logAudit } = await import('@/lib/admin/permissions')
+      const { db } = await import('@/lib/db')
+
+      const mockSession = { user: { id: '1', discordId: 'admin-123', name: 'Admin' } }
+      ;(auth as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession)
+      ;(hasPermission as ReturnType<typeof vi.fn>).mockResolvedValue(true)
+      ;(logAudit as ReturnType<typeof vi.fn>).mockResolvedValue(undefined)
+
+      const whereMock = vi.fn().mockResolvedValue(undefined)
+      const setMock = vi.fn().mockReturnValue({ where: whereMock })
+      ;(db.update as ReturnType<typeof vi.fn>).mockReturnValue({ set: setMock })
+
+      const { unbanPlayer } = await import('@/lib/admin/actions/leaderboard')
+      await unbanPlayer('player-uuid-456')
+
+      expect(setMock).toHaveBeenCalledWith({ banned: 0 })
+      expect(logAudit).toHaveBeenCalledWith(mockSession, 'UNBAN_PLAYER', 'player-uuid-456')
+    })
+  })
+
+  describe('deleteMatch', () => {
+    beforeEach(() => {
+      vi.resetModules()
+    })
+
+    it('deletes match by id', async () => {
+      const { auth } = await import('@/lib/auth')
+      const { hasPermission, logAudit } = await import('@/lib/admin/permissions')
+      const { db } = await import('@/lib/db')
+
+      const mockSession = { user: { id: '1', discordId: 'admin-123', name: 'Admin' } }
+      ;(auth as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession)
+      ;(hasPermission as ReturnType<typeof vi.fn>).mockResolvedValue(true)
+      ;(logAudit as ReturnType<typeof vi.fn>).mockResolvedValue(undefined)
+
+      const whereMock = vi.fn().mockResolvedValue(undefined)
+      ;(db.delete as ReturnType<typeof vi.fn>).mockReturnValue({ where: whereMock })
+
+      const { deleteMatch } = await import('@/lib/admin/actions/leaderboard')
+      await deleteMatch(42)
+
+      expect(db.delete).toHaveBeenCalled()
+      expect(whereMock).toHaveBeenCalled()
+      expect(logAudit).toHaveBeenCalledWith(mockSession, 'DELETE_MATCH', '42')
+    })
+
+    it('rejects non-admin with Forbidden error', async () => {
+      const { auth } = await import('@/lib/auth')
+      const { hasPermission } = await import('@/lib/admin/permissions')
+
+      ;(auth as ReturnType<typeof vi.fn>).mockResolvedValue({
+        user: { id: '1', discordId: 'unknown-id' },
+      })
+      ;(hasPermission as ReturnType<typeof vi.fn>).mockResolvedValue(false)
+
+      const { deleteMatch } = await import('@/lib/admin/actions/leaderboard')
+      await expect(deleteMatch(1)).rejects.toThrow('Forbidden')
+    })
   })
 })

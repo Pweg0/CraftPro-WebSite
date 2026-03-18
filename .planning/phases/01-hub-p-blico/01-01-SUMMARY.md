@@ -176,3 +176,20 @@ None - no external service configuration required for the scaffold plan. mcsrvst
 ---
 *Phase: 01-hub-p-blico*
 *Completed: 2026-03-18*
+
+## Self-Check: PASSED
+
+All created files verified to exist on disk. All task commits verified in git log.
+- FOUND: src/types/index.ts
+- FOUND: src/lib/minecraft-status.ts
+- FOUND: src/data/servers.ts
+- FOUND: src/data/banned-items.ts
+- FOUND: public/images/hero-background.webp
+- FOUND: vitest.config.ts
+- FOUND: tests/setup.ts
+- FOUND: tests/minecraft-status.test.ts
+- FOUND: src/components/ui/sheet.tsx
+- FOUND: .planning/phases/01-hub-p-blico/01-01-SUMMARY.md
+- COMMIT 29c2902: chore(01-01): scaffold Next.js 16 project
+- COMMIT 50711afc: feat(01-01): design tokens, types, API client, static data, hero image
+- COMMIT 67326983: docs(01-01): complete scaffold foundation plan

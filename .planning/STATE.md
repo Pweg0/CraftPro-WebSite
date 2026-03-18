@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 04-painel-admin-01-PLAN.md
-last_updated: "2026-03-18T23:40:11.614Z"
+stopped_at: Completed 04-painel-admin-02-PLAN.md
+last_updated: "2026-03-18T23:46:19.789Z"
 progress:
   total_phases: 4
   completed_phases: 3
   total_plans: 13
-  completed_plans: 10
+  completed_plans: 11
 ---
 
 # Project State
@@ -56,6 +56,7 @@ Plan: 1 of 4
 | Phase 03-sistema-competitivo P02 | 5 | 2 tasks | 4 files |
 | Phase 03-sistema-competitivo P03 | 4 | 2 tasks | 5 files |
 | Phase 04-painel-admin P01 | 3 | 2 tasks | 13 files |
+| Phase 04-painel-admin P02 | 12 | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -90,6 +91,9 @@ Recent decisions affecting current work:
 - [Phase 03-sistema-competitivo]: MatchHistoryTable client-side pagination for v1 — page state is local, all 20 matches from server; true server-side pagination deferred
 - [Phase 04-painel-admin]: permissions.ts uses dynamic imports for db/schema to avoid circular dependency issues in test environment
 - [Phase 04-painel-admin]: Seed script uses relative imports from ../src/lib/db/schema instead of @/ path alias — tsx runs outside Next.js context
+- [Phase 04-painel-admin]: isAdmin flag embedded in Auth.js session callback via env var check — avoids NEXT_PUBLIC_ exposure of admin IDs to client bundle
+- [Phase 04-painel-admin]: Two-layer admin guard: middleware (env-var only, Edge runtime) + layout (DB-backed isAdmin) for defence in depth
+- [Phase 04-painel-admin]: AdminSidebar receives sections[] from layout Server Component — keeps DB calls server-side, sidebar is purely presentational
 
 ### Roadmap Evolution
 
@@ -107,6 +111,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-18T23:40:11.609Z
-Stopped at: Completed 04-painel-admin-01-PLAN.md
+Last session: 2026-03-18T23:46:19.785Z
+Stopped at: Completed 04-painel-admin-02-PLAN.md
 Resume file: None

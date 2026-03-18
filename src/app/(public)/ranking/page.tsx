@@ -1,24 +1,34 @@
-// src/app/(public)/ranking/page.tsx
-// Phase 1 stub — prevents 404 from navbar. Full ranking implemented in Phase 3.
-import { Badge } from '@/components/ui/badge';
-import { Trophy } from 'lucide-react';
+import { Trophy } from "lucide-react"
+import { getLeaderboard, getTop10Wins } from "@/lib/db/queries/leaderboard"
+import { LeaderboardTable } from "@/components/ranking/LeaderboardTable"
 
-export default function RankingPage() {
+export const revalidate = 60
+
+export default async function RankingPage() {
+  const { ranked, unranked } = await getLeaderboard()
+  const top10Wins = await getTop10Wins()
+
   return (
     <div className="min-h-screen bg-brand-primary py-16 px-4">
-      <div className="container mx-auto text-center">
-        <Trophy className="h-12 w-12 text-brand-yellow mx-auto mb-4" />
-        <div className="flex justify-center mb-4">
-          <Badge className="bg-brand-yellow/20 text-brand-yellow border-brand-yellow/50 px-4 py-1" variant="outline">
-            Em Breve
-          </Badge>
+      <div className="container mx-auto max-w-5xl">
+        {/* Header */}
+        <div className="flex items-center gap-3 mb-2">
+          <Trophy className="h-8 w-8 text-brand-yellow flex-shrink-0" />
+          <h1 className="font-display text-2xl text-white">Ranking Competitivo</h1>
         </div>
-        <h1 className="font-display text-2xl text-white mb-4">Ranking</h1>
-        <p className="text-white/60 max-w-xl mx-auto">
-          O sistema de ranking competitivo com ELO, tiers (Bronze, Silver, Gold, Diamond)
-          e leaderboard global está sendo preparado.
+        <p className="text-white/60 mb-8 ml-11">
+          Classificacao global dos jogadores de Pokemon
         </p>
+
+        {ranked.length === 0 && unranked.length === 0 ? (
+          <div className="text-center py-20 text-white/40">
+            Nenhum jogador registrado ainda. As batalhas no servidor populam o ranking
+            automaticamente.
+          </div>
+        ) : (
+          <LeaderboardTable ranked={ranked} unranked={unranked} top10Wins={top10Wins} />
+        )}
       </div>
     </div>
-  );
+  )
 }

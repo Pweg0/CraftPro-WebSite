@@ -1,9 +1,16 @@
 // src/app/(public)/itens-banidos/page.tsx
-// Server Component — loads static data, passes to Client Component for filtering
-import { BANNED_ITEMS } from '@/data/banned-items';
-import { BannedItemsTable } from '@/components/banned-items/BannedItemsTable';
+// Server Component — loads items from DB, passes to Client Component for filtering
+import { db } from '@/lib/db'
+import { bannedItems } from '@/lib/db/schema'
+import { BannedItemsTable } from '@/components/banned-items/BannedItemsTable'
 
-export default function ItensBanidosPage() {
+export default async function ItensBanidosPage() {
+  const items = await db.select({
+    name: bannedItems.name,
+    reason: bannedItems.reason,
+    category: bannedItems.category,
+  }).from(bannedItems)
+
   return (
     <div className="min-h-screen bg-brand-primary py-16 px-4">
       <div className="container mx-auto">
@@ -15,8 +22,8 @@ export default function ItensBanidosPage() {
           </p>
         </div>
 
-        <BannedItemsTable items={BANNED_ITEMS} />
+        <BannedItemsTable items={items} />
       </div>
     </div>
-  );
+  )
 }

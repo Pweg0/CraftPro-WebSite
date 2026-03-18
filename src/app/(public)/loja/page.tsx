@@ -1,8 +1,10 @@
 // src/app/(public)/loja/page.tsx
-// Static Server Component — store teaser with category preview cards
+// Server Component — store teaser with category preview cards + DB-backed preview items
 // Per CONTEXT.md: "Não é uma página vazia — mostra o que virá"
-import { Badge } from '@/components/ui/badge';
-import { ShoppingBag, Star, Shield, Zap } from 'lucide-react';
+import { Badge } from '@/components/ui/badge'
+import { ShoppingBag, Star, Shield, Zap } from 'lucide-react'
+import { db } from '@/lib/db'
+import { shopItems } from '@/lib/db/schema'
 
 const storeCategories = [
   {
@@ -32,9 +34,11 @@ const storeCategories = [
     bgColor: 'bg-brand-blue/10',
     borderColor: 'border-brand-blue/30',
   },
-];
+]
 
-export default function LojaPage() {
+export default async function LojaPage() {
+  const previewItems = await db.select().from(shopItems)
+
   return (
     <div className="min-h-screen bg-brand-primary py-16 px-4">
       <div className="container mx-auto">
@@ -64,7 +68,7 @@ export default function LojaPage() {
           className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12"
         >
           {storeCategories.map((category) => {
-            const Icon = category.icon;
+            const Icon = category.icon
             return (
               <div
                 key={category.id}
@@ -75,9 +79,28 @@ export default function LojaPage() {
                 <h3 className={`font-semibold text-base ${category.color} mb-2`}>{category.name}</h3>
                 <p className="text-sm text-white/60">{category.description}</p>
               </div>
-            );
+            )
           })}
         </div>
+
+        {/* DB-backed preview items — shown when admin has added items */}
+        {previewItems.length > 0 && (
+          <div className="mb-12">
+            <h2 className="text-xl font-semibold text-white mb-4 text-center">Itens em Destaque</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {previewItems.map((item) => (
+                <div
+                  key={item.id}
+                  className="bg-brand-card rounded-card p-4 border border-white/10"
+                >
+                  <h3 className="text-sm font-semibold text-white mb-1">{item.name}</h3>
+                  <p className="text-xs text-white/60 mb-2">{item.description}</p>
+                  <Badge variant="outline" className="text-xs">{item.category}</Badge>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Discord CTA */}
         <div className="text-center">
@@ -96,5 +119,5 @@ export default function LojaPage() {
         </div>
       </div>
     </div>
-  );
+  )
 }

@@ -42,8 +42,8 @@ Requirements para release inicial. Cada um mapeia para fases do roadmap.
 ### Páginas Extras
 
 - [x] **EXTRA-01**: Página de itens banidos com lista e razão de cada ban
-- [ ] **EXTRA-02**: Página da loja com status "Em Breve" e preview do que virá
-- [ ] **EXTRA-03**: Página de replays de batalhas (stub/placeholder — formato a definir)
+- [x] **EXTRA-02**: Página da loja com status "Em Breve" e preview do que virá
+- [x] **EXTRA-03**: Página de replays de batalhas (stub/placeholder — formato a definir)
 
 ## v2 Requirements
 
@@ -105,8 +105,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PROF-01 | Phase 3 | Pending |
 | PROF-02 | Phase 3 | Pending |
 | EXTRA-01 | Phase 1 | Complete |
-| EXTRA-02 | Phase 1 | Pending |
-| EXTRA-03 | Phase 1 | Pending |
+| EXTRA-02 | Phase 1 | Complete |
+| EXTRA-03 | Phase 1 | Complete |
 
 **Coverage:**
 - v1 requirements: 20 total

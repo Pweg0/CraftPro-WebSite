@@ -12,7 +12,7 @@ O site é construído em três entregas coesas: primeiro o hub público (tudo qu
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Hub Público** - Toda a experiência pública — hero, navegação, servidores, páginas de suporte, design vibrante completo
+- [x] **Phase 1: Hub Público** - Toda a experiência pública — hero, navegação, servidores, páginas de suporte, design vibrante completo (completed 2026-03-18)
 - [ ] **Phase 2: Autenticação** - Login via Discord com sessão persistente e logout de qualquer página
 - [ ] **Phase 3: Sistema Competitivo** - ELO, leaderboards, top-10, tiers visuais e perfis de usuário completos
 
@@ -72,6 +72,6 @@ Phases execute in numeric order: 1 → 2 → 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Hub Público | 2/3 | In Progress|  |
+| 1. Hub Público | 3/3 | Complete   | 2026-03-18 |
 | 2. Autenticação | 0/2 | Not started | - |
 | 3. Sistema Competitivo | 0/3 | Not started | - |

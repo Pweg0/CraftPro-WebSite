@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 current_plan: 3
 status: executing
-stopped_at: Completed 01-hub-p-blico 01-02-PLAN.md
-last_updated: "2026-03-18T19:14:06.557Z"
+stopped_at: Completed 01-hub-p-blico 01-03-PLAN.md
+last_updated: "2026-03-18T19:23:26.830Z"
 progress:
   total_phases: 3
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 3
-  completed_plans: 2
+  completed_plans: 3
 ---
 
 # Project State
@@ -51,6 +51,7 @@ Status: Ready to execute
 *Updated after each plan completion*
 | Phase 01-hub-p-blico P01 | 18min | 2 tasks | 28 files |
 | Phase 01-hub-p-blico P02 | 12 | 2 tasks | 9 files |
+| Phase 01-hub-p-blico P03 | 15 | 2 tasks | 14 files |
 
 ## Accumulated Context
 
@@ -69,6 +70,8 @@ Recent decisions affecting current work:
 - [Phase 01-02]: SheetTrigger (base-ui) does not accept asChild prop — styled directly with className instead of wrapping Button
 - [Phase 01-02]: src/app/page.tsx removed in favor of src/app/(public)/page.tsx to use route group pattern
 - [Phase 01-02]: Client Component islands — HeroSection and HeroCTAButtons are 'use client'; page.tsx stays Server Component
+- [Phase 01-hub-p-blico]: Server status fetched in Server Components only — getServerStatus never called from Client Components
+- [Phase 01-hub-p-blico]: Em Breve pages are first-class with Discord CTA and visual preview content, not blank placeholders
 
 ### Pending Todos
 
@@ -82,6 +85,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-18T19:14:06.548Z
-Stopped at: Completed 01-hub-p-blico 01-02-PLAN.md
+Last session: 2026-03-18T19:23:26.822Z
+Stopped at: Completed 01-hub-p-blico 01-03-PLAN.md
 Resume file: None

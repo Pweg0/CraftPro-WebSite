@@ -36,8 +36,8 @@ Requirements para release inicial. Cada um mapeia para fases do roadmap.
 
 ### Perfil de Usuário
 
-- [ ] **PROF-01**: Página de perfil com stats de batalha (wins, losses, win rate, elo atual)
-- [ ] **PROF-02**: Histórico de batalhas recentes no perfil
+- [x] **PROF-01**: Página de perfil com stats de batalha (wins, losses, win rate, elo atual)
+- [x] **PROF-02**: Histórico de batalhas recentes no perfil
 
 ### Páginas Extras
 
@@ -102,8 +102,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | RANK-02 | Phase 3 | Complete |
 | RANK-03 | Phase 3 | Complete |
 | RANK-04 | Phase 3 | Complete |
-| PROF-01 | Phase 3 | Pending |
-| PROF-02 | Phase 3 | Pending |
+| PROF-01 | Phase 3 | Complete |
+| PROF-02 | Phase 3 | Complete |
 | EXTRA-01 | Phase 1 | Complete |
 | EXTRA-02 | Phase 1 | Complete |
 | EXTRA-03 | Phase 1 | Complete |

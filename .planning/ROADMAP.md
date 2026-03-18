@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Hub Público** - Toda a experiência pública — hero, navegação, servidores, páginas de suporte, design vibrante completo (completed 2026-03-18)
 - [x] **Phase 2: Autenticação** - Login via Discord com sessão persistente e logout de qualquer página (completed 2026-03-18)
-- [ ] **Phase 3: Sistema Competitivo** - ELO, leaderboards, top-10, tiers visuais e perfis de usuário completos
+- [x] **Phase 3: Sistema Competitivo** - ELO, leaderboards, top-10, tiers visuais e perfis de usuário completos (completed 2026-03-18)
 
 ## Phase Details
 
@@ -75,14 +75,14 @@ Phases execute in numeric order: 1 → 2 → 3
 |-------|----------------|--------|-----------|
 | 1. Hub Público | 3/3 | Complete    | 2026-03-18 |
 | 2. Autenticação | 3/3 | Complete    | 2026-03-18 |
-| 3. Sistema Competitivo | 2/3 | In Progress | — |
+| 3. Sistema Competitivo | 3/3 | Complete   | 2026-03-18 |
 
 ### Phase 4: Painel Admin — Rota /admin protegida para gerenciar itens banidos (CRUD), servidores (CRUD), configurações da loja, e dados do leaderboard. Acesso restrito ao dono do servidor. Dados salvos no Neon PostgreSQL via Drizzle ORM.
 
 **Goal:** [To be planned]
 **Requirements**: TBD
 **Depends on:** Phase 3
-**Plans:** 2/2 plans complete
+**Plans:** 3/3 plans complete
 
 Plans:
 - [ ] TBD (run /gsd:plan-phase 4 to break down)

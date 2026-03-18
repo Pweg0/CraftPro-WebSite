@@ -87,32 +87,32 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| LAND-01 | — | Pending |
-| LAND-02 | — | Pending |
-| LAND-03 | — | Pending |
-| LAND-04 | — | Pending |
-| LAND-05 | — | Pending |
-| AUTH-01 | — | Pending |
-| AUTH-02 | — | Pending |
-| AUTH-03 | — | Pending |
-| SERV-01 | — | Pending |
-| SERV-02 | — | Pending |
-| SERV-03 | — | Pending |
-| RANK-01 | — | Pending |
-| RANK-02 | — | Pending |
-| RANK-03 | — | Pending |
-| RANK-04 | — | Pending |
-| PROF-01 | — | Pending |
-| PROF-02 | — | Pending |
-| EXTRA-01 | — | Pending |
-| EXTRA-02 | — | Pending |
-| EXTRA-03 | — | Pending |
+| LAND-01 | Phase 1 | Pending |
+| LAND-02 | Phase 1 | Pending |
+| LAND-03 | Phase 1 | Pending |
+| LAND-04 | Phase 1 | Pending |
+| LAND-05 | Phase 1 | Pending |
+| AUTH-01 | Phase 2 | Pending |
+| AUTH-02 | Phase 2 | Pending |
+| AUTH-03 | Phase 2 | Pending |
+| SERV-01 | Phase 1 | Pending |
+| SERV-02 | Phase 1 | Pending |
+| SERV-03 | Phase 1 | Pending |
+| RANK-01 | Phase 3 | Pending |
+| RANK-02 | Phase 3 | Pending |
+| RANK-03 | Phase 3 | Pending |
+| RANK-04 | Phase 3 | Pending |
+| PROF-01 | Phase 3 | Pending |
+| PROF-02 | Phase 3 | Pending |
+| EXTRA-01 | Phase 1 | Pending |
+| EXTRA-02 | Phase 1 | Pending |
+| EXTRA-03 | Phase 1 | Pending |
 
 **Coverage:**
 - v1 requirements: 20 total
-- Mapped to phases: 0
-- Unmapped: 20 ⚠️
+- Mapped to phases: 20
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-03-18*
-*Last updated: 2026-03-18 after initial definition*
+*Last updated: 2026-03-18 — traceability preenchida após criação do roadmap*

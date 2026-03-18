@@ -127,3 +127,30 @@
     @apply font-sans;
   }
 }
+
+@theme {
+  /* CraftPro Brasil brand palette — Minecraft/Pokémon fusion */
+  --color-brand-primary: #1a1a2e;
+  --color-brand-surface: #16213e;
+  --color-brand-card: #0f3460;
+  --color-brand-accent: #e94560;
+  --color-brand-online: #00ff87;
+  --color-brand-offline: #6b7280;
+  --color-brand-blue: #4cc9f0;
+  --color-brand-yellow: #ffd60a;
+
+  /* Typography — Press Start 2P for headings, Inter for body */
+  --font-display: var(--font-press-start), monospace;
+  --font-body: var(--font-inter), sans-serif;
+
+  /* Shared border radius */
+  --radius-card: 0.75rem;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-brand-primary);
+    color: white;
+    font-family: var(--font-body);
+  }
+}

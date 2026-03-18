@@ -15,3 +15,11 @@ vi.mock('next/image', () => ({
     return React.createElement('img', { src, alt, ...props });
   },
 }));
+
+// Mock next-auth/react — prevents real OAuth calls in tests
+vi.mock("next-auth/react", () => ({
+  useSession: vi.fn(),
+  signIn: vi.fn(),
+  signOut: vi.fn(),
+  SessionProvider: ({ children }: { children: React.ReactNode }) => children,
+}))

@@ -59,17 +59,19 @@ Exceptions:
 
 | Role | Size | Weight | Line Height | Font | Usage |
 |------|------|--------|-------------|------|-------|
-| Body | 14px (text-sm) | 400 (regular) | 1.5 | Inter | Table cell content, form field values, audit log entries, description text |
+| Body | 14px (text-sm) | 400 (regular) | 1.5 | Inter | Table cell content, form field values, audit log entries, description text, stat card labels |
 | Label | 14px (text-sm) | 600 (semibold) | 1.4 | Inter | Form field labels, table column headers, sidebar section labels |
 | Heading | 20px (text-xl) | 600 (semibold) | 1.2 | Inter | Page titles (e.g., "Itens Banidos", "Servidores"), dialog titles |
 | Display | 16px (text-base) | 400 (regular — Press Start 2P renders larger visually) | 1.2 | Press Start 2P | Dashboard section header only ("Dashboard") — one instance per page maximum |
 
 Notes:
 - Press Start 2P is reserved for the Dashboard page header to signal entry to the admin hub with brand continuity. All other admin pages use Inter headings at 20px/600 for readability in dense data tables.
-- Dashboard stat card numbers: 28px (text-3xl), weight 700, Inter — these are the primary data point and must be visually dominant.
-- Stat card labels under numbers: 12px (text-xs), weight 400, Inter, color `--color-muted-foreground`.
+- Dashboard stat card numbers: 28px (text-3xl), weight 600 (semibold), Inter — these are the primary data point and must be visually dominant. Size (28px) at weight 600 provides sufficient dominance without requiring a third weight.
+- Stat card labels under numbers: 14px (text-sm), weight 400, Inter, color `--color-muted-foreground` — same size as Body role, distinguished by muted color rather than a separate size token.
 
 Source: `src/app/globals.css` (font variables detected) + project design decisions ("colorido vibrante Minecraft/Pokémon")
+
+**Typography scale: 14, 16, 20, 28 (4 sizes). Weights: 400, 600 (2 weights).**
 
 ---
 
@@ -88,7 +90,7 @@ Source: `src/app/globals.css` (font variables detected) + project design decisio
 
 **Accent (`#e94560`) reserved for:**
 1. Active sidebar nav item (left border indicator + text color)
-2. Primary CTA buttons on CRUD forms ("Salvar", "Adicionar") — `bg-brand-accent text-white`
+2. Primary CTA buttons on CRUD forms ("Criar Item", "Salvar Alterações") — `bg-brand-accent text-white`
 3. Dashboard total-players stat card accent bar (top border)
 4. "Admin" nav link in public Navbar (text color when user is admin)
 
@@ -126,8 +128,8 @@ Source: `src/app/globals.css` — all brand tokens detected, not re-specified
 
 | Component | Path | Notes |
 |-----------|------|-------|
-| AdminSidebar | `src/components/admin/AdminSidebar.tsx` | Fixed desktop, Sheet drawer mobile. Receives `isSuperAdmin` prop from layout. Active item: accent left border 3px + accent text. |
-| AdminStatCard | `src/components/admin/AdminStatCard.tsx` | Dashboard card: `bg-brand-card`, colored accent top-border, stat number 28px/700, label 12px/400 muted |
+| AdminSidebar | `src/components/admin/AdminSidebar.tsx` | Fixed desktop, Sheet drawer mobile. Receives `isSuperAdmin` prop from layout. Active item: accent left border 3px + accent text. Mobile hamburger trigger must have `aria-label="Abrir menu"`. |
+| AdminStatCard | `src/components/admin/AdminStatCard.tsx` | Dashboard card: `bg-brand-card`, colored accent top-border, stat number 28px/600, label 14px/400 muted |
 | BannedItemForm | `src/components/admin/BannedItemForm.tsx` | Dialog form: name (Input), reason (Input), category (Select). Used for both create and edit. |
 | ServerForm | `src/components/admin/ServerForm.tsx` | Dialog form: name (Input), ip (Input), description (Textarea), bannerPath (Input). |
 | ShopItemForm | `src/components/admin/ShopItemForm.tsx` | Dialog form: name (Input), description (Textarea), category (Select). |
@@ -161,7 +163,7 @@ Source: `src/app/globals.css` — all brand tokens detected, not re-specified
 ### Mobile (<1024px)
 
 - Sidebar hidden by default
-- Hamburger button (top-left, 44px touch target) triggers Sheet drawer
+- Hamburger button (top-left, 44px touch target, `aria-label="Abrir menu"`) triggers Sheet drawer
 - Sheet opens from left, same width as desktop sidebar (256px)
 - Main content occupies full width, p-4 (16px)
 
@@ -218,9 +220,11 @@ Not used for this admin panel. All initial data fetches are Server Components �
 | Primary CTA — add item | "Adicionar Item" |
 | Primary CTA — add server | "Adicionar Servidor" |
 | Primary CTA — add shop item | "Adicionar Item da Loja" |
-| Primary CTA — save form | "Salvar" |
+| Primary CTA — create new record (form submit) | "Criar Item" (when Dialog opened via Adicionar) |
+| Primary CTA — save edits (form submit) | "Salvar Alterações" (when Dialog opened via Editar) |
 | Primary CTA — grant permission | "Conceder Acesso" |
-| Secondary CTA — cancel | "Cancelar" |
+| Secondary CTA — discard unsaved form changes | "Descartar" (when the form has unsaved changes) |
+| Secondary CTA — close form with no changes | "Fechar" (when no changes have been made) |
 | Table empty state heading | "Nenhum item encontrado" |
 | Table empty state body | "Clique em 'Adicionar' para criar o primeiro registro." |
 | Leaderboard empty state | "Nenhum jogador registrado ainda." |
@@ -234,7 +238,9 @@ Not used for this admin panel. All initial data fetches are Server Components �
 | Destructive — delete match | "Deletar Partida: Esta partida será removida permanentemente. O ELO NÃO será revertido automaticamente. Confirmar?" |
 | Destructive — ban player | "Banir Jogador: O jogador sumirá do leaderboard público. O ban é reversível. Confirmar?" |
 | Destructive — unban player | "Reverter Ban: O jogador voltará a aparecer no leaderboard. Confirmar?" |
-| Destructive confirm button | "Confirmar" (variant: destructive on delete; variant: default on ban/unban) |
+| Destructive confirm button — delete actions | "Confirmar Exclusão" (variant: destructive) |
+| Destructive confirm button — ban action | "Confirmar Ban" (variant: destructive) |
+| Destructive confirm button — unban action | "Confirmar Reversão" (variant: default) |
 | 403 page heading | "Acesso Negado" |
 | 403 page body | "Você não tem permissão para acessar esta área. Fale com o super-admin se acredita que isso é um erro." |
 | 403 page CTA | "Voltar ao site" |
@@ -253,9 +259,9 @@ Source: CONTEXT.md locked decisions + project constraint "site inteiro em PT-BR"
 |-------|---------|-----|
 | Populated | Items exist in DB | Table with rows, actions per row |
 | Empty | No items in DB | Empty state: "Nenhum item encontrado" + "Adicionar Item" button |
-| Creating | User opens add dialog | Dialog open, form blank, "Salvar" button |
-| Editing | User clicks "Editar" | Dialog open, form pre-populated |
-| Deleting | User clicks "Deletar" | AlertDialog confirmation |
+| Creating | User opens add dialog | Dialog open, form blank, "Criar Item" button |
+| Editing | User clicks "Editar" | Dialog open, form pre-populated, "Salvar Alterações" button |
+| Deleting | User clicks "Deletar" | AlertDialog confirmation with "Confirmar Exclusão" button |
 | Success | Mutation complete | Toast "Item salvo com sucesso." or "Item deletado." |
 | Error | Mutation fails | Toast "Erro ao salvar. Tente novamente." |
 

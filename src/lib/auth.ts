@@ -44,7 +44,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           .from(users)
           .where(eq(users.id, user.id))
           .limit(1)
-        session.user.discordId = dbUser?.discordId ?? null
+        const discordId = dbUser?.discordId ?? null
+        session.user.discordId = discordId
+        // Embed isAdmin flag — checked against env vars server-side so no NEXT_PUBLIC_ exposure needed
+        const superAdminId = process.env.SUPER_ADMIN_DISCORD_ID
+        const adminIds = (process.env.ADMIN_DISCORD_IDS ?? '').split(',').map(s => s.trim()).filter(Boolean)
+        session.user.isAdmin = !!(discordId && (discordId === superAdminId || adminIds.includes(discordId)))
       }
       return session
     },

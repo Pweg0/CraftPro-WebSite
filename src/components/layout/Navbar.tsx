@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Menu } from 'lucide-react';
 import { AvatarDropdown } from '@/components/auth/AvatarDropdown';
+import { useSession } from 'next-auth/react';
 
 const navLinks = [
   { href: '/', label: 'Início' },
@@ -18,6 +19,9 @@ const navLinks = [
 ];
 
 export function Navbar() {
+  const { data: session } = useSession()
+  const isAdminUser = !!(session?.user as any)?.isAdmin
+
   return (
     <nav
       data-testid="navbar"
@@ -41,6 +45,16 @@ export function Navbar() {
               </Link>
             </li>
           ))}
+          {isAdminUser && (
+            <li>
+              <Link
+                href="/admin"
+                className="text-sm text-brand-accent font-medium hover:text-brand-accent/80 transition-colors duration-150"
+              >
+                Admin
+              </Link>
+            </li>
+          )}
         </ul>
 
         {/* Desktop auth — right side */}
@@ -67,6 +81,14 @@ export function Navbar() {
                   {link.label}
                 </Link>
               ))}
+              {isAdminUser && (
+                <Link
+                  href="/admin"
+                  className="text-lg text-brand-accent font-medium hover:text-brand-accent/80 transition-colors duration-150"
+                >
+                  Admin
+                </Link>
+              )}
               <div className="pt-2 border-t border-white/10 mt-2">
                 <AvatarDropdown />
               </div>

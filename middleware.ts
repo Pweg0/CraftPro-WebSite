@@ -19,6 +19,17 @@ export default auth((req) => {
     return NextResponse.redirect(loginUrl)
   }
 
+  // Coarse admin check — env var only, no DB call (Edge runtime)
+  if (pathname.startsWith("/admin") && isLoggedIn) {
+    const discordId = (req.auth?.user as any)?.discordId
+    const superAdminId = process.env.SUPER_ADMIN_DISCORD_ID
+    const adminIds = (process.env.ADMIN_DISCORD_IDS ?? '').split(',').map(s => s.trim()).filter(Boolean)
+    const isAdminUser = discordId === superAdminId || adminIds.includes(discordId ?? '')
+    if (!isAdminUser) {
+      return NextResponse.redirect(new URL('/403', req.nextUrl.origin))
+    }
+  }
+
   return NextResponse.next()
 })
 

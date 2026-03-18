@@ -5,6 +5,7 @@ declare module "next-auth" {
     user: {
       id: string
       discordId: string | null
+      isAdmin?: boolean
     } & DefaultSession["user"]
   }
 }

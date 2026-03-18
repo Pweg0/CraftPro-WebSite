@@ -9,10 +9,10 @@ Requirements para release inicial. Cada um mapeia para fases do roadmap.
 
 ### Landing Page
 
-- [ ] **LAND-01**: Hero section imersivo com background Minecraft/Pokémon fornecido (otimizado WebP/srcset)
-- [ ] **LAND-02**: Navbar com navegação entre todas as páginas do site
-- [ ] **LAND-03**: Footer com links úteis e convite Discord
-- [ ] **LAND-04**: Animações com Motion (parallax hero, transições de página, efeitos visuais)
+- [x] **LAND-01**: Hero section imersivo com background Minecraft/Pokémon fornecido (otimizado WebP/srcset)
+- [x] **LAND-02**: Navbar com navegação entre todas as páginas do site
+- [x] **LAND-03**: Footer com links úteis e convite Discord
+- [x] **LAND-04**: Animações com Motion (parallax hero, transições de página, efeitos visuais)
 - [x] **LAND-05**: Design responsivo mobile-first (otimizado para conexões BR)
 
 ### Autenticação
@@ -87,10 +87,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| LAND-01 | Phase 1 | Pending |
-| LAND-02 | Phase 1 | Pending |
-| LAND-03 | Phase 1 | Pending |
-| LAND-04 | Phase 1 | Pending |
+| LAND-01 | Phase 1 | Complete |
+| LAND-02 | Phase 1 | Complete |
+| LAND-03 | Phase 1 | Complete |
+| LAND-04 | Phase 1 | Complete |
 | LAND-05 | Phase 1 | Complete |
 | AUTH-01 | Phase 2 | Pending |
 | AUTH-02 | Phase 2 | Pending |

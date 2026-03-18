@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_plan: 2
+current_plan: 3
 status: executing
-stopped_at: Completed 01-hub-p-blico 01-01-PLAN.md
-last_updated: "2026-03-18T19:05:45.391Z"
+stopped_at: Completed 01-hub-p-blico 01-02-PLAN.md
+last_updated: "2026-03-18T19:14:06.557Z"
 progress:
   total_phases: 3
   completed_phases: 0
   total_plans: 3
-  completed_plans: 1
+  completed_plans: 2
 ---
 
 # Project State
@@ -25,7 +25,7 @@ See: .planning/PROJECT.md (updated 2026-03-18)
 ## Current Position
 
 Phase: 01 (Hub Público) — EXECUTING
-Current Plan: 2
+Current Plan: 3
 Total Plans in Phase: 3
 Status: Ready to execute
 
@@ -50,6 +50,7 @@ Status: Ready to execute
 
 *Updated after each plan completion*
 | Phase 01-hub-p-blico P01 | 18min | 2 tasks | 28 files |
+| Phase 01-hub-p-blico P02 | 12 | 2 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -65,6 +66,9 @@ Recent decisions affecting current work:
 - [01-01]: React.createElement used in tests/setup.ts instead of JSX to avoid OXC parser error in .ts files
 - [01-01]: tests/ excluded from Next.js tsconfig to prevent vitest global type conflicts
 - [01-01]: Hero image converted at quality 80 yielding 166KB (under 500KB mobile limit)
+- [Phase 01-02]: SheetTrigger (base-ui) does not accept asChild prop — styled directly with className instead of wrapping Button
+- [Phase 01-02]: src/app/page.tsx removed in favor of src/app/(public)/page.tsx to use route group pattern
+- [Phase 01-02]: Client Component islands — HeroSection and HeroCTAButtons are 'use client'; page.tsx stays Server Component
 
 ### Pending Todos
 
@@ -78,6 +82,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-18T19:05:45.359Z
-Stopped at: Completed 01-hub-p-blico 01-01-PLAN.md
+Last session: 2026-03-18T19:14:06.548Z
+Stopped at: Completed 01-hub-p-blico 01-02-PLAN.md
 Resume file: None

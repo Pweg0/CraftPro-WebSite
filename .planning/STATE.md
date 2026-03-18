@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 04-painel-admin-04-PLAN.md
-last_updated: "2026-03-18T23:52:42.971Z"
+stopped_at: Completed 04-painel-admin-03-PLAN.md
+last_updated: "2026-03-18T23:55:13.189Z"
 progress:
   total_phases: 4
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 13
-  completed_plans: 12
+  completed_plans: 13
 ---
 
 # Project State
@@ -58,6 +58,7 @@ Plan: 1 of 4
 | Phase 04-painel-admin P01 | 3 | 2 tasks | 13 files |
 | Phase 04-painel-admin P02 | 12 | 2 tasks | 10 files |
 | Phase 04-painel-admin P04 | 4 | 2 tasks | 8 files |
+| Phase 04-painel-admin P03 | 6 | 3 tasks | 18 files |
 
 ## Accumulated Context
 
@@ -98,6 +99,8 @@ Recent decisions affecting current work:
 - [Phase 04-painel-admin]: AlertDialog for ban/unban/delete actions prevents accidental irreversible mutations
 - [Phase 04-painel-admin]: useOptimistic in PermissionManager for instant checkbox toggle feedback without waiting for server round-trip
 - [Phase 04-painel-admin]: isSuperAdmin page-level guard in permissoes page — layout only checks isAdmin, page adds super-admin check and redirects to /403
+- [Phase 04-painel-admin]: Server slug for servers auto-generated from name via normalize+lowercase+replace; shown as disabled field on edit since it is the PK
+- [Phase 04-painel-admin]: loja.test.tsx updated to mock db and await async Server Component after migration from static to DB-backed page
 
 ### Roadmap Evolution
 
@@ -115,6 +118,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-18T23:52:42.961Z
-Stopped at: Completed 04-painel-admin-04-PLAN.md
+Last session: 2026-03-18T23:55:13.185Z
+Stopped at: Completed 04-painel-admin-03-PLAN.md
 Resume file: None

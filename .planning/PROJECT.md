@@ -12,22 +12,21 @@ Transmitir a fusão Minecraft + Pokémon de forma vibrante e colorida, sendo o p
 
 ### Validated
 
-(None yet — ship to validate)
+- ✓ Landing page com hero section imersiva (background Minecraft/Pokémon) — Phase 1
+- ✓ Página de servidores (listar servidores do network) — Phase 1
+- ✓ Página da loja (coming soon — preparada para futuro) — Phase 1
+- ✓ Página de itens banidos — Phase 1
+- ✓ Página de replays de batalhas Pokémon (stub) — Phase 1
+- ✓ Design colorido vibrante com estética Minecraft/Pokémon — Phase 1
+- ✓ Site em Português BR — Phase 1
 
 ### Active
 
-- [ ] Landing page com hero section imersiva (background Minecraft/Pokémon)
-- [ ] Página de servidores (listar servidores do network)
 - [ ] Sistema de ranking competitivo de Pokémon (elo sobe/desce por vitórias/derrotas)
 - [ ] Página de ranking por elo (leaderboard)
 - [ ] Página Top 10 jogadores com mais vitórias
 - [ ] Sistema de perfil de usuário
-- [ ] Página de replays de batalhas Pokémon (formato a definir)
-- [ ] Página da loja (coming soon — preparada para futuro)
-- [ ] Página de itens banidos
 - [ ] Login via Discord
-- [ ] Design colorido vibrante com estética Minecraft/Pokémon
-- [ ] Site em Português BR
 
 ### Out of Scope
 
@@ -62,4 +61,4 @@ Transmitir a fusão Minecraft + Pokémon de forma vibrante e colorida, sendo o p
 | Ranking tipo elo competitivo | Referência LoL — sobe/desce com win/loss | — Pending |
 
 ---
-*Last updated: 2026-03-18 after initialization*
+*Last updated: 2026-03-18 after Phase 1 completion*

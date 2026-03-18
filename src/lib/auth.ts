@@ -38,6 +38,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       // Expose internal user id to session so Phase 3 can look up ELO by userId
       if (session.user) {
         session.user.id = user.id
+        // Expose discordId for admin permission checks in middleware and Server Components
+        const [dbUser] = await db
+          .select({ discordId: users.discordId })
+          .from(users)
+          .where(eq(users.id, user.id))
+          .limit(1)
+        session.user.discordId = dbUser?.discordId ?? null
       }
       return session
     },

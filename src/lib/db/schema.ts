@@ -1,5 +1,5 @@
 // src/lib/db/schema.ts
-import { pgTable, text, timestamp, integer, primaryKey } from "drizzle-orm/pg-core"
+import { pgTable, text, timestamp, integer, bigint, primaryKey, index, jsonb } from "drizzle-orm/pg-core"
 
 export const users = pgTable("users", {
   id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
@@ -40,3 +40,96 @@ export const verificationTokens = pgTable("verificationTokens", {
 }, (vt) => ({
   compoundKey: primaryKey({ columns: [vt.identifier, vt.token] }),
 }))
+
+// ============================================================
+// Arena — Competitive System (replays, leaderboard, matches)
+// ============================================================
+
+export const arenaPlayers = pgTable("arena_players", {
+  uuid: text("uuid").primaryKey(), // Minecraft UUID
+  name: text("name").notNull(),
+  elo: integer("elo").notNull().default(800),
+  wins: integer("wins").notNull().default(0),
+  losses: integer("losses").notNull().default(0),
+  division: text("division").notNull().default("UNRANKED"),
+  placementComplete: integer("placement_complete").notNull().default(0),
+  banned: integer("banned").notNull().default(0),
+  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow(),
+})
+
+export const arenaMatches = pgTable("arena_matches", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  matchId: text("match_id").unique().notNull(), // UUID from mod (idempotency key)
+  arenaName: text("arena_name"),
+  matchType: text("match_type"),
+  reason: text("reason"),
+  startedAt: bigint("started_at", { mode: "number" }), // epoch seconds
+  durationMs: bigint("duration_ms", { mode: "number" }),
+  winnerUuid: text("winner_uuid"),
+  winnerName: text("winner_name"),
+  loserUuid: text("loser_uuid"),
+  loserName: text("loser_name"),
+  winnerEloBefore: integer("winner_elo_before"),
+  winnerEloAfter: integer("winner_elo_after"),
+  winnerDelta: integer("winner_delta"),
+  loserEloBefore: integer("loser_elo_before"),
+  loserEloAfter: integer("loser_elo_after"),
+  loserDelta: integer("loser_delta"),
+  winnerDivision: text("winner_division"),
+  loserDivision: text("loser_division"),
+  replayLog: jsonb("replay_log"), // Array of Showdown protocol lines
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow(),
+}, (table) => ({
+  winnerIdx: index("idx_winner").on(table.winnerUuid),
+  loserIdx: index("idx_loser").on(table.loserUuid),
+  startedIdx: index("idx_started").on(table.startedAt),
+}))
+
+// ============================================================
+// Admin Panel — Phase 4 tables
+// ============================================================
+
+export const bannedItems = pgTable("banned_items", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  name: text("name").notNull(),
+  reason: text("reason").notNull(),
+  category: text("category").notNull(),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow(),
+  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow(),
+})
+
+export const servers = pgTable("servers", {
+  id: text("id").primaryKey(), // slug: 'pokebrawl', 'pokedash', etc.
+  name: text("name").notNull(),
+  ip: text("ip").notNull(),
+  description: text("description").notNull(),
+  bannerPath: text("banner_path").notNull(),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow(),
+})
+
+export const shopItems = pgTable("shop_items", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  category: text("category").notNull(),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow(),
+  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow(),
+})
+
+export const adminPermissions = pgTable("admin_permissions", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  discordId: text("discord_id").notNull(),
+  section: text("section").notNull(), // 'itens-banidos' | 'servidores' | 'loja' | 'leaderboard'
+  grantedAt: timestamp("granted_at", { mode: "date" }).defaultNow(),
+  grantedBy: text("granted_by").notNull(), // discordId of super-admin
+})
+
+export const adminAuditLog = pgTable("admin_audit_log", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  discordId: text("discord_id").notNull(),
+  discordName: text("discord_name"),
+  action: text("action").notNull(),
+  targetId: text("target_id"),
+  metadata: jsonb("metadata"),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow(),
+})

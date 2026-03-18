@@ -134,6 +134,19 @@ None - no external service configuration required.
 - 9 tests passing as baseline for Plan 03
 - `npx next build` exits 0
 
+## Self-Check: PASSED
+
+All key files found, all commits verified:
+- FOUND: src/components/layout/Navbar.tsx
+- FOUND: src/components/layout/Footer.tsx
+- FOUND: src/components/hero/HeroSection.tsx
+- FOUND: src/components/hero/HeroCTAButtons.tsx
+- FOUND: src/app/(public)/page.tsx
+- FOUND: .planning/phases/01-hub-p-blico/01-02-SUMMARY.md
+- FOUND: e6454dd3 (Task 1 commit)
+- FOUND: 51f651ed (Task 2 commit)
+- FOUND: be56e6db (deviation fix commit)
+
 ---
 *Phase: 01-hub-p-blico*
 *Completed: 2026-03-18*

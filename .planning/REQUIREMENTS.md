@@ -13,7 +13,7 @@ Requirements para release inicial. Cada um mapeia para fases do roadmap.
 - [ ] **LAND-02**: Navbar com navegação entre todas as páginas do site
 - [ ] **LAND-03**: Footer com links úteis e convite Discord
 - [ ] **LAND-04**: Animações com Motion (parallax hero, transições de página, efeitos visuais)
-- [ ] **LAND-05**: Design responsivo mobile-first (otimizado para conexões BR)
+- [x] **LAND-05**: Design responsivo mobile-first (otimizado para conexões BR)
 
 ### Autenticação
 
@@ -23,9 +23,9 @@ Requirements para release inicial. Cada um mapeia para fases do roadmap.
 
 ### Servidores
 
-- [ ] **SERV-01**: Página listando todos os servidores do network com status online/offline
-- [ ] **SERV-02**: Contagem de jogadores ao vivo por servidor
-- [ ] **SERV-03**: Botão para copiar IP do servidor
+- [x] **SERV-01**: Página listando todos os servidores do network com status online/offline
+- [x] **SERV-02**: Contagem de jogadores ao vivo por servidor
+- [x] **SERV-03**: Botão para copiar IP do servidor
 
 ### Ranking & Competitivo
 
@@ -41,7 +41,7 @@ Requirements para release inicial. Cada um mapeia para fases do roadmap.
 
 ### Páginas Extras
 
-- [ ] **EXTRA-01**: Página de itens banidos com lista e razão de cada ban
+- [x] **EXTRA-01**: Página de itens banidos com lista e razão de cada ban
 - [ ] **EXTRA-02**: Página da loja com status "Em Breve" e preview do que virá
 - [ ] **EXTRA-03**: Página de replays de batalhas (stub/placeholder — formato a definir)
 
@@ -91,20 +91,20 @@ Which phases cover which requirements. Updated during roadmap creation.
 | LAND-02 | Phase 1 | Pending |
 | LAND-03 | Phase 1 | Pending |
 | LAND-04 | Phase 1 | Pending |
-| LAND-05 | Phase 1 | Pending |
+| LAND-05 | Phase 1 | Complete |
 | AUTH-01 | Phase 2 | Pending |
 | AUTH-02 | Phase 2 | Pending |
 | AUTH-03 | Phase 2 | Pending |
-| SERV-01 | Phase 1 | Pending |
-| SERV-02 | Phase 1 | Pending |
-| SERV-03 | Phase 1 | Pending |
+| SERV-01 | Phase 1 | Complete |
+| SERV-02 | Phase 1 | Complete |
+| SERV-03 | Phase 1 | Complete |
 | RANK-01 | Phase 3 | Pending |
 | RANK-02 | Phase 3 | Pending |
 | RANK-03 | Phase 3 | Pending |
 | RANK-04 | Phase 3 | Pending |
 | PROF-01 | Phase 3 | Pending |
 | PROF-02 | Phase 3 | Pending |
-| EXTRA-01 | Phase 1 | Pending |
+| EXTRA-01 | Phase 1 | Complete |
 | EXTRA-02 | Phase 1 | Pending |
 | EXTRA-03 | Phase 1 | Pending |
 

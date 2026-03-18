@@ -31,9 +31,9 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 3 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Scaffold Next.js 16, Tailwind v4 @theme design tokens, shared types, mcsrvstat.us client, static data, Vitest + test stubs, hero image WebP
-- [ ] 01-02-PLAN.md — Navbar (sticky + mobile Sheet), Footer, HeroSection (Motion parallax), HeroCTAButtons (copy IP + Discord + scroll + Loja)
-- [ ] 01-03-PLAN.md — Server status page (ServerCard glow, CopyIPButton, live player count), Banned Items table (searchable), Loja teaser, Replays stub, Ranking/Perfil stubs
+- [x] 01-01-PLAN.md — Scaffold Next.js 16, Tailwind v4 @theme design tokens, shared types, mcsrvstat.us client, static data, Vitest + test stubs, hero image WebP
+- [x] 01-02-PLAN.md — Navbar (sticky + mobile Sheet), Footer, HeroSection (Motion parallax), HeroCTAButtons (copy IP + Discord + scroll + Loja)
+- [x] 01-03-PLAN.md — Server status page (ServerCard glow, CopyIPButton, live player count), Banned Items table (searchable), Loja teaser, Replays stub, Ranking/Perfil stubs
 
 ### Phase 2: Autenticação
 **Goal**: Usuários logados via Discord têm identidade persistente no site — podem fazer login, permanecer logados entre sessões e sair de qualquer página
@@ -46,9 +46,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — Neon DB setup (human gate) + packages install + Drizzle schema (Auth.js tables + discordId) + drizzle.config.ts + test stubs (auth.test.tsx)
-- [ ] 02-02-PLAN.md — Auth.js v5 config (Discord provider + DrizzleAdapter + discordId upsert) + /api/auth/[...nextauth] route handler + SessionProvider + layout.tsx + User type
-- [ ] 02-03-PLAN.md — AvatarDropdown component (login button / avatar+dropdown) + Navbar integration + proxy.ts route protection + manual OAuth flow verification
+- [x] 02-01-PLAN.md — Neon DB setup (human gate) + packages install + Drizzle schema (Auth.js tables + discordId) + drizzle.config.ts + test stubs (auth.test.tsx)
+- [x] 02-02-PLAN.md — Auth.js v5 config (Discord provider + DrizzleAdapter + discordId upsert) + /api/auth/[...nextauth] route handler + SessionProvider + layout.tsx + User type
+- [x] 02-03-PLAN.md — AvatarDropdown component (login button / avatar+dropdown) + Navbar integration + middleware.ts route protection + custom login page
 
 ### Phase 3: Sistema Competitivo
 **Goal**: Jogadores podem ver o ranking completo de Pokémon por ELO, o top-10 de vitórias, seus tiers visuais, e acessar perfis com histórico de batalhas — o hub competitivo central do CraftPro Brasil está vivo
@@ -74,15 +74,15 @@ Phases execute in numeric order: 1 → 2 → 3
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Hub Público | 3/3 | Complete    | 2026-03-18 |
-| 2. Autenticação | 1/3 | Complete    | 2026-03-18 |
-| 3. Sistema Competitivo | 0/3 | Not started | - |
+| 2. Autenticação | 3/3 | Complete    | 2026-03-18 |
+| 3. Sistema Competitivo | 1/2 | In Progress|  |
 
 ### Phase 4: Painel Admin — Rota /admin protegida para gerenciar itens banidos (CRUD), servidores (CRUD), configurações da loja, e dados do leaderboard. Acesso restrito ao dono do servidor. Dados salvos no Neon PostgreSQL via Drizzle ORM.
 
 **Goal:** [To be planned]
 **Requirements**: TBD
 **Depends on:** Phase 3
-**Plans:** 2/3 plans complete
+**Plans:** 1/2 plans executed
 
 Plans:
 - [ ] TBD (run /gsd:plan-phase 4 to break down)

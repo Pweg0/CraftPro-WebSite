@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Phase 3 context gathered
-last_updated: "2026-03-18T21:37:16.062Z"
+stopped_at: Completed 03-01-PLAN.md
+last_updated: "2026-03-18T22:01:23.725Z"
 progress:
   total_phases: 4
-  completed_phases: 1
-  total_plans: 6
-  completed_plans: 5
+  completed_phases: 2
+  total_plans: 8
+  completed_plans: 7
 ---
 
 # Project State
@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-18)
 
 **Core value:** Transmitir a fusão Minecraft + Pokémon de forma vibrante, sendo o hub central para jogadores do CraftPro Brasil
-**Current focus:** Phase 02 — Autenticação
+**Current focus:** Phase 03 — sistema-competitivo
 
 ## Current Position
 
-Phase: 02 (Autenticação) — EXECUTING
-Plan: 1 of 3
+Phase: 03 (sistema-competitivo) — EXECUTING
+Plan: 1 of 2
 
 ## Performance Metrics
 
@@ -51,6 +51,8 @@ Plan: 1 of 3
 | Phase 01-hub-p-blico P03 | 15 | 2 tasks | 14 files |
 | Phase 02-autentica-o P01 | 25 | 2 tasks | 7 files |
 | Phase 02-autentica-o P02 | 2 | 2 tasks | 5 files |
+| Phase 02-autentica-o P03 | 15 | 3 tasks | 10 files |
+| Phase 03-sistema-competitivo P01 | 10 | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -76,6 +78,9 @@ Recent decisions affecting current work:
 - [Phase 02-autentica-o]: neon-http driver chosen over neon-ws for App Router serverless compatibility
 - [Phase 02-autentica-o]: signIn callback upserts discordId using profile.id (Discord snowflake) as stable FK for Phase 3 ELO system
 - [Phase 02-autentica-o]: Providers wrapper in separate 'use client' file to keep layout.tsx as Server Component
+- [Phase 03-sistema-competitivo]: replayLog excluded from getPlayerMatches select — large JSONB not needed in match history, reserved for future replay viewer
+- [Phase 03-sistema-competitivo]: TierBadge uses inline styles not Tailwind tokens — 7 division colors are mod-spec constants that cannot be safely tokenized
+- [Phase 03-sistema-competitivo]: Division prop typed as string not strict union — DB returns plain strings, component degrades to UNRANKED for unknown values
 
 ### Roadmap Evolution
 
@@ -93,6 +98,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-18T21:37:16.035Z
-Stopped at: Phase 3 context gathered
-Resume file: .planning/phases/03-sistema-competitivo/03-CONTEXT.md
+Last session: 2026-03-18T22:01:23.720Z
+Stopped at: Completed 03-01-PLAN.md
+Resume file: None

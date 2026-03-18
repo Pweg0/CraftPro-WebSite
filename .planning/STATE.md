@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Phase 4 UI-SPEC approved
-last_updated: "2026-03-18T23:07:01.875Z"
+stopped_at: Completed 04-painel-admin-01-PLAN.md
+last_updated: "2026-03-18T23:40:11.614Z"
 progress:
   total_phases: 4
   completed_phases: 3
-  total_plans: 9
-  completed_plans: 9
+  total_plans: 13
+  completed_plans: 10
 ---
 
 # Project State
@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-18)
 
 **Core value:** Transmitir a fusão Minecraft + Pokémon de forma vibrante, sendo o hub central para jogadores do CraftPro Brasil
-**Current focus:** Phase 03 — sistema-competitivo
+**Current focus:** Phase 04 — painel-admin
 
 ## Current Position
 
-Phase: 03 (sistema-competitivo) — COMPLETE
-Plan: 2 of 2
+Phase: 04 (painel-admin) — EXECUTING
+Plan: 1 of 4
 
 ## Performance Metrics
 
@@ -55,6 +55,7 @@ Plan: 2 of 2
 | Phase 03-sistema-competitivo P01 | 10 | 2 tasks | 7 files |
 | Phase 03-sistema-competitivo P02 | 5 | 2 tasks | 4 files |
 | Phase 03-sistema-competitivo P03 | 4 | 2 tasks | 5 files |
+| Phase 04-painel-admin P01 | 3 | 2 tasks | 13 files |
 
 ## Accumulated Context
 
@@ -87,6 +88,8 @@ Recent decisions affecting current work:
 - [Phase 03-sistema-competitivo]: showUnranked condition tied to isLastPage — unranked players shown only on last page of ranked results
 - [Phase 03-sistema-competitivo]: Protected /perfil shows Discord session info + link to /ranking — no Discord-to-Minecraft UUID FK exists so cannot auto-redirect to profile
 - [Phase 03-sistema-competitivo]: MatchHistoryTable client-side pagination for v1 — page state is local, all 20 matches from server; true server-side pagination deferred
+- [Phase 04-painel-admin]: permissions.ts uses dynamic imports for db/schema to avoid circular dependency issues in test environment
+- [Phase 04-painel-admin]: Seed script uses relative imports from ../src/lib/db/schema instead of @/ path alias — tsx runs outside Next.js context
 
 ### Roadmap Evolution
 
@@ -104,6 +107,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-18T23:07:01.861Z
-Stopped at: Phase 4 UI-SPEC approved
-Resume file: .planning/phases/04-painel-admin/04-UI-SPEC.md
+Last session: 2026-03-18T23:40:11.609Z
+Stopped at: Completed 04-painel-admin-01-PLAN.md
+Resume file: None

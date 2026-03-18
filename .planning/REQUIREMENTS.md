@@ -29,8 +29,8 @@ Requirements para release inicial. Cada um mapeia para fases do roadmap.
 
 ### Ranking & Competitivo
 
-- [ ] **RANK-01**: Página de leaderboard mostrando jogadores ordenados por elo
-- [ ] **RANK-02**: Página Top 10 jogadores com mais vitórias
+- [x] **RANK-01**: Página de leaderboard mostrando jogadores ordenados por elo
+- [x] **RANK-02**: Página Top 10 jogadores com mais vitórias
 - [x] **RANK-03**: Tiers/ranks visuais (Bronze, Silver, Gold, Diamond, etc.)
 - [x] **RANK-04**: Sistema de cálculo ELO (sobe com vitória, desce com derrota)
 
@@ -98,8 +98,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SERV-01 | Phase 1 | Complete |
 | SERV-02 | Phase 1 | Complete |
 | SERV-03 | Phase 1 | Complete |
-| RANK-01 | Phase 3 | Pending |
-| RANK-02 | Phase 3 | Pending |
+| RANK-01 | Phase 3 | Complete |
+| RANK-02 | Phase 3 | Complete |
 | RANK-03 | Phase 3 | Complete |
 | RANK-04 | Phase 3 | Complete |
 | PROF-01 | Phase 3 | Pending |

@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 03-01-PLAN.md
-last_updated: "2026-03-18T22:01:23.725Z"
+stopped_at: Completed 03-02-PLAN.md
+last_updated: "2026-03-18T22:05:52.306Z"
 progress:
   total_phases: 4
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 8
-  completed_plans: 7
+  completed_plans: 8
 ---
 
 # Project State
@@ -23,8 +23,8 @@ See: .planning/PROJECT.md (updated 2026-03-18)
 
 ## Current Position
 
-Phase: 03 (sistema-competitivo) — EXECUTING
-Plan: 1 of 2
+Phase: 03 (sistema-competitivo) — COMPLETE
+Plan: 2 of 2
 
 ## Performance Metrics
 
@@ -53,6 +53,7 @@ Plan: 1 of 2
 | Phase 02-autentica-o P02 | 2 | 2 tasks | 5 files |
 | Phase 02-autentica-o P03 | 15 | 3 tasks | 10 files |
 | Phase 03-sistema-competitivo P01 | 10 | 2 tasks | 7 files |
+| Phase 03-sistema-competitivo P02 | 5 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -81,6 +82,8 @@ Recent decisions affecting current work:
 - [Phase 03-sistema-competitivo]: replayLog excluded from getPlayerMatches select — large JSONB not needed in match history, reserved for future replay viewer
 - [Phase 03-sistema-competitivo]: TierBadge uses inline styles not Tailwind tokens — 7 division colors are mod-spec constants that cannot be safely tokenized
 - [Phase 03-sistema-competitivo]: Division prop typed as string not strict union — DB returns plain strings, component degrades to UNRANKED for unknown values
+- [Phase 03-sistema-competitivo]: getAllByText used for Em Classificacao assertion — separator row AND UNRANKED TierBadge both render the same string
+- [Phase 03-sistema-competitivo]: showUnranked condition tied to isLastPage — unranked players shown only on last page of ranked results
 
 ### Roadmap Evolution
 
@@ -98,6 +101,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-18T22:01:23.720Z
-Stopped at: Completed 03-01-PLAN.md
+Last session: 2026-03-18T22:05:52.296Z
+Stopped at: Completed 03-02-PLAN.md
 Resume file: None

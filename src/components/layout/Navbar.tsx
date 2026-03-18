@@ -15,7 +15,6 @@ const navLinks = [
   { href: '/loja', label: 'Loja' },
   { href: '/itens-banidos', label: 'Itens Banidos' },
   { href: '/replays', label: 'Replays' },
-  { href: '/perfil', label: 'Perfil' },
 ];
 
 export function Navbar() {

@@ -13,6 +13,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     sessionsTable: sessions,
     verificationTokensTable: verificationTokens,
   }),
+  pages: {
+    signIn: "/login",
+  },
   providers: [
     Discord({
       clientId: process.env.AUTH_DISCORD_ID!,

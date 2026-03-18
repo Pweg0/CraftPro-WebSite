@@ -17,9 +17,9 @@ Requirements para release inicial. Cada um mapeia para fases do roadmap.
 
 ### Autenticação
 
-- [ ] **AUTH-01**: Usuário pode fazer login via Discord OAuth2
-- [ ] **AUTH-02**: Sessão persiste entre refreshes do navegador
-- [ ] **AUTH-03**: Usuário pode fazer logout de qualquer página
+- [x] **AUTH-01**: Usuário pode fazer login via Discord OAuth2
+- [x] **AUTH-02**: Sessão persiste entre refreshes do navegador
+- [x] **AUTH-03**: Usuário pode fazer logout de qualquer página
 
 ### Servidores
 
@@ -92,9 +92,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | LAND-03 | Phase 1 | Complete |
 | LAND-04 | Phase 1 | Complete |
 | LAND-05 | Phase 1 | Complete |
-| AUTH-01 | Phase 2 | Pending |
-| AUTH-02 | Phase 2 | Pending |
-| AUTH-03 | Phase 2 | Pending |
+| AUTH-01 | Phase 2 | Complete |
+| AUTH-02 | Phase 2 | Complete |
+| AUTH-03 | Phase 2 | Complete |
 | SERV-01 | Phase 1 | Complete |
 | SERV-02 | Phase 1 | Complete |
 | SERV-03 | Phase 1 | Complete |

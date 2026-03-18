@@ -2,15 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_plan: 3
-status: executing
-stopped_at: Phase 2 context gathered
-last_updated: "2026-03-18T19:53:20.945Z"
+status: unknown
+stopped_at: Completed 02-01-PLAN.md
+last_updated: "2026-03-18T20:32:58.260Z"
 progress:
   total_phases: 4
   completed_phases: 1
-  total_plans: 3
-  completed_plans: 3
+  total_plans: 6
+  completed_plans: 4
 ---
 
 # Project State
@@ -20,14 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-18)
 
 **Core value:** Transmitir a fusão Minecraft + Pokémon de forma vibrante, sendo o hub central para jogadores do CraftPro Brasil
-**Current focus:** Phase 01 — Hub Público
+**Current focus:** Phase 02 — Autenticação
 
 ## Current Position
 
-Phase: 01 (Hub Público) — EXECUTING
-Current Plan: 3
-Total Plans in Phase: 3
-Status: Ready to execute
+Phase: 02 (Autenticação) — EXECUTING
+Plan: 1 of 3
 
 ## Performance Metrics
 
@@ -52,6 +49,7 @@ Status: Ready to execute
 | Phase 01-hub-p-blico P01 | 18min | 2 tasks | 28 files |
 | Phase 01-hub-p-blico P02 | 12 | 2 tasks | 9 files |
 | Phase 01-hub-p-blico P03 | 15 | 2 tasks | 14 files |
+| Phase 02-autentica-o P01 | 25 | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -72,6 +70,9 @@ Recent decisions affecting current work:
 - [Phase 01-02]: Client Component islands — HeroSection and HeroCTAButtons are 'use client'; page.tsx stays Server Component
 - [Phase 01-hub-p-blico]: Server status fetched in Server Components only — getServerStatus never called from Client Components
 - [Phase 01-hub-p-blico]: Em Breve pages are first-class with Discord CTA and visual preview content, not blank placeholders
+- [Phase 02-autentica-o]: vi.mock at top-level for missing AvatarDropdown — Vite static analysis fails on dynamic import() of non-existent files
+- [Phase 02-autentica-o]: discordId column added to users table as project extension for Phase 3 ELO system FK
+- [Phase 02-autentica-o]: neon-http driver chosen over neon-ws for App Router serverless compatibility
 
 ### Roadmap Evolution
 
@@ -89,6 +90,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-18T19:53:20.919Z
-Stopped at: Phase 2 context gathered
-Resume file: .planning/phases/02-autentica-o/02-CONTEXT.md
+Last session: 2026-03-18T20:32:58.241Z
+Stopped at: Completed 02-01-PLAN.md
+Resume file: None

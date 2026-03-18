@@ -43,11 +43,12 @@ Plans:
   1. Usuário clica em "Entrar com Discord", autoriza no OAuth e retorna ao site já logado com nome e avatar do Discord visíveis na navbar
   2. Usuário fecha o browser, reabre o site e continua logado sem precisar autenticar novamente
   3. Usuário clica em "Sair" de qualquer página e a sessão é encerrada imediatamente, removendo o estado de logado da navbar
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 02-01: Auth.js v5 Discord provider + Drizzle adapter + upsert de usuário (discordId como FK estável), rota protegida /app/(auth)/
-- [ ] 02-02: Integração da sessão na Navbar (avatar + nome + logout), testes de persistência e rotação de refresh token
+- [ ] 02-01-PLAN.md — Neon DB setup (human gate) + packages install + Drizzle schema (Auth.js tables + discordId) + drizzle.config.ts + test stubs (auth.test.tsx)
+- [ ] 02-02-PLAN.md — Auth.js v5 config (Discord provider + DrizzleAdapter + discordId upsert) + /api/auth/[...nextauth] route handler + SessionProvider + layout.tsx + User type
+- [ ] 02-03-PLAN.md — AvatarDropdown component (login button / avatar+dropdown) + Navbar integration + proxy.ts route protection + manual OAuth flow verification
 
 ### Phase 3: Sistema Competitivo
 **Goal**: Jogadores podem ver o ranking completo de Pokémon por ELO, o top-10 de vitórias, seus tiers visuais, e acessar perfis com histórico de batalhas — o hub competitivo central do CraftPro Brasil está vivo
@@ -73,7 +74,7 @@ Phases execute in numeric order: 1 → 2 → 3
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Hub Público | 3/3 | Complete    | 2026-03-18 |
-| 2. Autenticação | 0/2 | Not started | - |
+| 2. Autenticação | 1/3 | In Progress|  |
 | 3. Sistema Competitivo | 0/3 | Not started | - |
 
 ### Phase 4: Painel Admin — Rota /admin protegida para gerenciar itens banidos (CRUD), servidores (CRUD), configurações da loja, e dados do leaderboard. Acesso restrito ao dono do servidor. Dados salvos no Neon PostgreSQL via Drizzle ORM.
@@ -81,7 +82,7 @@ Phases execute in numeric order: 1 → 2 → 3
 **Goal:** [To be planned]
 **Requirements**: TBD
 **Depends on:** Phase 3
-**Plans:** 0 plans
+**Plans:** 1/3 plans executed
 
 Plans:
 - [ ] TBD (run /gsd:plan-phase 4 to break down)

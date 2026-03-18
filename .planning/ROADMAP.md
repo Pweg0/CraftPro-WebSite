@@ -15,6 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Hub Público** - Toda a experiência pública — hero, navegação, servidores, páginas de suporte, design vibrante completo (completed 2026-03-18)
 - [x] **Phase 2: Autenticação** - Login via Discord com sessão persistente e logout de qualquer página (completed 2026-03-18)
 - [x] **Phase 3: Sistema Competitivo** - ELO, leaderboards, top-10, tiers visuais e perfis de usuário completos (completed 2026-03-18)
+- [ ] **Phase 4: Painel Admin** - Rota /admin protegida com CRUD para itens banidos, servidores, loja e leaderboard, com permissões granulares e auditoria
 
 ## Phase Details
 
@@ -66,23 +67,34 @@ Plans:
 - [x] 03-02-PLAN.md — Ranking page with ELO leaderboard and Top 10 Wins tabs, ISR 60s, pagination, PlayerRow with profile links
 - [ ] 03-03-PLAN.md — Player profile page (/perfil/[uuid]) with stats, tier badge, paginated match history, empty states, 404 handling (gap closure)
 
+### Phase 4: Painel Admin
+**Goal**: Admin do CraftPro Brasil pode gerenciar todo o conteudo dinamico do site — itens banidos, servidores, loja preview, leaderboard (ban/unban jogadores, deletar partidas) — via painel protegido em /admin com permissoes granulares por secao e log de auditoria
+**Depends on**: Phase 3
+**Requirements**: ADMIN-01, ADMIN-02, ADMIN-03, ADMIN-04, ADMIN-05, ADMIN-06, ADMIN-07, ADMIN-08, ADMIN-09, ADMIN-10
+**Success Criteria** (what must be TRUE):
+  1. Admin logado acessa /admin e ve dashboard com stats (total jogadores, partidas hoje, itens banidos, servidores) e logs recentes de auditoria
+  2. Admin pode criar, editar e deletar itens banidos via /admin/itens-banidos e as mudancas refletem na pagina publica /itens-banidos
+  3. Admin pode criar, editar e deletar servidores via /admin/servidores e as mudancas refletem na pagina publica /servidores
+  4. Admin pode criar, editar e deletar itens preview da loja via /admin/loja e as mudancas refletem na pagina publica /loja
+  5. Admin pode banir/desbanir jogadores do leaderboard e deletar partidas especificas via /admin/leaderboard
+  6. Super-admin pode gerenciar permissoes de outros admins por secao via /admin/permissoes
+  7. Usuario nao-admin logado ve pagina 403 ao tentar acessar /admin
+**Plans**: 4 plans
+
+Plans:
+- [ ] 04-01-PLAN.md — Schema (5 new tables + banned column), session discordId extension, permissions utility, seed script, shadcn components
+- [ ] 04-02-PLAN.md — Middleware admin check, 403 page, admin layout + sidebar, dashboard with stats and audit logs, navbar Admin link
+- [ ] 04-03-PLAN.md — CRUD for banned items, servers, shop items (Server Actions + forms + admin pages) + public page migrations to DB
+- [ ] 04-04-PLAN.md — Leaderboard management (ban/unban players, delete matches) + permissions management (super-admin only)
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3
+Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Hub Público | 3/3 | Complete    | 2026-03-18 |
-| 2. Autenticação | 3/3 | Complete    | 2026-03-18 |
+| 1. Hub Publico | 3/3 | Complete    | 2026-03-18 |
+| 2. Autenticacao | 3/3 | Complete    | 2026-03-18 |
 | 3. Sistema Competitivo | 3/3 | Complete   | 2026-03-18 |
-
-### Phase 4: Painel Admin — Rota /admin protegida para gerenciar itens banidos (CRUD), servidores (CRUD), configurações da loja, e dados do leaderboard. Acesso restrito ao dono do servidor. Dados salvos no Neon PostgreSQL via Drizzle ORM.
-
-**Goal:** [To be planned]
-**Requirements**: TBD
-**Depends on:** Phase 3
-**Plans:** 3/3 plans complete
-
-Plans:
-- [ ] TBD (run /gsd:plan-phase 4 to break down)
+| 4. Painel Admin | 0/4 | Planned | — |

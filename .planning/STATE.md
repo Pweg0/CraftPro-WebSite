@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 02-01-PLAN.md
-last_updated: "2026-03-18T20:32:58.260Z"
+stopped_at: Completed 02-02-PLAN.md
+last_updated: "2026-03-18T20:38:13.918Z"
 progress:
   total_phases: 4
   completed_phases: 1
   total_plans: 6
-  completed_plans: 4
+  completed_plans: 5
 ---
 
 # Project State
@@ -50,6 +50,7 @@ Plan: 1 of 3
 | Phase 01-hub-p-blico P02 | 12 | 2 tasks | 9 files |
 | Phase 01-hub-p-blico P03 | 15 | 2 tasks | 14 files |
 | Phase 02-autentica-o P01 | 25 | 2 tasks | 7 files |
+| Phase 02-autentica-o P02 | 2 | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -73,6 +74,8 @@ Recent decisions affecting current work:
 - [Phase 02-autentica-o]: vi.mock at top-level for missing AvatarDropdown — Vite static analysis fails on dynamic import() of non-existent files
 - [Phase 02-autentica-o]: discordId column added to users table as project extension for Phase 3 ELO system FK
 - [Phase 02-autentica-o]: neon-http driver chosen over neon-ws for App Router serverless compatibility
+- [Phase 02-autentica-o]: signIn callback upserts discordId using profile.id (Discord snowflake) as stable FK for Phase 3 ELO system
+- [Phase 02-autentica-o]: Providers wrapper in separate 'use client' file to keep layout.tsx as Server Component
 
 ### Roadmap Evolution
 
@@ -90,6 +93,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-18T20:32:58.241Z
-Stopped at: Completed 02-01-PLAN.md
+Last session: 2026-03-18T20:38:13.911Z
+Stopped at: Completed 02-02-PLAN.md
 Resume file: None

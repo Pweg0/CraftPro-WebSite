@@ -1,6 +1,6 @@
 // tests/navbar.test.tsx
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { Navbar } from '@/components/layout/Navbar';
 
 // Mock next/link for testing
@@ -8,6 +8,14 @@ vi.mock('next/link', () => ({
   default: ({ href, children, ...props }: { href: string; children: React.ReactNode; [key: string]: unknown }) => (
     <a href={href} {...props}>{children}</a>
   ),
+}));
+
+// Mock next-auth/react — AvatarDropdown (now in Navbar) calls useSession
+vi.mock('next-auth/react', () => ({
+  useSession: vi.fn().mockReturnValue({ data: null, status: 'unauthenticated' }),
+  signIn: vi.fn(),
+  signOut: vi.fn(),
+  SessionProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
 
 describe('Navbar', () => {

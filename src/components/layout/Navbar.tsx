@@ -6,6 +6,7 @@
 import Link from 'next/link';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Menu } from 'lucide-react';
+import { AvatarDropdown } from '@/components/auth/AvatarDropdown';
 
 const navLinks = [
   { href: '/', label: 'Início' },
@@ -43,6 +44,11 @@ export function Navbar() {
           ))}
         </ul>
 
+        {/* Desktop auth — right side */}
+        <div className="hidden md:flex items-center">
+          <AvatarDropdown />
+        </div>
+
         {/* Mobile hamburger + Sheet */}
         <Sheet>
           <SheetTrigger
@@ -62,6 +68,9 @@ export function Navbar() {
                   {link.label}
                 </Link>
               ))}
+              <div className="pt-2 border-t border-white/10 mt-2">
+                <AvatarDropdown />
+              </div>
             </nav>
           </SheetContent>
         </Sheet>

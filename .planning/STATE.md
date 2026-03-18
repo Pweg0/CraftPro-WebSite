@@ -73,6 +73,10 @@ Recent decisions affecting current work:
 - [Phase 01-hub-p-blico]: Server status fetched in Server Components only — getServerStatus never called from Client Components
 - [Phase 01-hub-p-blico]: Em Breve pages are first-class with Discord CTA and visual preview content, not blank placeholders
 
+### Roadmap Evolution
+
+- Phase 4 added: Painel Admin — rota /admin protegida para gerenciar itens banidos, servidores, loja e leaderboard
+
 ### Pending Todos
 
 - Delete craftpro-temp scaffold directory at C:/Users/JoJo/Desktop/ALEMA/craftpro-temp

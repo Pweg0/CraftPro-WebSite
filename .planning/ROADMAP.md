@@ -28,12 +28,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Visitante acessa a página de Itens Banidos e vê a lista completa com a razão de cada ban
   4. Visitante acessa a Loja e vê a página "Em Breve" com preview do que virá; acessa Replays e vê página placeholder
   5. Site carrega rápido em mobile 4G brasileiro (Lighthouse mobile score 70+), sem quebra de layout em nenhuma tela
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 01-01: Scaffold Next.js 16 + Tailwind v4 + Drizzle + Neon + design tokens (gaming aesthetic, PT-BR)
-- [ ] 01-02: Layout shell (Navbar, Footer), hero section com WebP/srcset otimizado, animações Motion
-- [ ] 01-03: Página de Servidores (status + player count ao vivo), Itens Banidos, Loja placeholder, Replays stub
+- [ ] 01-01-PLAN.md — Scaffold Next.js 16, Tailwind v4 @theme design tokens, shared types, mcsrvstat.us client, static data, Vitest + test stubs, hero image WebP
+- [ ] 01-02-PLAN.md — Navbar (sticky + mobile Sheet), Footer, HeroSection (Motion parallax), HeroCTAButtons (copy IP + Discord + scroll + Loja)
+- [ ] 01-03-PLAN.md — Server status page (ServerCard glow, CopyIPButton, live player count), Banned Items table (searchable), Loja teaser, Replays stub, Ranking/Perfil stubs
 
 ### Phase 2: Autenticação
 **Goal**: Usuários logados via Discord têm identidade persistente no site — podem fazer login, permanecer logados entre sessões e sair de qualquer página
@@ -72,6 +72,6 @@ Phases execute in numeric order: 1 → 2 → 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Hub Público | 0/3 | Not started | - |
+| 1. Hub Público | 0/3 | Ready to execute | - |
 | 2. Autenticação | 0/2 | Not started | - |
 | 3. Sistema Competitivo | 0/3 | Not started | - |

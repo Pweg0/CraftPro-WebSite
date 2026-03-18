@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 04-painel-admin-02-PLAN.md
-last_updated: "2026-03-18T23:46:19.789Z"
+stopped_at: Completed 04-painel-admin-04-PLAN.md
+last_updated: "2026-03-18T23:52:42.971Z"
 progress:
   total_phases: 4
   completed_phases: 3
   total_plans: 13
-  completed_plans: 11
+  completed_plans: 12
 ---
 
 # Project State
@@ -57,6 +57,7 @@ Plan: 1 of 4
 | Phase 03-sistema-competitivo P03 | 4 | 2 tasks | 5 files |
 | Phase 04-painel-admin P01 | 3 | 2 tasks | 13 files |
 | Phase 04-painel-admin P02 | 12 | 2 tasks | 10 files |
+| Phase 04-painel-admin P04 | 4 | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -94,6 +95,9 @@ Recent decisions affecting current work:
 - [Phase 04-painel-admin]: isAdmin flag embedded in Auth.js session callback via env var check — avoids NEXT_PUBLIC_ exposure of admin IDs to client bundle
 - [Phase 04-painel-admin]: Two-layer admin guard: middleware (env-var only, Edge runtime) + layout (DB-backed isAdmin) for defence in depth
 - [Phase 04-painel-admin]: AdminSidebar receives sections[] from layout Server Component — keeps DB calls server-side, sidebar is purely presentational
+- [Phase 04-painel-admin]: AlertDialog for ban/unban/delete actions prevents accidental irreversible mutations
+- [Phase 04-painel-admin]: useOptimistic in PermissionManager for instant checkbox toggle feedback without waiting for server round-trip
+- [Phase 04-painel-admin]: isSuperAdmin page-level guard in permissoes page — layout only checks isAdmin, page adds super-admin check and redirects to /403
 
 ### Roadmap Evolution
 
@@ -111,6 +115,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-18T23:46:19.785Z
-Stopped at: Completed 04-painel-admin-02-PLAN.md
+Last session: 2026-03-18T23:52:42.961Z
+Stopped at: Completed 04-painel-admin-04-PLAN.md
 Resume file: None

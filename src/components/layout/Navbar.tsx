@@ -5,7 +5,6 @@
 'use client';
 import Link from 'next/link';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Button } from '@/components/ui/button';
 import { Menu } from 'lucide-react';
 
 const navLinks = [
@@ -46,15 +45,11 @@ export function Navbar() {
 
         {/* Mobile hamburger + Sheet */}
         <Sheet>
-          <SheetTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="md:hidden text-white hover:text-brand-accent"
-              aria-label="Abrir menu de navegação"
-            >
-              <Menu className="h-5 w-5" />
-            </Button>
+          <SheetTrigger
+            className="md:hidden inline-flex items-center justify-center text-white hover:text-brand-accent rounded-lg p-2 transition-colors"
+            aria-label="Abrir menu de navegação"
+          >
+            <Menu className="h-5 w-5" />
           </SheetTrigger>
           <SheetContent side="right" className="bg-brand-surface border-white/10">
             <nav className="flex flex-col gap-4 mt-8">

@@ -126,6 +126,21 @@ export const adminPermissions = pgTable("admin_permissions", {
   grantedBy: text("granted_by").notNull(), // discordId of super-admin
 })
 
+// ============================================================
+// Licenses — Mod activation keys
+// ============================================================
+
+export const licenses = pgTable("licenses", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  key: text("key").unique().notNull(),
+  ownerName: text("owner_name").notNull(),
+  status: text("status").notNull().default("active"), // active | revoked
+  serverIp: text("server_ip"), // last known server IP (filled on validate)
+  lastValidatedAt: timestamp("last_validated_at", { mode: "date" }),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow(),
+  note: text("note"), // admin notes
+})
+
 export const adminAuditLog = pgTable("admin_audit_log", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   discordId: text("discord_id").notNull(),

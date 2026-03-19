@@ -10,7 +10,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   const superAdmin = isSuperAdmin(session)
   const sections = superAdmin
-    ? (['itens-banidos', 'servidores', 'loja', 'leaderboard', 'permissoes'] as const)
+    ? (['itens-banidos', 'servidores', 'loja', 'leaderboard', 'licencas', 'permissoes'] as const)
     : await getAdminSections(session.user.discordId!)
 
   return (

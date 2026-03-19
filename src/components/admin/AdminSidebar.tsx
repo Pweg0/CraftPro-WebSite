@@ -11,6 +11,7 @@ import {
   Trophy,
   Shield,
   Users,
+  Key,
   Menu,
 } from 'lucide-react'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
@@ -30,7 +31,8 @@ const navItems = [
   { href: '/admin/loja', label: 'Loja', icon: ShoppingBag, section: 'loja' },
   { href: '/admin/leaderboard', label: 'Leaderboard', icon: Trophy, section: 'leaderboard' },
   { href: '/admin/usuarios', label: 'Usuarios', icon: Users, section: 'leaderboard' },
-  { href: '/admin/permissoes', label: 'Permissões', icon: Shield, section: 'permissoes' },
+  { href: '/admin/licencas', label: 'Licencas', icon: Key, section: 'licencas' },
+  { href: '/admin/permissoes', label: 'Permissoes', icon: Shield, section: 'permissoes' },
 ]
 
 function SidebarContent({
@@ -42,7 +44,7 @@ function SidebarContent({
 }: AdminSidebarProps & { pathname: string }) {
   const visibleItems = navItems.filter((item) => {
     if (item.section === null) return true // Dashboard always visible
-    if (item.section === 'permissoes') return isSuperAdmin
+    if (item.section === 'permissoes' || item.section === 'licencas') return isSuperAdmin
     return isSuperAdmin || sections.includes(item.section)
   })
 

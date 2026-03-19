@@ -35,6 +35,10 @@ Transmitir a fusão Minecraft + Pokémon de forma vibrante e colorida, sendo o p
 - ✓ Gerenciamento de leaderboard (ban/unban jogadores, deletar partidas) — Phase 4
 - ✓ Permissões granulares por seção com super-admin — Phase 4
 - ✓ Log de auditoria para ações admin — Phase 4
+- ✓ Página de detalhes de partida com replay log formatado — Post-Phase
+- ✓ Página de replays listando partidas recentes do banco — Post-Phase
+- ✓ Vinculação Discord ↔ Minecraft via admin — Post-Phase
+- ✓ Deploy em produção (craftprobrasil.com.br via Vercel + Neon) — Post-Phase
 
 ### Out of Scope
 
@@ -42,7 +46,7 @@ Transmitir a fusão Minecraft + Pokémon de forma vibrante e colorida, sendo o p
 - Loja funcional no v1 — será página "em breve"
 - App mobile nativo — web-first
 - Conteúdo em inglês — site apenas em PT-BR
-- Sistema de replay com vídeo — formato será definido posteriormente
+- ~~Sistema de replay com vídeo~~ — replay log do protocolo Showdown implementado (v1)
 
 ## Context
 
@@ -69,5 +73,21 @@ Transmitir a fusão Minecraft + Pokémon de forma vibrante e colorida, sendo o p
 | Ranking tipo elo competitivo | Referência LoL — sobe/desce com win/loss | Implemented (Phase 3) |
 | Admin via env var + DB permissions | Acesso restrito, permissões granulares por seção | Implemented (Phase 4) |
 
+## Deployment
+
+- **URL**: https://craftprobrasil.com.br
+- **Hosting**: Vercel (hobby plan)
+- **Database**: Neon PostgreSQL (free tier, sa-east-1)
+- **Auth**: Discord OAuth2 via Auth.js v5
+- **DNS**: Domínio .com.br via nameservers Vercel
+
+## Stack
+
+- Next.js 16 (Turbopack) + TypeScript
+- Tailwind CSS v4 + shadcn/ui (base-ui)
+- Drizzle ORM + Neon PostgreSQL
+- Auth.js v5 (Discord provider)
+- Vitest + Testing Library
+
 ---
-*Last updated: 2026-03-19 after Phase 4 completion — all v1 phases complete*
+*Last updated: 2026-03-19 — v1 complete, deployed to craftprobrasil.com.br*

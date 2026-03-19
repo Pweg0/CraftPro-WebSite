@@ -65,7 +65,7 @@ Plans:
 Plans:
 - [x] 03-01-PLAN.md — Query modules (leaderboard.ts, player.ts), TierBadge component, calcWinRate utility, next.config.ts remote patterns
 - [x] 03-02-PLAN.md — Ranking page with ELO leaderboard and Top 10 Wins tabs, ISR 60s, pagination, PlayerRow with profile links
-- [ ] 03-03-PLAN.md — Player profile page (/perfil/[uuid]) with stats, tier badge, paginated match history, empty states, 404 handling (gap closure)
+- [x] 03-03-PLAN.md — Player profile page (/perfil/[uuid]) with stats, tier badge, paginated match history, empty states, 404 handling (gap closure)
 
 ### Phase 4: Painel Admin
 **Goal**: Admin do CraftPro Brasil pode gerenciar todo o conteudo dinamico do site — itens banidos, servidores, loja preview, leaderboard (ban/unban jogadores, deletar partidas) — via painel protegido em /admin com permissoes granulares por secao e log de auditoria
@@ -82,10 +82,10 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 04-01-PLAN.md — Schema (5 new tables + banned column), session discordId extension, permissions utility, seed script, shadcn components
-- [ ] 04-02-PLAN.md — Middleware admin check, 403 page, admin layout + sidebar, dashboard with stats and audit logs, navbar Admin link
-- [ ] 04-03-PLAN.md — CRUD for banned items, servers, shop items (Server Actions + forms + admin pages) + public page migrations to DB
-- [ ] 04-04-PLAN.md — Leaderboard management (ban/unban players, delete matches) + permissions management (super-admin only)
+- [x] 04-01-PLAN.md — Schema (5 new tables + banned column), session discordId extension, permissions utility, seed script, shadcn components
+- [x] 04-02-PLAN.md — Middleware admin check, 403 page, admin layout + sidebar, dashboard with stats and audit logs, navbar Admin link
+- [x] 04-03-PLAN.md — CRUD for banned items, servers, shop items (Server Actions + forms + admin pages) + public page migrations to DB
+- [x] 04-04-PLAN.md — Leaderboard management (ban/unban players, delete matches) + permissions management (super-admin only)
 
 ## Progress
 
@@ -98,3 +98,12 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | 2. Autenticacao | 3/3 | Complete    | 2026-03-18 |
 | 3. Sistema Competitivo | 3/3 | Complete   | 2026-03-18 |
 | 4. Painel Admin | 4/4 | Complete   | 2026-03-18 |
+
+## Post-Phase Extras (implemented outside formal phases)
+
+- [x] **Match Detail Page** — `/match/[id]` com header (avatares, ELO, divisões) e replay log formatado com cores por tipo de evento
+- [x] **Replays Page Upgrade** — `/replays` agora lista partidas recentes do banco com links pra detalhes
+- [x] **Admin User Management** — `/admin/usuarios` para vincular contas Discord ↔ Minecraft (Mojang API lookup)
+- [x] **Perfil Auto-Redirect** — `/perfil` redireciona pro perfil competitivo quando Minecraft está vinculado
+- [x] **Bug Fixes** — DropdownMenu onSelect→onClick (base-ui), banner path validation, CopyIPButton bg, asChild→render prop, Select null handling
+- [x] **Vercel Deployment** — Site publicado em craftprobrasil.com.br com env vars, force-dynamic pages, DNS configurado

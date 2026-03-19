@@ -57,7 +57,7 @@ Deferidos para release futura. Rastreados mas fora do roadmap atual.
 
 ### Replays
 
-- **REPL-01**: Visualizador de replays completo (quando formato definido)
+- [x] **REPL-01**: Visualizador de replays — página /match/[id] com replay log formatado do protocolo Showdown (implementado v1)
 - **REPL-02**: Filtro de replays por jogador/data/resultado
 
 ### Perfil Avançado
@@ -108,11 +108,32 @@ Which phases cover which requirements. Updated during roadmap creation.
 | EXTRA-02 | Phase 1 | Complete |
 | EXTRA-03 | Phase 1 | Complete |
 
+### Admin Panel (Phase 4)
+
+- [x] **ADMIN-01**: Schema com 5 tabelas admin + coluna banned em arena_players
+- [x] **ADMIN-02**: Sistema de permissões (isAdmin, isSuperAdmin, hasPermission) via env var + DB
+- [x] **ADMIN-03**: Rota /admin protegida com middleware + layout guard + página 403 temática
+- [x] **ADMIN-04**: CRUD de itens banidos, servidores e loja preview via Server Actions
+- [x] **ADMIN-05**: Permissões granulares por seção + log de auditoria em todas as mutações
+- [x] **ADMIN-06**: Dashboard com stats ao vivo e logs de auditoria recentes
+- [x] **ADMIN-07**: Leaderboard management — ban/unban jogadores, deletar partidas
+- [x] **ADMIN-08**: Ban reversível (flag, dados preservados, filtro no leaderboard público)
+- [x] **ADMIN-09**: Link "Admin" condicional na navbar (só pra admins logados)
+- [x] **ADMIN-10**: Página 403 com visual temático Minecraft/Pokémon
+
+### Post-Phase Extras
+
+- [x] **POST-01**: Página /match/[id] com detalhes da partida e replay log formatado
+- [x] **POST-02**: Página /replays atualizada com lista de partidas recentes do banco
+- [x] **POST-03**: Admin /usuarios para vincular Discord ↔ Minecraft (Mojang API)
+- [x] **POST-04**: /perfil auto-redirect pro perfil competitivo quando Minecraft vinculado
+
 **Coverage:**
-- v1 requirements: 20 total
-- Mapped to phases: 20
-- Unmapped: 0 ✓
+- v1 requirements: 20 total — all complete
+- Admin requirements: 10 total — all complete
+- Post-phase extras: 4 total — all complete
+- v2 deferred: 6 remaining (SHOP-01..03, REPL-02, PROF-03..04, RANK-05..06)
 
 ---
 *Requirements defined: 2026-03-18*
-*Last updated: 2026-03-18 — traceability preenchida após criação do roadmap*
+*Last updated: 2026-03-19 — v1 milestone complete, deployed to production*

@@ -18,9 +18,9 @@ export function ProfileHeader({ player }: ProfileHeaderProps) {
   const winRate = calcWinRate(player.wins, player.losses)
   return (
     <div className="flex flex-col md:flex-row items-center gap-6 bg-brand-surface rounded-xl p-6 border border-white/10">
-      {/* 3D body render from crafatar.com */}
+      {/* Player skin render */}
       <Image
-        src={`https://crafatar.com/renders/body/${player.uuid}?size=200`}
+        src={`https://mc-heads.net/body/${player.uuid}/200`}
         width={100}
         height={200}
         alt={`${player.name} skin`}

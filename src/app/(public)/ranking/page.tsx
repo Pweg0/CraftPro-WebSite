@@ -2,7 +2,7 @@ import { Trophy } from "lucide-react"
 import { getLeaderboard, getTop10Wins } from "@/lib/db/queries/leaderboard"
 import { LeaderboardTable } from "@/components/ranking/LeaderboardTable"
 
-export const revalidate = 60
+export const dynamic = 'force-dynamic'
 
 export default async function RankingPage() {
   const { ranked, unranked } = await getLeaderboard()

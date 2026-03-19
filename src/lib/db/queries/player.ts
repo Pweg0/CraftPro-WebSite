@@ -42,6 +42,15 @@ export async function getPlayerMatches(uuid: string, limit = 20, offset = 0) {
     .offset(offset)
 }
 
+export async function getMatchById(matchId: string) {
+  const [match] = await db
+    .select()
+    .from(arenaMatches)
+    .where(eq(arenaMatches.matchId, matchId))
+    .limit(1)
+  return match ?? null
+}
+
 export async function getPlayerMatchCount(uuid: string) {
   const [result] = await db
     .select({ total: count() })

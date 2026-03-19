@@ -1,50 +1,131 @@
-// src/app/(public)/replays/page.tsx
-// Stub page with preview of future replay functionality — NOT a blank page
-import { Badge } from '@/components/ui/badge';
-import { Film } from 'lucide-react';
+import { db } from "@/lib/db"
+import { arenaMatches } from "@/lib/db/schema"
+import { desc, isNotNull } from "drizzle-orm"
+import Image from "next/image"
+import Link from "next/link"
+import { Film, Swords } from "lucide-react"
 
-export default function ReplaysPage() {
+export const revalidate = 60
+
+export default async function ReplaysPage() {
+  // Fetch recent matches that have replay logs
+  const matches = await db
+    .select({
+      matchId: arenaMatches.matchId,
+      arenaName: arenaMatches.arenaName,
+      reason: arenaMatches.reason,
+      startedAt: arenaMatches.startedAt,
+      durationMs: arenaMatches.durationMs,
+      winnerUuid: arenaMatches.winnerUuid,
+      winnerName: arenaMatches.winnerName,
+      loserUuid: arenaMatches.loserUuid,
+      loserName: arenaMatches.loserName,
+      winnerDelta: arenaMatches.winnerDelta,
+      loserDelta: arenaMatches.loserDelta,
+    })
+    .from(arenaMatches)
+    .where(isNotNull(arenaMatches.replayLog))
+    .orderBy(desc(arenaMatches.startedAt))
+    .limit(20)
+
+  function formatDate(epochSeconds: number | null): string {
+    if (!epochSeconds) return "—"
+    return new Date(epochSeconds * 1000).toLocaleDateString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    })
+  }
+
+  function formatDuration(ms: number | null): string {
+    if (!ms) return "—"
+    const totalSec = Math.floor(ms / 1000)
+    const min = Math.floor(totalSec / 60)
+    const sec = totalSec % 60
+    return `${min}:${sec.toString().padStart(2, "0")}`
+  }
+
   return (
     <div className="min-h-screen bg-brand-primary py-16 px-4">
-      <div className="container mx-auto">
+      <div className="container mx-auto max-w-3xl">
         <div className="text-center mb-12">
           <div className="flex justify-center mb-4">
             <Film className="h-12 w-12 text-brand-blue" />
           </div>
-          <div className="flex justify-center mb-4">
-            <Badge
-              data-testid="replays-em-breve-badge"
-              className="bg-brand-blue/20 text-brand-blue border-brand-blue/50 text-sm px-4 py-1"
-              variant="outline"
-            >
-              Em Breve
-            </Badge>
-          </div>
           <h1 className="font-display text-2xl text-white mb-4">Replays</h1>
           <p className="text-white/60 max-w-xl mx-auto">
-            Em breve você poderá assistir e compartilhar replays das suas batalhas Pokémon.
-            Reviva os melhores momentos competitivos do CraftPro Brasil.
+            Reviva as batalhas Pokemon competitivas do CraftPro Brasil.
           </p>
         </div>
 
-        {/* Preview mockup cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl mx-auto mb-12 opacity-50">
-          {[1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className="rounded-card border border-white/10 bg-brand-surface p-4 text-center"
-            >
-              <div className="h-20 bg-brand-card rounded mb-3 flex items-center justify-center">
-                <Film className="h-6 w-6 text-white/20" />
-              </div>
-              <div className="h-3 bg-white/10 rounded mb-2" />
-              <div className="h-2 bg-white/5 rounded w-2/3 mx-auto" />
-            </div>
-          ))}
-        </div>
+        {matches.length === 0 ? (
+          <div className="text-center py-12 bg-brand-surface rounded-xl border border-white/10">
+            <Swords className="h-10 w-10 text-white/20 mx-auto mb-4" />
+            <p className="text-white/60">Nenhum replay disponivel ainda.</p>
+            <p className="text-white/40 text-sm mt-2">
+              Os replays aparecerao aqui quando batalhas forem registradas.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {matches.map((match) => (
+              <Link
+                key={match.matchId}
+                href={`/match/${match.matchId}`}
+                className="block bg-brand-surface rounded-xl border border-white/10 p-4 hover:border-white/20 hover:bg-white/5 transition-colors"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    {/* Winner avatar */}
+                    <div className="flex items-center gap-2">
+                      {match.winnerUuid && (
+                        <Image
+                          src={`https://mc-heads.net/avatar/${match.winnerUuid}/24`}
+                          width={24}
+                          height={24}
+                          alt={match.winnerName ?? ""}
+                          className="rounded"
+                          unoptimized
+                        />
+                      )}
+                      <span className="text-green-400 text-sm font-medium">
+                        {match.winnerName ?? "?"}
+                      </span>
+                    </div>
+
+                    <span className="text-white/30 text-xs">vs</span>
+
+                    {/* Loser avatar */}
+                    <div className="flex items-center gap-2">
+                      {match.loserUuid && (
+                        <Image
+                          src={`https://mc-heads.net/avatar/${match.loserUuid}/24`}
+                          width={24}
+                          height={24}
+                          alt={match.loserName ?? ""}
+                          className="rounded"
+                          unoptimized
+                        />
+                      )}
+                      <span className="text-red-400 text-sm font-medium">
+                        {match.loserName ?? "?"}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-4 text-xs text-white/40">
+                    {match.arenaName && <span>{match.arenaName}</span>}
+                    <span>{formatDuration(match.durationMs)}</span>
+                    <span>{formatDate(match.startedAt)}</span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
 
         {/* Discord CTA */}
-        <div className="text-center">
+        <div className="text-center mt-12">
           <p className="text-white/60 mb-4">
             Fique por dentro das novidades no Discord.
           </p>
@@ -60,5 +141,5 @@ export default function ReplaysPage() {
         </div>
       </div>
     </div>
-  );
+  )
 }

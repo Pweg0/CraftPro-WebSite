@@ -89,9 +89,9 @@ export function MatchHistoryTable({ matches, playerUuid, totalMatches, pageSize 
               return (
                 <TableRow key={match.matchId} className="border-white/10 hover:bg-white/5">
                   <TableCell>
-                    <span className={`font-bold ${isWinner ? "text-green-400" : "text-red-400"}`}>
+                    <Link href={`/match/${match.matchId}`} className={`font-bold hover:underline ${isWinner ? "text-green-400" : "text-red-400"}`}>
                       {isWinner ? "V" : "D"}
-                    </span>
+                    </Link>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">

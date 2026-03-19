@@ -3,56 +3,136 @@
 import { useEffect, useRef, useState } from "react"
 
 /**
- * Player name mapping: UUID → display name.
- * Extracted from |player| lines so we can show names everywhere.
+ * Cobblemon's battle.getShowdownMessages() returns an array where each entry
+ * is a multi-line block starting with a header: "update", "sideupdate", or "end".
+ *
+ * - "update" blocks contain the actual Showdown protocol lines we need
+ *   (|move|, |switch|, |-damage|, |player|, |start|, |win|, etc.)
+ * - "sideupdate" blocks contain private per-player data (|request|, |error|)
+ * - "end" blocks contain a giant JSON blob with battle results
+ *
+ * Pokemon names in Cobblemon are UUIDs — we build a mapping from the
+ * |switch| lines (which contain "UUID|Species, UUID, ...") and replace them.
  */
-interface PlayerNames {
-  winnerName: string | null
-  loserName: string | null
-  winnerUuid: string | null
-  loserUuid: string | null
-}
 
 /**
- * Filter Cobblemon's showdownMessages into clean Showdown protocol
- * that replay-embed.js can understand.
+ * Extract protocol lines from "update" blocks, skip sideupdate/end blocks.
+ * Also builds a UUID→species name mapping from |switch| lines.
  */
-function filterLogForEmbed(lines: string[], names?: PlayerNames): string {
-  const filtered: string[] = []
+function filterLogForEmbed(
+  blocks: string[],
+  playerNames?: { winnerUuid?: string | null; winnerName?: string | null; loserUuid?: string | null; loserName?: string | null }
+): string {
+  const protocolLines: string[] = []
+  // Map Pokemon UUIDs to species names (extracted from |switch| lines)
+  const pokemonNames = new Map<string, string>()
 
-  for (const raw of lines) {
-    const l = raw.trim()
-    if (!l) continue
+  // First pass: extract Pokemon UUID→species mapping from ALL update blocks
+  // (needed because some Pokemon may only appear in |pp_update| before entering battle)
+  for (const block of blocks) {
+    const trimmed = block.trim()
+    if (!trimmed) continue
+    const firstNewline = trimmed.indexOf("\n")
+    if (firstNewline === -1) continue
+    const header = trimmed.substring(0, firstNewline).trim()
+    if (header !== "update") continue
 
-    // Skip Cobblemon-internal lines the embed doesn't understand
-    if (l.startsWith("sideupdate") || l.startsWith("|sideupdate")) continue
-    if (l.startsWith("update") || l.startsWith("|update")) continue
-    if (l.includes("|request|")) continue
-    if (l.startsWith("|callback|") || l.startsWith("callback|")) continue
-    if (l.startsWith("|choice|") || l.startsWith("choice|")) continue
-    if (l.startsWith("seed|") || l.startsWith("|seed|")) continue
-
-    // Skip input commands (>start, >player, >p1 move, etc.)
-    if (l.startsWith(">")) continue
-
-    // Skip the giant "end" JSON blob (end + JSON with battle result data)
-    if (l === "end" || l.startsWith("end\n") || l.startsWith("end{") || l.startsWith("end {")) continue
-    // Also skip if the line is just a giant JSON object (team data, etc.)
-    if (l.startsWith("{") && l.length > 200) continue
-
-    filtered.push(l)
-  }
-
-  // Replace UUIDs with player names in protocol lines
-  let result = filtered.join("\n")
-  if (names) {
-    if (names.winnerUuid && names.winnerName) {
-      result = result.replaceAll(names.winnerUuid, names.winnerName)
-    }
-    if (names.loserUuid && names.loserName) {
-      result = result.replaceAll(names.loserUuid, names.loserName)
+    const body = trimmed.substring(firstNewline + 1)
+    for (const line of body.split("\n")) {
+      const l = line.trim()
+      // |switch|p1a: UUID|Species, UUID, L50, M|HP/MaxHP
+      const switchMatch = l.match(/\|switch\|p[12]a: ([a-f0-9-]{36})\|(\w[\w\s-]*),/)
+      if (switchMatch) {
+        pokemonNames.set(switchMatch[1], switchMatch[2].trim())
+      }
+      const formeMatch = l.match(/\|-formechange\|p[12]a: ([a-f0-9-]{36})\|(\w[\w\s-]*)/)
+      if (formeMatch) {
+        pokemonNames.set(formeMatch[1], formeMatch[2].trim())
+      }
     }
   }
+
+  // Track whether we're inside a |split| section (to skip duplicate lines)
+  let inSplit = false
+  let splitSkipNext = false
+
+  for (const block of blocks) {
+    const trimmed = block.trim()
+    if (!trimmed) continue
+
+    const firstNewline = trimmed.indexOf("\n")
+    if (firstNewline === -1) continue
+
+    const header = trimmed.substring(0, firstNewline).trim()
+
+    // Only process "update" blocks — skip "sideupdate" and "end"
+    if (header !== "update") continue
+
+    const body = trimmed.substring(firstNewline + 1)
+    const bodyLines = body.split("\n")
+
+    for (let i = 0; i < bodyLines.length; i++) {
+      const l = bodyLines[i].trim()
+      if (!l) {
+        // Empty lines reset split state and are kept (turn separators)
+        inSplit = false
+        splitSkipNext = false
+        protocolLines.push("")
+        continue
+      }
+
+      // Skip Cobblemon-specific protocol extensions
+      if (l.startsWith("|request|")) continue
+      if (l.startsWith("|callback|")) continue
+      if (l.startsWith("|choice|")) continue
+      if (l.startsWith("|seed|")) continue
+      if (l.startsWith(">")) continue
+      if (l.startsWith("|pp_update|")) continue
+      if (l.startsWith("|t:|")) continue
+
+      // Handle |split| — keep first copy, skip the duplicate
+      // Cobblemon emits: |split|p1 → line_for_p1 → line_for_p2
+      // We want to keep only the public (second) version
+      if (l.startsWith("|split|")) {
+        inSplit = true
+        splitSkipNext = true // skip the next line (private), keep the one after
+        continue
+      }
+
+      if (inSplit && splitSkipNext) {
+        splitSkipNext = false // skipped private line, next is public
+        continue
+      }
+
+      if (inSplit && !splitSkipNext) {
+        inSplit = false // public line, keep it and exit split mode
+      }
+
+      protocolLines.push(l)
+    }
+  }
+
+  let result = protocolLines.join("\n")
+
+  // Replace player UUIDs with display names
+  if (playerNames?.winnerUuid && playerNames?.winnerName) {
+    result = result.replaceAll(playerNames.winnerUuid, playerNames.winnerName)
+  }
+  if (playerNames?.loserUuid && playerNames?.loserName) {
+    result = result.replaceAll(playerNames.loserUuid, playerNames.loserName)
+  }
+
+  // Replace Pokemon UUIDs with species names
+  for (const [uuid, species] of pokemonNames) {
+    result = result.replaceAll(uuid, species)
+  }
+
+  // Fix duplicate species names from UUID replacement in |switch| lines
+  // "Tentacruel, Tentacruel, L45" → "Tentacruel, L45"
+  result = result.replace(
+    /\|switch\|([^|]+)\|(\w[\w\s-]*), \2,/g,
+    "|switch|$1|$2,"
+  )
 
   return result
 }
@@ -80,8 +160,7 @@ export function ShowdownReplayPlayer({
     if (loadedRef.current || !containerRef.current) return
     loadedRef.current = true
 
-    const names: PlayerNames = { winnerName: winnerName ?? null, loserName: loserName ?? null, winnerUuid: winnerUuid ?? null, loserUuid: loserUuid ?? null }
-    const logData = filterLogForEmbed(replayLog, names)
+    const logData = filterLogForEmbed(replayLog, { winnerUuid, winnerName, loserUuid, loserName })
 
     if (!logData.trim()) {
       setError("Replay log vazio após filtro — dados de protocolo Showdown não encontrados.")

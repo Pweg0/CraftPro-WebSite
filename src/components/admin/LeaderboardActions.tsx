@@ -42,10 +42,8 @@ export function BanPlayerButton({ uuid, isBanned }: BanPlayerButtonProps) {
   if (isBanned) {
     return (
       <AlertDialog>
-        <AlertDialogTrigger asChild>
-          <Button variant="ghost" size="sm" className="text-xs">
-            Reverter Ban
-          </Button>
+        <AlertDialogTrigger render={<Button variant="ghost" size="sm" className="text-xs" />}>
+          Reverter Ban
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -70,10 +68,8 @@ export function BanPlayerButton({ uuid, isBanned }: BanPlayerButtonProps) {
 
   return (
     <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <Button variant="ghost" size="sm" className="text-xs text-destructive hover:text-destructive">
-          Banir Jogador
-        </Button>
+      <AlertDialogTrigger render={<Button variant="ghost" size="sm" className="text-xs text-destructive hover:text-destructive" />}>
+        Banir Jogador
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
@@ -117,10 +113,8 @@ export function DeleteMatchButton({ id }: DeleteMatchButtonProps) {
 
   return (
     <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <Button variant="ghost" size="sm" className="text-xs text-destructive hover:text-destructive">
-          Deletar
-        </Button>
+      <AlertDialogTrigger render={<Button variant="ghost" size="sm" className="text-xs text-destructive hover:text-destructive" />}>
+        Deletar
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>

@@ -90,7 +90,7 @@ export function ShopItemForm({ item, open, onOpenChange }: ShopItemFormProps) {
           </div>
           <div>
             <label className="text-sm text-white/70 block mb-1">Categoria</label>
-            <Select value={category} onValueChange={setCategory}>
+            <Select value={category} onValueChange={(v) => setCategory(v ?? '')}>
               <SelectTrigger className="w-full bg-brand-surface border-white/20 text-white">
                 <SelectValue placeholder="Selecione a categoria" />
               </SelectTrigger>

@@ -11,9 +11,9 @@ export default function ForbiddenPage() {
         <p className="text-white/60 max-w-md mx-auto mb-8">
           Você não tem permissão para acessar esta área. Fale com o super-admin se acredita que isso é um erro.
         </p>
-        <Button asChild>
-          <Link href="/">Voltar ao site</Link>
-        </Button>
+        <Link href="/">
+          <Button>Voltar ao site</Button>
+        </Link>
       </div>
     </div>
   )

@@ -22,11 +22,19 @@ Transmitir a fusão Minecraft + Pokémon de forma vibrante e colorida, sendo o p
 
 ### Active
 
-- [ ] Sistema de ranking competitivo de Pokémon (elo sobe/desce por vitórias/derrotas)
-- [ ] Página de ranking por elo (leaderboard)
-- [ ] Página Top 10 jogadores com mais vitórias
-- [ ] Sistema de perfil de usuário
-- [ ] Login via Discord
+- (No active requirements — all v1 requirements validated)
+
+### Recently Validated
+
+- ✓ Sistema de ranking competitivo de Pokémon (elo sobe/desce por vitórias/derrotas) — Phase 3
+- ✓ Página de ranking por elo (leaderboard) — Phase 3
+- ✓ Página Top 10 jogadores com mais vitórias — Phase 3
+- ✓ Sistema de perfil de usuário — Phase 3
+- ✓ Login via Discord — Phase 2
+- ✓ Painel admin com CRUD de itens banidos, servidores, loja preview — Phase 4
+- ✓ Gerenciamento de leaderboard (ban/unban jogadores, deletar partidas) — Phase 4
+- ✓ Permissões granulares por seção com super-admin — Phase 4
+- ✓ Log de auditoria para ações admin — Phase 4
 
 ### Out of Scope
 
@@ -55,10 +63,11 @@ Transmitir a fusão Minecraft + Pokémon de forma vibrante e colorida, sendo o p
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Login via Discord | Comunidade já usa Discord, reduz fricção | — Pending |
-| Estilo colorido vibrante | Combina com a imagem de referência e o tema Pokémon/Minecraft | — Pending |
-| Loja como "coming soon" | Funcionalidade virá depois, mas página precisa existir | — Pending |
-| Ranking tipo elo competitivo | Referência LoL — sobe/desce com win/loss | — Pending |
+| Login via Discord | Comunidade já usa Discord, reduz fricção | Implemented (Phase 2) |
+| Estilo colorido vibrante | Combina com a imagem de referência e o tema Pokémon/Minecraft | Implemented (Phase 1) |
+| Loja como "coming soon" | Funcionalidade virá depois, mas página precisa existir | Implemented (Phase 1), admin CRUD (Phase 4) |
+| Ranking tipo elo competitivo | Referência LoL — sobe/desce com win/loss | Implemented (Phase 3) |
+| Admin via env var + DB permissions | Acesso restrito, permissões granulares por seção | Implemented (Phase 4) |
 
 ---
-*Last updated: 2026-03-18 after Phase 1 completion*
+*Last updated: 2026-03-19 after Phase 4 completion — all v1 phases complete*

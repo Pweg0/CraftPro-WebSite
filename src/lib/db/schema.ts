@@ -8,6 +8,8 @@ export const users = pgTable("users", {
   emailVerified: timestamp("emailVerified", { mode: "date" }),
   image: text("image"),
   discordId: text("discordId").unique(), // Project extension — Discord snowflake, stable FK for Phase 3
+  minecraftUuid: text("minecraftUuid"), // Linked Minecraft UUID (set by admin)
+  minecraftName: text("minecraftName"), // Linked Minecraft username (set by admin)
   createdAt: timestamp("createdAt", { mode: "date" }).defaultNow(),
 })
 

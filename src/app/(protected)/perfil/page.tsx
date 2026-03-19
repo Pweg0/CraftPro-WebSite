@@ -3,11 +3,28 @@ import { redirect } from 'next/navigation'
 import { User } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { db } from '@/lib/db'
+import { users } from '@/lib/db/schema'
+import { eq } from 'drizzle-orm'
+
+export const dynamic = 'force-dynamic'
 
 export default async function PerfilPage() {
   const session = await auth()
   if (!session?.user) {
     redirect('/login?callbackUrl=/perfil')
+  }
+
+  // Check if user has linked Minecraft account
+  const [dbUser] = await db
+    .select({ minecraftUuid: users.minecraftUuid, minecraftName: users.minecraftName })
+    .from(users)
+    .where(eq(users.id, session.user.id))
+    .limit(1)
+
+  // If linked, redirect to public profile
+  if (dbUser?.minecraftUuid) {
+    redirect(`/perfil/${dbUser.minecraftUuid}`)
   }
 
   return (
@@ -31,7 +48,7 @@ export default async function PerfilPage() {
           <p className="text-white/40 text-sm mb-6">Conectado via Discord</p>
           <div className="border-t border-white/10 pt-6">
             <p className="text-white/60 mb-4">
-              Para ver seu perfil competitivo, encontre seu nome no ranking:
+              Sua conta Minecraft ainda nao foi vinculada. Fale com o admin do servidor para vincular.
             </p>
             <Link
               href="/ranking"

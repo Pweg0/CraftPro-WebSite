@@ -10,6 +10,7 @@ import {
   ShoppingBag,
   Trophy,
   Shield,
+  Users,
   Menu,
 } from 'lucide-react'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
@@ -28,6 +29,7 @@ const navItems = [
   { href: '/admin/servidores', label: 'Servidores', icon: Server, section: 'servidores' },
   { href: '/admin/loja', label: 'Loja', icon: ShoppingBag, section: 'loja' },
   { href: '/admin/leaderboard', label: 'Leaderboard', icon: Trophy, section: 'leaderboard' },
+  { href: '/admin/usuarios', label: 'Usuarios', icon: Users, section: 'leaderboard' },
   { href: '/admin/permissoes', label: 'Permissões', icon: Shield, section: 'permissoes' },
 ]
 

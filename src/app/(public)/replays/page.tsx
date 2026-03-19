@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { db } from "@/lib/db"
 import { arenaMatches } from "@/lib/db/schema"
 import { desc, isNotNull } from "drizzle-orm"

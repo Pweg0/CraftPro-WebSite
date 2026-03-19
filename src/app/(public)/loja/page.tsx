@@ -1,6 +1,7 @@
 // src/app/(public)/loja/page.tsx
 // Server Component — store teaser with category preview cards + DB-backed preview items
 // Per CONTEXT.md: "Não é uma página vazia — mostra o que virá"
+export const dynamic = 'force-dynamic'
 import { Badge } from '@/components/ui/badge'
 import { ShoppingBag, Star, Shield, Zap } from 'lucide-react'
 import { db } from '@/lib/db'

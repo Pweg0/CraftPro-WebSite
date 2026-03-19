@@ -1,5 +1,7 @@
 // src/app/(public)/itens-banidos/page.tsx
 // Server Component — loads items from DB, passes to Client Component for filtering
+export const dynamic = 'force-dynamic'
+
 import { db } from '@/lib/db'
 import { bannedItems } from '@/lib/db/schema'
 import { BannedItemsTable } from '@/components/banned-items/BannedItemsTable'

@@ -147,7 +147,13 @@ export default async function MatchPage({ params }: MatchPageProps) {
 
         {/* Showdown Replay Player */}
         {replayLog.length > 0 ? (
-          <ShowdownReplayPlayer replayLog={replayLog} />
+          <ShowdownReplayPlayer
+            replayLog={replayLog}
+            winnerName={match.winnerName}
+            loserName={match.loserName}
+            winnerUuid={match.winnerUuid}
+            loserUuid={match.loserUuid}
+          />
         ) : (
           <div className="bg-brand-surface rounded-xl border border-white/10 p-6">
             <div className="text-center py-8">

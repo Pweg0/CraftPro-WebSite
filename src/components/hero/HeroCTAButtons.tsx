@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { Copy, Check, ExternalLink, ChevronDown, ShoppingBag } from 'lucide-react';
+import { Copy, Check, ExternalLink, Server, ShoppingBag } from 'lucide-react';
 import { useState } from 'react';
 
 // Main server IP — the primary IP players type to connect to CraftPro Brasil
@@ -20,12 +20,6 @@ export function HeroCTAButtons() {
       description: MAIN_SERVER_IP,
     });
     setTimeout(() => setCopied(false), 2000);
-  };
-
-  const handleScrollToServers = () => {
-    document.getElementById('servidores-section')?.scrollIntoView({
-      behavior: 'smooth',
-    });
   };
 
   return (
@@ -61,17 +55,17 @@ export function HeroCTAButtons() {
         </Button>
       </a>
 
-      {/* CTA 3: Ver Servidores — smooth scroll */}
-      <Button
-        onClick={handleScrollToServers}
-        size="lg"
-        variant="outline"
-        data-testid="cta-ver-servidores"
-        className="border-white/30 text-white hover:bg-white/10 gap-2"
-      >
-        <ChevronDown className="h-4 w-4" />
-        Ver Servidores
-      </Button>
+      {/* CTA 3: Ver Servidores — link to /servidores */}
+      <Link href="/servidores" data-testid="cta-ver-servidores">
+        <Button
+          size="lg"
+          variant="outline"
+          className="border-white/30 text-white hover:bg-white/10 gap-2"
+        >
+          <Server className="h-4 w-4" />
+          Ver Servidores
+        </Button>
+      </Link>
 
       {/* CTA 4: Loja — link to /loja page */}
       <Link href="/loja" data-testid="cta-loja">

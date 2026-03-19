@@ -23,13 +23,14 @@ export function ServerCard({ server, status }: ServerCardProps) {
     >
       {/* Server banner */}
       <div className="relative h-40 bg-brand-surface">
-        {server.bannerPath && server.bannerPath.startsWith('/') ? (
+        {server.bannerPath ? (
           <Image
             src={server.bannerPath}
             alt={`Banner do servidor ${server.name}`}
             fill
             sizes="(max-width: 768px) 100vw, 33vw"
             className="object-cover"
+            {...(server.bannerPath.startsWith('http') ? { unoptimized: true } : {})}
           />
         ) : (
           <div className="flex h-full items-center justify-center">

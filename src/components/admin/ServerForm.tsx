@@ -102,12 +102,12 @@ export function ServerForm({ item, open, onOpenChange }: ServerFormProps) {
             />
           </div>
           <div>
-            <label className="text-sm text-white/70 block mb-1">Caminho do Banner</label>
+            <label className="text-sm text-white/70 block mb-1">Banner (URL ou caminho local)</label>
             <Input
               name="bannerPath"
               defaultValue={item?.bannerPath}
               required
-              placeholder="/images/servers/slug.webp"
+              placeholder="/images/servers/slug.webp ou https://..."
               className="bg-brand-surface border-white/20 text-white"
             />
           </div>

@@ -23,7 +23,7 @@ export function ServerCard({ server, status }: ServerCardProps) {
     >
       {/* Server banner */}
       <div className="relative h-40 bg-brand-surface">
-        {server.bannerPath ? (
+        {server.bannerPath && server.bannerPath.startsWith('/') ? (
           <Image
             src={server.bannerPath}
             alt={`Banner do servidor ${server.name}`}

@@ -26,7 +26,7 @@ export function CopyIPButton({ ip }: CopyIPButtonProps) {
       variant="outline"
       size="sm"
       data-testid="copy-ip-button"
-      className="border-white/30 text-white hover:bg-white/10 gap-2 font-mono text-xs"
+      className="border-white/30 bg-transparent text-white hover:bg-white/10 gap-2 font-mono text-xs"
     >
       {copied ? <Check className="h-3 w-3 text-brand-online" /> : <Copy className="h-3 w-3" />}
       {copied ? 'Copiado!' : ip}

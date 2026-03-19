@@ -122,12 +122,12 @@ export function BannedItemsCrud({ items }: BannedItemsCrudProps) {
                         <MoreHorizontal className="h-4 w-4" />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onSelect={() => handleEdit(item)}>
+                        <DropdownMenuItem onClick={() => handleEdit(item)}>
                           Editar
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           variant="destructive"
-                          onSelect={() => handleDeleteClick(item.id)}
+                          onClick={() => handleDeleteClick(item.id)}
                         >
                           Deletar
                         </DropdownMenuItem>

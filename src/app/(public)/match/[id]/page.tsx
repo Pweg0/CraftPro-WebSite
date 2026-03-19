@@ -3,6 +3,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { getMatchById } from "@/lib/db/queries/player"
 import { TierBadge } from "@/components/ranking/TierBadge"
+import { ShowdownReplayPlayer } from "@/components/replay/ShowdownReplayPlayer"
 import { Swords, Clock, MapPin, Calendar, Trophy } from "lucide-react"
 
 interface MatchPageProps {
@@ -14,89 +15,6 @@ const REASON_LABELS: Record<string, string> = {
   TIMEOUT: "Tempo Esgotado",
   DISCONNECT: "Desconexao",
   FLEE: "Fuga",
-}
-
-// Replay log line styling
-type LineType = "move" | "damage" | "switch" | "faint" | "win" | "info"
-
-function classifyLine(line: string): LineType {
-  if (line.startsWith("|win|")) return "win"
-  if (line.startsWith("|faint|")) return "faint"
-  if (line.startsWith("|move|")) return "move"
-  if (line.startsWith("|-damage|") || line.startsWith("|-supereffective") || line.startsWith("|-crit")) return "damage"
-  if (line.startsWith("|switch|") || line.startsWith("|drag|") || line.startsWith("|replace|")) return "switch"
-  return "info"
-}
-
-const LINE_COLORS: Record<LineType, string> = {
-  move: "text-yellow-400",
-  damage: "text-red-400",
-  switch: "text-blue-400",
-  faint: "text-white/40",
-  win: "text-green-400 font-bold",
-  info: "text-white/60",
-}
-
-// Lines to filter out — internal protocol, not meaningful to players
-const HIDDEN_PREFIXES = ["|request|", "|update|", "|sideupdate|", "|split|", "|"]
-
-function shouldShow(line: string): boolean {
-  if (!line || line.trim() === "" || line.trim() === "|") return false
-  for (const prefix of HIDDEN_PREFIXES) {
-    if (line === prefix) return false
-  }
-  if (line.startsWith("|request|")) return false
-  if (line.startsWith("|update|")) return false
-  if (line.startsWith("|sideupdate|")) return false
-  if (line.startsWith("|split|")) return false
-  if (line.startsWith("|callback|")) return false
-  if (line.startsWith("|choice|")) return false
-  return true
-}
-
-function formatLine(line: string): string {
-  // Remove leading | and split
-  const clean = line.startsWith("|") ? line.slice(1) : line
-  const parts = clean.split("|")
-  const type = parts[0]
-
-  switch (type) {
-    case "move":
-      return `⚔️ ${parts[1]?.replace(/p[12]a: /, "")} usou ${parts[2]} em ${parts[3]?.replace(/p[12]a: /, "") ?? ""}`
-    case "-damage":
-      return `💥 ${parts[1]?.replace(/p[12]a: /, "")} sofreu dano → ${parts[2] ?? ""}`
-    case "switch":
-    case "drag":
-      return `🔄 ${parts[1]?.replace(/p[12]a: /, "")} entrou em campo (${parts[2]?.split(",")[0] ?? ""})`
-    case "faint":
-      return `💀 ${parts[1]?.replace(/p[12]a: /, "")} foi derrotado`
-    case "win":
-      return `🏆 ${parts[1]} venceu a batalha!`
-    case "-supereffective":
-      return `⚡ Super efetivo!`
-    case "-crit":
-      return `🎯 Golpe critico!`
-    case "-resisted":
-      return `🛡️ Nao muito efetivo...`
-    case "-immune":
-      return `❌ Nao afetou...`
-    case "turn":
-      return `— Turno ${parts[1]} —`
-    case "-heal":
-      return `💚 ${parts[1]?.replace(/p[12]a: /, "")} recuperou vida → ${parts[2] ?? ""}`
-    case "-status":
-      return `🔥 ${parts[1]?.replace(/p[12]a: /, "")} foi afetado por ${parts[2] ?? ""}`
-    case "-boost":
-      return `⬆️ ${parts[1]?.replace(/p[12]a: /, "")} aumentou ${parts[2] ?? ""}`
-    case "-unboost":
-      return `⬇️ ${parts[1]?.replace(/p[12]a: /, "")} diminuiu ${parts[2] ?? ""}`
-    case "-weather":
-      return `🌤️ Clima: ${parts[1] ?? ""}`
-    case "-ability":
-      return `✨ Habilidade: ${parts[2] ?? ""} (${parts[1]?.replace(/p[12]a: /, "") ?? ""})`
-    default:
-      return clean
-  }
 }
 
 function formatDuration(ms: number | null): string {
@@ -124,13 +42,13 @@ export default async function MatchPage({ params }: MatchPageProps) {
 
   if (!match) notFound()
 
-  const replayLines = Array.isArray(match.replayLog)
-    ? (match.replayLog as string[]).filter(shouldShow)
+  const replayLog = Array.isArray(match.replayLog)
+    ? (match.replayLog as string[])
     : []
 
   return (
     <div className="min-h-screen bg-brand-primary py-16 px-4">
-      <div className="container mx-auto max-w-3xl">
+      <div className="container mx-auto max-w-4xl">
         {/* Match Header */}
         <div className="bg-brand-surface rounded-xl border border-white/10 p-6 md:p-8 mb-6">
           {/* VS Section */}
@@ -227,27 +145,16 @@ export default async function MatchPage({ params }: MatchPageProps) {
           </div>
         </div>
 
-        {/* Replay Log */}
-        <div className="bg-brand-surface rounded-xl border border-white/10 p-6">
-          <h2 className="text-white font-semibold text-lg mb-4">Replay da Batalha</h2>
-
-          {replayLines.length === 0 ? (
+        {/* Showdown Replay Player */}
+        {replayLog.length > 0 ? (
+          <ShowdownReplayPlayer replayLog={replayLog} />
+        ) : (
+          <div className="bg-brand-surface rounded-xl border border-white/10 p-6">
             <div className="text-center py-8">
               <p className="text-white/40">Nenhum replay disponivel para esta partida.</p>
             </div>
-          ) : (
-            <div className="space-y-1 font-mono text-sm max-h-[600px] overflow-y-auto pr-2">
-              {replayLines.map((line, i) => {
-                const type = classifyLine(line)
-                return (
-                  <div key={i} className={`${LINE_COLORS[type]} py-0.5`}>
-                    {formatLine(line)}
-                  </div>
-                )
-              })}
-            </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   )

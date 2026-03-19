@@ -43,18 +43,22 @@ Transmitir a fusão Minecraft + Pokémon de forma vibrante e colorida, sendo o p
 ### Out of Scope
 
 - Login via email/senha ou Microsoft — login será exclusivamente via Discord
-- Loja funcional no v1 — será página "em breve"
+- Loja funcional no v1 — será página "em breve" (planejada para v2.0)
 - App mobile nativo — web-first
 - Conteúdo em inglês — site apenas em PT-BR
 - ~~Sistema de replay com vídeo~~ — replay log do protocolo Showdown implementado (v1)
+- Plugins Bukkit/Spigot — servidor é NeoForge, só aceita mods
 
 ## Context
 
 - **Modpack:** AllTheMods 1.21.1 V6 (tech + magia + Pokémon integrados)
 - **Imagem de referência:** Background fornecido pelo usuário — cenário Minecraft pixelado com Pokémon, água refletiva, céu azul vibrante, placas de jogos (PokeBrawl, PokeDash, PokeGold)
 - **Público:** Jogadores brasileiros de Minecraft que curtem Pokémon e modpacks
-- **Loja futura:** Venderá itens cosméticos, ranks/VIP e outros itens do servidor
+- **Loja futura:** Venderá itens cosméticos, ranks/VIP e outros itens do servidor — entrega via RCON + fila no banco
 - **Ranking:** Sistema competitivo tipo League of Legends — elo sobe com vitórias e desce com derrotas
+- **Servidor:** NeoForge (não suporta plugins, apenas mods) — modpack AllTheMods 1.21.1 V6
+- **Permissões:** LuckPerms (substituindo FTB Ranks) — integra com FTB Chunks e suporta ranks temporários
+- **Pagamento:** MercadoPago (Pix, boleto, cartão) — público brasileiro
 
 ## Constraints
 
@@ -72,6 +76,11 @@ Transmitir a fusão Minecraft + Pokémon de forma vibrante e colorida, sendo o p
 | Loja como "coming soon" | Funcionalidade virá depois, mas página precisa existir | Implemented (Phase 1), admin CRUD (Phase 4) |
 | Ranking tipo elo competitivo | Referência LoL — sobe/desce com win/loss | Implemented (Phase 3) |
 | Admin via env var + DB permissions | Acesso restrito, permissões granulares por seção | Implemented (Phase 4) |
+| Banner aceita URL externa ou local | Flexibilidade para admin usar imagens externas | Implemented (Post-Phase) |
+| "Ver Servidores" navega para /servidores | Melhor UX — leva direto à página completa | Implemented (Post-Phase) |
+| RCON + fila no banco para loja | NeoForge não suporta plugins; RCON já vem no Minecraft | Decided (v2.0) |
+| LuckPerms substituindo FTB Ranks | Ranks temporários, API rica, integra com FTB Chunks | Decided (v2.0) |
+| MercadoPago como gateway | Público brasileiro, suporta Pix/boleto/cartão | Decided (v2.0) |
 
 ## Deployment
 
@@ -90,4 +99,4 @@ Transmitir a fusão Minecraft + Pokémon de forma vibrante e colorida, sendo o p
 - Vitest + Testing Library
 
 ---
-*Last updated: 2026-03-19 — v1 complete, deployed to craftprobrasil.com.br*
+*Last updated: 2026-03-19 — v1.0 complete, deployed to craftprobrasil.com.br. v2.0 planning started (loja, LuckPerms, MercadoPago).*

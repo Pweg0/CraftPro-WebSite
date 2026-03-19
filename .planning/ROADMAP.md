@@ -107,3 +107,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 - [x] **Perfil Auto-Redirect** — `/perfil` redireciona pro perfil competitivo quando Minecraft está vinculado
 - [x] **Bug Fixes** — DropdownMenu onSelect→onClick (base-ui), banner path validation, CopyIPButton bg, asChild→render prop, Select null handling
 - [x] **Vercel Deployment** — Site publicado em craftprobrasil.com.br com env vars, force-dynamic pages, DNS configurado
+- [x] **Banner URL externa** — ServerCard aceita URLs externas (https://...) além de caminhos locais (/images/...), com unoptimized para domínios arbitrários
+- [x] **"Ver Servidores" CTA** — Botão na hero agora navega para /servidores em vez de smooth scroll para anchor
+- [x] **ServerForm label** — Campo de banner no admin atualizado para indicar URL ou caminho local

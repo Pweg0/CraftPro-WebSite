@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: unknown
-stopped_at: Completed 04-painel-admin-03-PLAN.md
-last_updated: "2026-03-19T00:00:11.563Z"
+status: complete
+stopped_at: Milestone v1.0 complete — all 4 phases delivered
+last_updated: "2026-03-19T00:00:00.000Z"
 progress:
   total_phases: 4
   completed_phases: 4
@@ -16,15 +16,15 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-18)
+See: .planning/PROJECT.md (updated 2026-03-19)
 
 **Core value:** Transmitir a fusão Minecraft + Pokémon de forma vibrante, sendo o hub central para jogadores do CraftPro Brasil
-**Current focus:** Phase 04 — painel-admin
+**Current focus:** Milestone v1.0 COMPLETE — pronto para v2.0
 
 ## Current Position
 
-Phase: 04 (painel-admin) — EXECUTING
-Plan: 1 of 4
+Phase: ALL COMPLETE (4/4 phases, 13/13 plans)
+Milestone: v1.0 — DONE
 
 ## Performance Metrics
 
@@ -118,6 +118,21 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-18T23:55:13.185Z
-Stopped at: Completed 04-painel-admin-03-PLAN.md
+Last session: 2026-03-19
+Stopped at: Milestone v1.0 complete. Post-milestone tweaks: banner URL support, "Ver Servidores" CTA navigation fix.
 Resume file: None
+
+## v2.0 Planning Notes
+
+Discussed features for next milestone:
+- **Loja funcional** — MercadoPago (Pix/cartão), entrega via RCON + fila no banco, ranks temporários via LuckPerms
+- **Notificações Discord** — bot para compras, novos jogadores, resultados de batalhas
+- **Blog/notícias** — admin publica updates e eventos
+- **Temporadas de ranking** — reset de ELO, hall da fama
+- **Dashboard do jogador** — gráfico de evolução ELO, Pokémon mais usados
+
+Infrastructure decisions:
+- Servidor roda NeoForge (não suporta plugins, apenas mods)
+- RCON + fila no banco para entrega de itens da loja (sem mod extra)
+- LuckPerms será instalado para substituir FTB Ranks (melhor para ranks temporários + integra com FTB Chunks)
+- MercadoPago como gateway de pagamento (público brasileiro)

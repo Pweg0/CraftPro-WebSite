@@ -117,7 +117,7 @@ export default async function LojaPage() {
           </p>
           <a
             data-testid="store-discord-cta"
-            href="https://discord.gg/craftprobrasil"
+            href="https://discord.gg/FcdR6PPjg6"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2.5 bg-[#5865F2] hover:bg-[#4752C4] text-white font-semibold px-7 py-3.5 rounded-xl

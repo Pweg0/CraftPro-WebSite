@@ -53,7 +53,7 @@ export function Footer() {
               Junte-se a nossa comunidade no Discord para novidades, eventos e suporte.
             </p>
             <a
-              href="https://discord.gg/craftprobrasil"
+              href="https://discord.gg/FcdR6PPjg6"
               target="_blank"
               rel="noopener noreferrer"
               data-testid="footer-discord-link"

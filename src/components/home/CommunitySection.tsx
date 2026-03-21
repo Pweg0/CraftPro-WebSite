@@ -56,7 +56,7 @@ export function CommunitySection() {
           </motion.div>
 
           <motion.a
-            href="https://discord.gg/craftprobrasil"
+            href="https://discord.gg/FcdR6PPjg6"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-xl font-semibold text-white text-sm

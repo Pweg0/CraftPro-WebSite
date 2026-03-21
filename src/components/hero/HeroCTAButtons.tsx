@@ -39,7 +39,7 @@ export function HeroCTAButtons() {
 
       {/* CTA 2: Discord */}
       <a
-        href="https://discord.gg/craftprobrasil"
+        href="https://discord.gg/FcdR6PPjg6"
         target="_blank"
         rel="noopener noreferrer"
         data-testid="cta-discord"

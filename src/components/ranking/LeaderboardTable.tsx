@@ -10,7 +10,6 @@ import {
   TableHead,
   TableCell,
 } from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
 import { PlayerRow } from "@/components/ranking/PlayerRow"
 
 type Player = {
@@ -50,42 +49,42 @@ export function LeaderboardTable({ ranked, unranked, top10Wins }: LeaderboardTab
     <div>
       {/* Tab buttons */}
       <div className="flex gap-2 mb-6">
-        <Button
+        <button
           onClick={() => handleTabSwitch("elo")}
-          className={
+          className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 ${
             tab === "elo"
-              ? "bg-brand-accent text-white border-brand-accent"
-              : "bg-brand-card text-white/60 hover:text-white border-transparent"
-          }
+              ? "bg-brand-accent/15 text-brand-accent border border-brand-accent/30 shadow-[0_0_15px_rgba(255,45,85,0.1)]"
+              : "bg-white/[0.03] text-white/50 border border-white/[0.06] hover:text-white hover:bg-white/[0.06]"
+          }`}
         >
-          <Trophy className="mr-2 h-4 w-4" />
+          <Trophy className="h-4 w-4" />
           Leaderboard (ELO)
-        </Button>
-        <Button
+        </button>
+        <button
           onClick={() => handleTabSwitch("wins")}
-          className={
+          className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 ${
             tab === "wins"
-              ? "bg-brand-accent text-white border-brand-accent"
-              : "bg-brand-card text-white/60 hover:text-white border-transparent"
-          }
+              ? "bg-brand-yellow/15 text-brand-yellow border border-brand-yellow/30 shadow-[0_0_15px_rgba(255,214,10,0.1)]"
+              : "bg-white/[0.03] text-white/50 border border-white/[0.06] hover:text-white hover:bg-white/[0.06]"
+          }`}
         >
-          <Medal className="mr-2 h-4 w-4" />
+          <Medal className="h-4 w-4" />
           Top 10 Vitorias
-        </Button>
+        </button>
       </div>
 
       {/* Table */}
-      <div className="rounded-lg border border-white/10 overflow-hidden bg-brand-surface">
+      <div className="rounded-2xl border border-white/[0.06] overflow-hidden bg-brand-surface/40 backdrop-blur-sm">
         <Table>
           <TableHeader>
-            <TableRow className="border-white/10 hover:bg-transparent">
-              <TableHead className="text-white/60">#</TableHead>
-              <TableHead className="text-white/60 w-10"></TableHead>
-              <TableHead className="text-white/60">Jogador</TableHead>
-              <TableHead className="text-white/60">ELO</TableHead>
-              <TableHead className="text-white/60">Divisao</TableHead>
-              <TableHead className="text-white/60">W/L</TableHead>
-              <TableHead className="text-white/60">Win Rate</TableHead>
+            <TableRow className="border-white/[0.06] hover:bg-transparent">
+              <TableHead className="text-white/40 text-xs uppercase tracking-wider">#</TableHead>
+              <TableHead className="text-white/40 text-xs uppercase tracking-wider w-10"></TableHead>
+              <TableHead className="text-white/40 text-xs uppercase tracking-wider">Jogador</TableHead>
+              <TableHead className="text-white/40 text-xs uppercase tracking-wider">ELO</TableHead>
+              <TableHead className="text-white/40 text-xs uppercase tracking-wider">Divisao</TableHead>
+              <TableHead className="text-white/40 text-xs uppercase tracking-wider">W/L</TableHead>
+              <TableHead className="text-white/40 text-xs uppercase tracking-wider">Win Rate</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -100,10 +99,10 @@ export function LeaderboardTable({ ranked, unranked, top10Wins }: LeaderboardTab
                 ))}
                 {showUnranked && unranked.length > 0 && (
                   <>
-                    <TableRow className="border-white/10">
+                    <TableRow className="border-white/[0.06]">
                       <TableCell
                         colSpan={7}
-                        className="text-center text-white/40 text-xs py-2 bg-white/5 font-semibold tracking-widest uppercase"
+                        className="text-center text-white/30 text-xs py-3 bg-white/[0.02] font-semibold tracking-[0.15em] uppercase"
                       >
                         Em Classificacao
                       </TableCell>
@@ -127,32 +126,28 @@ export function LeaderboardTable({ ranked, unranked, top10Wins }: LeaderboardTab
         </Table>
       </div>
 
-      {/* Pagination — only for ELO tab */}
+      {/* Pagination */}
       {tab === "elo" && totalPages > 1 && (
-        <div className="flex items-center justify-center gap-4 mt-4">
-          <Button
-            variant="ghost"
-            size="sm"
+        <div className="flex items-center justify-center gap-4 mt-5">
+          <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page <= 1}
-            className="text-white/60 hover:text-white disabled:opacity-30"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm text-white/50 hover:text-white hover:bg-white/[0.04] disabled:opacity-25 disabled:hover:bg-transparent transition-all duration-200"
           >
             <ChevronLeft className="h-4 w-4" />
             Anterior
-          </Button>
-          <span className="text-white/60 text-sm">
-            Pagina {page} de {totalPages}
+          </button>
+          <span className="text-white/40 text-sm tabular-nums">
+            {page} / {totalPages}
           </span>
-          <Button
-            variant="ghost"
-            size="sm"
+          <button
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={page >= totalPages}
-            className="text-white/60 hover:text-white disabled:opacity-30"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm text-white/50 hover:text-white hover:bg-white/[0.04] disabled:opacity-25 disabled:hover:bg-transparent transition-all duration-200"
           >
             Proxima
             <ChevronRight className="h-4 w-4" />
-          </Button>
+          </button>
         </div>
       )}
     </div>

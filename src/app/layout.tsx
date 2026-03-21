@@ -1,13 +1,13 @@
 import type { Metadata } from 'next';
-import { Inter, Press_Start_2P } from 'next/font/google';
+import { Sora, Press_Start_2P } from 'next/font/google';
 import './globals.css';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { Providers } from '@/lib/providers';
 
-const inter = Inter({
+const sora = Sora({
   subsets: ['latin'],
-  variable: '--font-inter',
+  variable: '--font-sora',
   display: 'swap',
 });
 
@@ -30,8 +30,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR" className={`${inter.variable} ${pressStart.variable}`}>
-      <body className="font-body antialiased flex flex-col min-h-screen">
+    <html lang="pt-BR" className={`${sora.variable} ${pressStart.variable}`}>
+      <body className="noise-overlay font-body antialiased flex flex-col min-h-screen">
         <Providers>
           <Navbar />
           <main className="flex-1">

@@ -57,6 +57,20 @@ export function Navbar() {
               </li>
             );
           })}
+          {session && (
+            <li>
+              <Link
+                href="/loja/meus-pedidos"
+                className={`relative text-sm px-3.5 py-2 rounded-lg transition-all duration-200 ${
+                  pathname.startsWith('/loja/meus-pedidos')
+                    ? 'text-white bg-white/[0.08]'
+                    : 'text-white/50 hover:text-white hover:bg-white/[0.04]'
+                }`}
+              >
+                Meus Pedidos
+              </Link>
+            </li>
+          )}
           {isAdminUser && (
             <li>
               <Link
@@ -104,6 +118,18 @@ export function Navbar() {
                   </Link>
                 );
               })}
+              {session && (
+                <Link
+                  href="/loja/meus-pedidos"
+                  className={`text-base px-4 py-3 rounded-xl transition-all duration-200 ${
+                    pathname.startsWith('/loja/meus-pedidos')
+                      ? 'text-white bg-white/[0.08] border-l-2 border-brand-accent'
+                      : 'text-white/50 hover:text-white hover:bg-white/[0.04]'
+                  }`}
+                >
+                  Meus Pedidos
+                </Link>
+              )}
               {isAdminUser && (
                 <Link
                   href="/admin"

@@ -1,10 +1,11 @@
 ---
 gsd_state_version: 1.0
 milestone: v2.0
-milestone_name: Loja e Blog
-status: roadmap_ready
-stopped_at: Roadmap v2.0 created — ready to plan Phase 5
-last_updated: "2026-03-26T00:00:00.000Z"
+milestone_name: — Loja e Blog
+status: Roadmap ready — awaiting plan-phase 5
+stopped_at: Phase 5 context gathered
+last_updated: "2026-03-26T14:17:19.016Z"
+last_activity: 2026-03-26 — Roadmap v2.0 written (Phases 5-8)
 progress:
   total_phases: 4
   completed_phases: 0
@@ -98,7 +99,7 @@ Recent decisions affecting v2.0:
 
 ## Session Continuity
 
-Last session: 2026-03-26
-Stopped at: Roadmap v2.0 written — 4 phases (5-8), 21 requirements mapped, files written
-Resume file: .planning/ROADMAP.md
+Last session: 2026-03-26T14:17:18.971Z
+Stopped at: Phase 5 context gathered
+Resume file: .planning/phases/05-loja-funcional/05-CONTEXT.md
 Next action: /gsd:plan-phase 5

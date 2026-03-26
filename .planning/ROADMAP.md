@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Autenticação** - Login via Discord com sessão persistente e logout de qualquer página (completed 2026-03-18)
 - [x] **Phase 3: Sistema Competitivo** - ELO, leaderboards, top-10, tiers visuais e perfis de usuário completos (completed 2026-03-18)
 - [x] **Phase 4: Painel Admin** - Rota /admin protegida com CRUD para itens banidos, servidores, loja e leaderboard, com permissões granulares e auditoria (completed 2026-03-18)
-- [x] **Phase 5: Loja Funcional** - Loja real com produtos, preços em BRL, integração MercadoPago (Pix/cartão), entrega via RCON + fila no banco, ranks temporários via LuckPerms (completed 2026-03-26)
+- [ ] **Phase 5: Loja Funcional** - Loja real com produtos, preços em BRL, integração MercadoPago (Pix/cartão), entrega via RCON + fila no banco, ranks temporários via LuckPerms
 
 ## Phase Details
 
@@ -99,22 +99,27 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. Autenticacao | 3/3 | Complete    | 2026-03-18 |
 | 3. Sistema Competitivo | 3/3 | Complete   | 2026-03-18 |
 | 4. Painel Admin | 4/4 | Complete   | 2026-03-18 |
-| 5. Loja Funcional | 4/4 | Complete   | 2026-03-26 |
+| 5. Loja Funcional | 4/6 | Gap Closure | — |
 
 ### Phase 5: Loja Funcional
 **Goal**: Jogadores podem comprar itens, ranks e cosméticos via MercadoPago (Pix/cartão). Pedidos são processados automaticamente via fila no banco + entrega RCON no servidor NeoForge.
 **Depends on**: Phase 4
-**Requirements**: SHOP-01, SHOP-02, SHOP-03
+**Requirements**: SHOP-01, SHOP-02, SHOP-03, SHOP-05, SHOP-06
 **Success Criteria** (what must be TRUE):
   1. Jogador logado acessa /loja e vê catálogo de itens disponíveis com preços em BRL
   2. Jogador clica em comprar, é redirecionado ao checkout MercadoPago, conclui pagamento
   3. Após pagamento confirmado, pedido é adicionado à fila de entrega
   4. Sistema processa fila e envia comando RCON ao servidor para entregar o item
   5. Admin pode adicionar/editar/ocultar itens com preço e categoria via /admin/loja
-**Plans**: TBD (multiple plans)
+**Plans**: 6 plans
 
 Plans:
 - [x] 05-01-PLAN.md — Schema foundation: shopItems extension (price, available, imageUrl), orders table, shop query module, ShopItemCard, /loja catalog page, admin CRUD update
+- [x] 05-02-PLAN.md — MercadoPago Checkout API + webhook handler + BuyButton + orders page
+- [x] 05-03-PLAN.md — Public /loja catalog rewrite + ProductCard + OrderStatusStepper + meus-pedidos
+- [x] 05-04-PLAN.md — Admin shop CRUD extended (type/duration/active) + /admin/pedidos order management
+- [ ] 05-05-PLAN.md — (gap closure) deliveryQueue schema + UNIQUE mercadopagoId + HMAC webhook + resolveRconCommand
+- [ ] 05-06-PLAN.md — (gap closure) rcon-client install + cron worker /api/cron/process-orders + forceRetryDelivery rewrite
 
 ## Post-Phase Extras (implemented outside formal phases)
 

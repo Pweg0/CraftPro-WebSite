@@ -11,6 +11,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -35,10 +36,20 @@ interface ShopItem {
   name: string
   description: string
   category: string
+  price: number
+  imageUrl?: string | null
+  available: number
 }
 
 interface LojaCrudProps {
   items: ShopItem[]
+}
+
+function formatBRL(cents: number): string {
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  }).format(cents / 100)
 }
 
 export function LojaCrud({ items }: LojaCrudProps) {
@@ -102,19 +113,37 @@ export function LojaCrud({ items }: LojaCrudProps) {
             <TableHeader>
               <TableRow>
                 <TableHead>Nome</TableHead>
-                <TableHead>Descricao</TableHead>
                 <TableHead>Categoria</TableHead>
+                <TableHead>Preço</TableHead>
+                <TableHead>Status</TableHead>
                 <TableHead className="w-12"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {items.map((item) => (
                 <TableRow key={item.id}>
-                  <TableCell className="text-sm text-white/90 font-medium">{item.name}</TableCell>
-                  <TableCell className="text-sm text-white/60 max-w-xs truncate">
-                    {item.description}
+                  <TableCell>
+                    <div>
+                      <p className="text-sm text-white/90 font-medium">{item.name}</p>
+                      <p className="text-xs text-white/40 truncate max-w-xs">{item.description}</p>
+                    </div>
                   </TableCell>
                   <TableCell className="text-sm text-white/60">{item.category}</TableCell>
+                  <TableCell className="text-sm font-medium text-white/80">
+                    {item.price > 0 ? formatBRL(item.price) : <span className="text-white/30">—</span>}
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant="outline"
+                      className={
+                        item.available === 1
+                          ? 'text-brand-green border-brand-green/30 bg-brand-green/10 text-xs'
+                          : 'text-white/40 border-white/20 bg-white/5 text-xs'
+                      }
+                    >
+                      {item.available === 1 ? 'Visível' : 'Oculto'}
+                    </Badge>
+                  </TableCell>
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger
@@ -155,13 +184,13 @@ export function LojaCrud({ items }: LojaCrudProps) {
           <AlertDialogHeader>
             <AlertDialogTitle>Deletar Item da Loja</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta acao nao pode ser desfeita. Tem certeza?
+              Esta ação não pode ser desfeita. Tem certeza?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction variant="destructive" onClick={handleConfirmDelete}>
-              Confirmar Exclusao
+              Confirmar Exclusão
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

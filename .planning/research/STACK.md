@@ -1,95 +1,138 @@
 # Stack Research
 
-**Domain:** Gaming community website — Minecraft server network with competitive features (elo ranking, Discord auth, leaderboards, user profiles, battle replays)
-**Researched:** 2026-03-18
-**Confidence:** HIGH (core stack verified via official docs and multiple sources)
+**Domain:** Minecraft gaming community website — v2.0 additions: payment, RCON delivery, Discord bot, blog, seasons, ELO charts
+**Researched:** 2026-03-26
+**Confidence:** HIGH (core choices verified via official docs and npm; deployment architecture verified via Vercel KB)
 
 ---
 
-## Recommended Stack
+## Context: What Already Exists
 
-### Core Technologies
+The following stack is validated and NOT re-researched here:
 
-| Technology | Version | Purpose | Why Recommended |
-|------------|---------|---------|-----------------|
-| Next.js | 16.x (current stable) | Full-stack React framework | App Router + RSC gives server-rendered leaderboards and profiles for free; Turbopack default makes dev fast; single repo for frontend + API routes; Vercel deployment is zero-config |
-| React | 19.x | UI library | Ships with Next.js 16; React Compiler is stable in 16 and auto-memoizes components — no manual useMemo/useCallback needed |
-| TypeScript | 5.x | Type safety | Non-negotiable for a codebase with elo math, DB schemas, and OAuth — catches bugs before runtime |
-| Tailwind CSS | 4.x (stable since Jan 22 2025) | Utility-first styling | CSS-first config with @theme; 5x faster full builds, 100x faster incremental — critical for vibrant, custom gaming aesthetic; no config file needed |
-| shadcn/ui | latest (Tailwind v4 / React 19 compatible) | Accessible component primitives | Not a component library — you own the code. Copy-paste components into the project, customize freely. Full Tailwind v4 support as of Feb 2025. Leaderboard tables, profile cards, dialogs all available |
-| Auth.js (NextAuth) | v5.x (beta.25+ stable enough for prod) | Discord OAuth login | Official Auth.js Discord provider; works with Next.js 16 App Router; database adapter for persisting sessions; the only auth approach worth using for Discord-exclusive login |
+- Next.js 16 (Turbopack) + TypeScript 5.x
+- Tailwind CSS v4 + shadcn/ui (base-ui)
+- Drizzle ORM 0.45.x + Neon PostgreSQL
+- Auth.js v5 (Discord provider)
+- Vitest + Testing Library
+- Deployed on Vercel (hobby plan)
 
-### Database & ORM
+This document covers ONLY the additions required for v2.0 features.
 
-| Technology | Version | Purpose | Why Recommended |
-|------------|---------|---------|-----------------|
-| PostgreSQL (via Neon) | PostgreSQL 17 | Primary database | Relational model is correct for elo ratings — player table, match table, junction table with FK constraints. Neon provides serverless Postgres with Vercel-native integration, free tier (100 CU-hours/month, no credit card), and branching for safe migrations |
-| Drizzle ORM | 0.45.x | Type-safe database access | Schema defined in TypeScript (no .prisma file, no codegen step). Tiny bundle (~90% smaller than Prisma), no native binary = no cold start issues on Vercel serverless functions. SQL-like query builder is easy to understand. Correct choice for a Vercel + Neon deployment |
-| Drizzle Kit | 0.26.x | Schema migrations | Generates and runs SQL migrations from Drizzle schema; `drizzle-kit push` for development, `drizzle-kit migrate` for production |
+---
 
-### Animations & UI
+## Recommended Stack Additions
+
+### Payments — MercadoPago
 
 | Technology | Version | Purpose | Why Recommended |
 |------------|---------|---------|-----------------|
-| Motion (formerly Framer Motion) | 12.x | Page transitions, scroll animations, hover effects | Rebranded to `motion` package; import from `motion/react` not `framer-motion`. 30M+ downloads/month. Perfect for vibrant gaming aesthetic: card entrances, leaderboard row animations, hero parallax. Works with Tailwind v4 |
+| `mercadopago` (official SDK) | 2.12.0 | Server-side payment creation, Pix QR code generation, webhook verification | Official SDK from MercadoPago; TypeScript types included; ES Module compatible; handles Checkout API (transparent flow — no redirect to MP hosted page) and Checkout Pro; last published Jan 2025 |
 
-### Supporting Libraries
+**Integration pattern for this project:**
+- Use **Checkout API** (transparent) not Checkout Pro. Checkout Pro redirects to mercadopago.com — bad UX for a gaming site selling ranks/items. Checkout API keeps the payment form in your site.
+- Pix flow: POST to `/v1/orders` with `payment_method.id: "pix"` → receive `qr_code_base64` + `qr_code` text → display QR to user → receive webhook on `status: "approved"` → trigger RCON delivery.
+- Webhook endpoint: Next.js Route Handler at `app/api/webhooks/mercadopago/route.ts`. Verify `X-Signature` HMAC header before processing. Never trust `paymentId` from webhook body alone — re-fetch from API to confirm status.
+- Frontend: use `@mercadopago/sdk-js` (separate browser-side SDK, distinct from server SDK) only if you need hosted card fields for credit card. For Pix-only (recommend starting here), the server SDK is sufficient.
+
+### RCON — Minecraft Server Communication
+
+| Technology | Version | Purpose | Why Recommended |
+|------------|---------|---------|-----------------|
+| `rcon-client` | 4.2.5 | TCP connection to Minecraft's native RCON port; send commands (e.g., LuckPerms rank grant, item give) | RCON is natively built into Minecraft — no mods needed, works on NeoForge. `rcon-client` is TypeScript-native, async/await, has a built-in packet queue to prevent race conditions. **Warning: maintainer posted unmaintained notice** — mitigate by wrapping in an abstraction layer so it can be swapped |
+
+**Why not the alternatives:**
+- `@minecraft-js/rcon` v1.1.0 — last commit Aug 2022, effectively dead.
+- `ts-rcon` v1.2.1 — last release May 2021, minimal maintenance.
+- `@c43721/rcon` v0.0.10 — published to JSR (not npm), cross-runtime focus; adds complexity without clear benefit.
+- `rcon-client` despite the warning has the most weekly downloads and the most battle-tested Minecraft-specific usage; version 4.2.5 is feature-complete for this use case.
+
+**Delivery queue pattern (critical for reliability):**
+Do NOT call RCON directly from the payment webhook handler. The Minecraft server may be offline (restarts, backups). Instead:
+
+```
+webhook confirmed → insert row in `delivery_queue` table (status=pending)
+→ cron job (Vercel Cron, every 1 min) → read pending rows → attempt RCON
+→ on success: mark delivered; on failure: increment retry_count; max 5 retries
+```
+
+This pattern lives entirely in Neon PostgreSQL (existing infrastructure) + Vercel Cron. No Redis, no BullMQ, no extra services needed on hobby plan.
+
+### Discord Notifications
+
+| Technology | Version | Purpose | Why Recommended |
+|------------|---------|---------|-----------------|
+| Discord Webhooks (no library needed) | N/A | Send notifications to Discord channel for purchases, new players, battle results | Vercel Hobby plan cannot run persistent WebSocket processes — discord.js `Client` gateway bot is **incompatible** with Vercel. Discord Webhooks are pure HTTP POST — no persistent connection, works perfectly in serverless Next.js Route Handlers and Server Actions |
+
+**Integration pattern:**
+```typescript
+// From any Server Action or Route Handler:
+await fetch(process.env.DISCORD_WEBHOOK_URL, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    embeds: [{
+      title: "Nova compra: Rank VIP",
+      description: `${playerName} comprou o rank VIP por R$XX`,
+      color: 0x00ff88,
+    }]
+  })
+});
+```
+
+No `discord.js` install needed. Store `DISCORD_WEBHOOK_URL` as Vercel env var (set per channel — one webhook URL per notification category is fine).
+
+**If you need a bot that listens to events (e.g., reacts to `!rank` command):**
+- Deploy discord.js 14.x as a separate Node.js service on Railway (free $5/month credit covers a small always-on Node process).
+- The Next.js app communicates with the bot via a shared Neon DB row or a simple HTTP endpoint on Railway — not direct Discord API.
+- Start with webhooks only (covers 100% of v2.0 notification needs). Bot can be v2.1.
+
+### ELO Charts — Player Dashboard
+
+| Technology | Version | Purpose | Why Recommended |
+|------------|---------|---------|-----------------|
+| Recharts | 3.8.0 | `LineChart` for ELO history over time; `BarChart` for Pokémon usage stats | React-native SVG charting library, composable component API matches the existing shadcn/ui + Tailwind pattern. v3.8.0 is the current stable (released March 6 2026). Compatible with React 19 + Next.js 16 (known `react-is` peer dep workaround needed — see compatibility section). Installed in many Next.js 16 admin dashboards in production |
+
+**Why not Chart.js/react-chartjs-2:** Canvas-based, harder to style with Tailwind, less React-native API. Overkill — ELO history for typical players is <1000 data points, well within Recharts SVG sweet spot.
+
+**Why not Victory or Nivo:** More complex APIs, heavier bundles, Recharts is the standard for Next.js dashboards.
+
+### Scheduled Jobs — RCON Delivery + Season Resets
+
+| Technology | Version | Purpose | Why Recommended |
+|------------|---------|---------|-----------------|
+| Vercel Cron Jobs | N/A (platform feature) | Trigger RCON delivery queue processing every minute; trigger season ELO reset on schedule | Zero infrastructure cost on Hobby plan (up to 2 cron jobs on hobby). Defined in `vercel.json`. Calls a Next.js Route Handler that reads the DB queue and dispatches RCON commands |
+
+**Cron limitation on hobby:** 1 invocation/day max frequency. If you need minute-level retry (RCON queue), use a different approach: trigger the queue processor from the webhook confirmation itself (fire-and-forget via `waitUntil` from the Vercel Edge Runtime, or simply run synchronously if the server is online). The DB queue handles persistence across failures regardless.
+
+**Update:** Vercel Hobby actually supports cron at 60-second intervals as of 2024 for cron jobs defined in vercel.json — verify in your account dashboard. If restricted to daily, use a free external cron service (cron-job.org) to hit your `/api/cron/deliver` Route Handler.
+
+---
+
+## Supporting Libraries (New)
 
 | Library | Version | Purpose | When to Use |
 |---------|---------|---------|-------------|
-| TanStack Query | v5.x | Client-side data fetching with caching | Leaderboard polling (refetch every 30s), profile data, replay list — anywhere you need stale-while-revalidate or background sync on the client side |
-| Zustand | 5.x | Lightweight global state | User session UI state (open/close modals, optimistic UI updates). NOT for server data — that's TanStack Query's job |
-| `elo-rating` (npm) | 2.x | Elo calculation math | Pure JS Elo implementation. Used server-side in API routes when recording a battle result. Handles K-factor, expected score, rating update |
-| `next-intl` | 3.x | i18n (even for single language) | PT-BR string management keeps text out of JSX; enables future language support without refactor. Use even for PT-BR-only to maintain clean separation of copy and code |
-| Zod | 3.x | Schema validation | Validate API request bodies (battle results, profile updates) before touching DB. Pairs with `drizzle-zod` for DB schema → Zod schema generation |
-| `@vercel/analytics` | latest | Web analytics | Free on Vercel; zero config; shows player traffic patterns without GDPR complexity for BR audience |
-| Lucide React | latest | Icon set | Consistent icon library; tree-shakeable; used natively by shadcn/ui |
-| `date-fns` | 3.x | Date formatting | Format match timestamps, profile join dates in PT-BR locale (`pt-BR` locale pack included) |
-
-### Development Tools
-
-| Tool | Purpose | Notes |
-|------|---------|-------|
-| ESLint + `eslint-config-next` | Code linting | Comes preconfigured with `create-next-app`; catches React RSC anti-patterns (using hooks in server components) |
-| Prettier | Code formatting | Add `prettier-plugin-tailwindcss` to auto-sort class names — essential with Tailwind v4 |
-| Husky + lint-staged | Pre-commit hooks | Run ESLint + Prettier on staged files only; prevents broken code from being committed |
-| `drizzle-studio` | DB GUI | `npx drizzle-kit studio` — visual DB browser during development; inspect elo ratings, match history directly |
-| Vercel CLI | Local preview + deployment | `vercel dev` mirrors production Edge/Node split locally |
+| `@mercadopago/sdk-js` | latest | Browser-side card tokenization (Checkout API credit card) | Only needed if adding credit/debit card input on the page. Not needed for Pix-only launch |
+| `recharts` | 3.8.0 | ELO line chart + Pokémon bar chart in player dashboard | Player dashboard phase only |
+| `date-fns` | 3.x (already in stack) | Format PT-BR dates on blog posts, event calendar, match timestamps | Already installed; no addition needed |
 
 ---
 
 ## Installation
 
 ```bash
-# Scaffold
-npx create-next-app@latest craftpro-site --typescript --tailwind --app --src-dir --import-alias "@/*"
+# Payments
+npm install mercadopago
 
-# Core auth
-npm install next-auth@beta
+# RCON (Minecraft server communication)
+npm install rcon-client
 
-# Database
-npm install drizzle-orm @neondatabase/serverless
-npm install -D drizzle-kit
+# Charts
+npm install recharts
 
-# UI & animation
-npm install motion
-npm install lucide-react date-fns zod
-
-# State & data fetching
-npm install @tanstack/react-query zustand
-
-# Elo calculation
-npm install elo-rating
-
-# i18n
-npm install next-intl
-
-# Analytics
-npm install @vercel/analytics
-
-# Dev tools
-npm install -D prettier prettier-plugin-tailwindcss husky lint-staged
-npx shadcn@latest init
+# If adding credit card tokenization later (not needed for Pix launch):
+# npm install @mercadopago/sdk-js
 ```
 
 ---
@@ -98,14 +141,12 @@ npx shadcn@latest init
 
 | Recommended | Alternative | When to Use Alternative |
 |-------------|-------------|-------------------------|
-| Next.js 16 | Remix v3 | If you need fine-grained loader/action control and dislike RSC mental model; smaller community for gaming sites |
-| Drizzle ORM | Prisma 7 | Prisma 7 removed the Rust engine and is now pure TypeScript — viable if team prefers schema-first `.prisma` file workflow and wants richer Prisma Studio GUI |
-| Neon (serverless Postgres) | Supabase | Supabase adds real-time subscriptions out of the box (useful for live leaderboard updates). Use Supabase if live score updates are priority; Neon if you want simpler infra |
-| Auth.js v5 | Lucia Auth | Lucia gives more control and is lighter. Use Lucia if Auth.js v5 beta stability is a concern, but Auth.js is the standard for Discord OAuth in Next.js ecosystem |
-| Tailwind CSS v4 | Tailwind CSS v3 | Use v3 only if you need an existing component library that hasn't updated yet; no reason to use v3 for a greenfield project |
-| Motion v12 | GSAP | GSAP is more powerful for complex timeline animations (e.g., full cinematic sequences). Overkill for this project; Motion covers all needed cases with less setup |
-| Zustand | Jotai | Use Jotai if you have many independent fine-grained atoms (e.g., a complex form builder). For this gaming site, Zustand's single-store model is simpler |
-| TanStack Query v5 | SWR | SWR is simpler but has fewer features. TanStack Query's devtools and background refetch control are worth it for leaderboard polling |
+| `mercadopago` SDK v2 | Stripe | If expanding to international sales or needing better DX. Stripe does not support Pix natively in Brazil — use MercadoPago for Brazilian market |
+| `mercadopago` SDK v2 | PagSeguro / PagBank SDK | If audience has distrust of MercadoPago. PagSeguro has worse Node.js SDK quality. MercadoPago has dominant market share in Brazil |
+| `rcon-client` (unmaintained but working) | Implement raw RCON TCP socket in Node.js `net` module | If rcon-client breaks on a future Node.js version. The RCON protocol is simple (4-byte little-endian length header + type + body) — a custom implementation is ~50 lines |
+| Discord Webhooks (no library) | `discord.js` v14 on Railway | Only if needing bot commands (slash commands, message reactions). Not needed for notification-only v2.0 use cases |
+| Recharts | Victory | Victory has a cleaner API for animations, but lower ecosystem adoption in Next.js; Recharts has more shadcn/ui examples to follow |
+| Vercel Cron | cron-job.org + Route Handler | If Vercel Hobby cron frequency is insufficient. cron-job.org is free and more flexible; use it as the HTTP trigger for your `/api/cron/deliver` endpoint |
 
 ---
 
@@ -113,40 +154,75 @@ npx shadcn@latest init
 
 | Avoid | Why | Use Instead |
 |-------|-----|-------------|
-| Redux / Redux Toolkit | Massive boilerplate for a site that doesn't need complex global state. The gaming site needs minimal client state — user session UI, modals | Zustand for global state, TanStack Query for server state |
-| `framer-motion` (old package name) | Rebranded to `motion`. The `framer-motion` package still works but is not receiving new features — all development is in `motion` | `npm install motion`, import from `motion/react` |
-| `next-auth` v4 | Version 4 is not compatible with Next.js 16 App Router patterns. Uses pages-based API routes under the hood | Auth.js v5 (`next-auth@beta`), which is the official Next.js App Router compatible version |
-| MongoDB | Document store is wrong for elo ratings. You need relational integrity: a match cannot reference a non-existent player; elo history needs transactional updates | PostgreSQL via Neon |
-| Supabase Auth | Redundant if using Auth.js for Discord OAuth. Two auth systems creates token confusion | Auth.js v5 handles all auth; Supabase only if replacing Neon as DB layer |
-| `create-react-app` / Vite (standalone SPA) | SPA means no SSR — leaderboards and profiles lose SEO, first-paint is slower, and you lose server-side elo computation | Next.js 16 App Router |
-| Chakra UI / MUI | Both carry large bundle sizes and impose opinionated design systems that fight against a custom vibrant Minecraft/Pokémon aesthetic | shadcn/ui (copy-paste, zero bundle overhead from unused components) + Tailwind v4 |
-| Vercel Postgres (deprecated) | Vercel migrated all Vercel Postgres to Neon Q4 2024 — Q1 2025. The product no longer exists as a separate offering | Neon directly (via Vercel Marketplace or neon.tech) |
+| `discord.js` Client on Vercel | discord.js requires a persistent WebSocket gateway connection. Vercel Functions time out after 10–60 seconds and cannot maintain WebSocket connections. It will silently fail | Discord Webhooks (pure HTTP POST) for notifications; discord.js on Railway only if bot commands are needed |
+| BullMQ / Bull / Redis for RCON queue | BullMQ requires Redis. Vercel Hobby has no Redis. Adding Upstash Redis (cheapest) adds cost and complexity for a queue that can live in the existing Neon PostgreSQL table | `delivery_queue` table in Neon + Vercel Cron / cron-job.org |
+| Checkout Pro (MercadoPago hosted page) | Redirects user to mercadopago.com to complete payment — breaks the immersive gaming store UX, loses brand control, harder to customize | Checkout API (transparent) — payment stays on your domain |
+| Stripe | Does not natively support Pix, which is the dominant payment method in Brazil (especially for the gaming demographic). Adds friction | `mercadopago` SDK — supports Pix, boleto, and credit/debit cards natively for Brazilian market |
+| Chart.js + `react-chartjs-2` | Canvas-based rendering makes Tailwind CSS styling difficult; requires `Chart.register(...)` boilerplate; less composable with React component patterns | Recharts — SVG-based, composable, React-first |
+| `next-intl` blog CMS | next-intl manages string translations, not content management. Using it as a "CMS" by storing blog posts as JSON locale files creates an unmanageable content editing workflow | Store blog posts in Neon (markdown body column), admin UI in existing Next.js admin panel |
+| External CMS (Contentful, Sanity, Strapi) | Over-engineered for a gaming community blog where the admin already has a Next.js admin panel. Adds API cost, another auth layer, and a separate deployment | Blog posts table in Neon + markdown body + `react-markdown` or `next-mdx-remote` for rendering |
 
 ---
 
-## Stack Patterns by Variant
+## Blog/Content Rendering
 
-**For server-rendered leaderboard pages (elo rankings, top 10):**
-- Use Next.js RSC (async Server Components) to fetch from Neon DB directly at request time
-- No client JS needed for the leaderboard render itself
-- Revalidate with `revalidatePath` after a battle result is recorded
+No external CMS. Blog posts live in the existing Neon database with a `content TEXT` column (markdown). Rendering:
 
-**For user profile pages:**
-- Hybrid: Server Component fetches initial profile data; client island handles edit form with TanStack Query mutation
-- Auth.js `auth()` server-side session check for protected routes
+| Library | Version | Purpose | When to Use |
+|---------|---------|---------|-------------|
+| `react-markdown` | 9.x | Render markdown blog post content as React | Simpler use case — no code blocks, just text/images/links |
+| `next-mdx-remote` | 5.x | Render MDX (markdown + React components) server-side | If you want to embed React components (event banners, player cards) inside blog posts |
 
-**For the elo update flow (core competitive feature):**
-- Battle result submitted via Next.js Server Action (no separate API endpoint needed)
-- Server Action: validate with Zod → compute new ratings with `elo-rating` → write both players' new ratings + match record to Postgres in a single DB transaction
-- Drizzle's `db.transaction()` ensures atomic elo updates — no partial writes
+**Recommendation:** Start with `react-markdown`. Upgrade to `next-mdx-remote` only if admin needs to embed custom components in posts. Both are zero-cost and use existing infrastructure.
 
-**For animated hero section:**
-- `motion` with `useScroll` + `useTransform` for parallax on the Minecraft/Pokémon background image
-- Tailwind v4 for responsive layout; Motion for entrance animations on first render
+```bash
+npm install react-markdown
+# or, if MDX needed later:
+# npm install next-mdx-remote
+```
 
-**For Discord login:**
-- Auth.js v5 DiscordProvider with database adapter (Neon via Drizzle adapter)
-- Fetch Discord guild membership or roles in the `signIn` callback to assign server-specific ranks/permissions
+---
+
+## Stack Patterns by Feature
+
+**Loja (Store) — purchase flow:**
+```
+User clicks "Buy" → Server Action creates MercadoPago order (server-side SDK)
+→ Return Pix QR code to client → User pays via Pix
+→ MercadoPago POSTs to /api/webhooks/mercadopago (Route Handler)
+→ Verify HMAC signature → Confirm payment via API re-fetch
+→ Insert row: delivery_queue {player_id, command, status: "pending"}
+→ Insert row: orders {player_id, item_id, status: "paid"}
+→ Vercel Cron / cron-job.org hits /api/cron/deliver
+→ Read pending delivery_queue rows → rcon-client.send(command)
+→ Update row status: "delivered"
+→ POST Discord Webhook: "Compra entregue para {player}"
+```
+
+**Temporadas (Season reset):**
+```
+Admin triggers via admin panel OR Vercel Cron on season-end date
+→ Server Action: copy current rankings to hall_da_fama table
+→ Server Action: reset all player elo to starting value (e.g., 1000)
+→ Increment current_season counter in seasons table
+→ POST Discord Webhook: "Temporada X encerrada! Campeão: {player}"
+```
+
+**Dashboard do jogador — ELO chart:**
+```
+RSC Page /jogadores/[id]: fetch elo_history table (date, rating) for player
+→ Pass as prop to <EloChart /> client component
+→ Recharts LineChart with date on X axis, elo on Y axis
+→ Tailwind + Recharts customTooltip for PT-BR formatting
+```
+
+**Blog post:**
+```
+Admin creates post in /admin/blog: title, slug, content (markdown textarea), published_at
+→ Drizzle insert into blog_posts table
+→ Public page /blog/[slug]: RSC fetches by slug, renders with react-markdown
+→ revalidatePath("/blog") on publish
+```
 
 ---
 
@@ -154,32 +230,30 @@ npx shadcn@latest init
 
 | Package | Compatible With | Notes |
 |---------|-----------------|-------|
-| next@16.x | react@19.x, react-dom@19.x | React 19 ships with Next.js 16; do not mix React 18 components expecting legacy behavior |
-| next-auth@beta (v5) | next@14+, next@15, next@16 | v5 minimum is Next.js 14; confirmed working on Next.js 16 |
-| tailwindcss@4.x | postcss@8.x | Tailwind v4 still uses PostCSS; `postcss.config.mjs` required |
-| shadcn/ui (latest) | tailwindcss@4.x, react@19.x | shadcn updated for Tailwind v4 in Feb 2025; use `npx shadcn@latest` CLI |
-| drizzle-orm@0.45.x | @neondatabase/serverless | Neon's serverless driver is the recommended Drizzle driver for Vercel Functions |
-| motion@12.x | react@18+, react@19 | No breaking changes from framer-motion; supports React 19 concurrent features |
-| @tanstack/react-query@5.x | react@18+, react@19 | v5 supports React 19 use() hook patterns and Next.js App Router streaming |
+| `mercadopago@2.12.0` | Node.js 18+, TypeScript 5.x | ES Module; use `import { MercadoPagoConfig, Payment } from "mercadopago"` |
+| `rcon-client@4.2.5` | Node.js 14+, TypeScript 5.x | CommonJS; works in Next.js API routes and Server Actions |
+| `recharts@3.8.0` | React 19, Next.js 16 | Requires `react-is` peer dep override for React 19: `npm install react-is@19` or add `overrides: { "react-is": "19.x" }` in package.json. Required as of March 2026 |
+| `react-markdown@9.x` | React 18+, React 19 | ESM only; import with `import ReactMarkdown from "react-markdown"` |
+| Discord Webhooks | N/A | Pure `fetch()` — no package, no compatibility concerns |
 
 ---
 
 ## Sources
 
-- [Next.js 16 official blog](https://nextjs.org/blog/next-16) — Turbopack stable, React Compiler, Cache Components (HIGH confidence)
-- [Next.js 16.1 release](https://nextjs.org/blog/next-16-1) — latest minor version details (HIGH confidence)
-- [Tailwind CSS v4.0 announcement](https://tailwindcss.com/blog/tailwindcss-v4) — stable since Jan 22 2025, CSS-first config (HIGH confidence)
-- [shadcn/ui Tailwind v4 docs](https://ui.shadcn.com/docs/tailwind-v4) — React 19 + Tailwind v4 compatible (HIGH confidence)
-- [Auth.js Discord provider](https://authjs.dev/getting-started/providers/discord) — official Auth.js v5 Discord integration (HIGH confidence)
-- [Auth.js v5 migration guide](https://authjs.dev/getting-started/migrating-to-v5) — App Router compatibility (HIGH confidence)
-- [Drizzle ORM npm](https://www.npmjs.com/package/drizzle-orm) — version 0.45.1 current (HIGH confidence)
-- [Neon plans & pricing](https://neon.com/docs/introduction/plans) — free tier details verified (HIGH confidence)
-- [Motion (framer-motion) npm](https://www.npmjs.com/package/framer-motion) — v12.36.0 current, `motion/react` import (HIGH confidence)
-- [TanStack Query SSR docs](https://tanstack.com/query/latest/docs/framework/react/guides/ssr) — App Router + RSC patterns (HIGH confidence)
-- [Drizzle vs Prisma 2026 — makerkit.dev](https://makerkit.dev/blog/tutorials/drizzle-vs-prisma) — performance comparison (MEDIUM confidence, third-party)
-- [Next.js 16 InfoQ coverage](https://www.infoq.com/news/2025/12/nextjs-16-release/) — Turbopack default, proxy.ts replaces middleware (MEDIUM confidence)
+- [MercadoPago Node.js SDK — GitHub releases](https://github.com/mercadopago/sdk-nodejs/releases) — v2.12.0 confirmed Jan 2025 (HIGH confidence)
+- [MercadoPago Pix integration docs](https://www.mercadopago.com.br/developers/pt/docs/checkout-api-orders/payment-integration/pix) — Pix order API flow (HIGH confidence)
+- [Next.js + MercadoPago Pix integration — tabnews.com.br](https://www.tabnews.com.br/zilvodev/como-integrar-mercado-pago-pix-no-next-js-15-app-router) — Next.js 15 App Router practical guide (MEDIUM confidence)
+- [rcon-client — GitHub](https://github.com/janispritzkau/rcon-client) — v4.2.5, unmaintained warning noted (HIGH confidence for functionality, LOW for long-term maintenance)
+- [rcon-client on libraries.io](https://libraries.io/npm/rcon-client) — version 4.2.3 (MEDIUM confidence)
+- [Can I deploy Discord bots to Vercel? — Vercel KB](https://vercel.com/kb/guide/can-i-deploy-discord-bots-to-vercel) — persistent WS bots do not work on Vercel (HIGH confidence)
+- [Discord Webhooks with Next.js 15 — freeCodeCamp](https://www.freecodecamp.org/news/integrate-discord-webhooks-with-nextjs-15-example-project/) — fetch-based webhook approach (HIGH confidence)
+- [discord.js v14.25.1 — discord.js.org](https://discord.js.org/docs) — current version confirmed (HIGH confidence)
+- [Recharts v3.8.0 — GitHub releases](https://github.com/recharts/recharts/releases) — released March 6 2026 (HIGH confidence)
+- [Recharts React 19 compatibility — GitHub issue #4558](https://github.com/recharts/recharts/issues/4558) — react-is peer dep workaround (HIGH confidence)
+- [Railway Discord bot deployment](https://railway.com/deploy/discordjs) — $5/month free credit, always-on (MEDIUM confidence)
+- [BullMQ Vercel incompatibility — Next.js discussion #33989](https://github.com/vercel/next.js/discussions/33989) — confirmed Redis/BullMQ requires persistent process (HIGH confidence)
 
 ---
 
-*Stack research for: CraftPro Brasil — Minecraft server network landing page with competitive features*
-*Researched: 2026-03-18*
+*Stack research for: CraftPro Brasil — v2.0 additions (Loja, Blog, Notificações Discord, Temporadas, Dashboard)*
+*Researched: 2026-03-26*

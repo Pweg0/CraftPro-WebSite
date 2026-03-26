@@ -1,194 +1,181 @@
 # Pitfalls Research
 
-**Domain:** Minecraft server community website — competitive Pokémon ranking, Discord auth, leaderboards, user profiles
-**Researched:** 2026-03-18
-**Confidence:** MEDIUM-HIGH (verified through official Discord docs, multiple community sources, and established pattern analysis)
+**Domain:** Minecraft server community website — v2.0 additions: functional shop (MercadoPago + RCON + LuckPerms), Blog/Events, Discord bot notifications, competitive seasons (ELO reset + hall of fame), player dashboard (ELO chart, Pokémon stats)
+**Researched:** 2026-03-26
+**Confidence:** MEDIUM-HIGH (Vercel limits verified from official docs; MercadoPago behavior from official docs + community; RCON/LuckPerms from GitHub issues; Discord architecture from official docs)
 
 ---
 
 ## Critical Pitfalls
 
-### Pitfall 1: Discord OAuth Refresh Token Not Stored After Each Use
+### Pitfall 1: RCON From Serverless — New TCP Connection Per Invocation Kills Reliability
 
 **What goes wrong:**
-Discord issues a new refresh token on every token refresh call. If the application stores the original refresh token and reuses it after the first refresh, all subsequent refreshes return `invalid_grant` errors, silently logging users out — or worse, breaking their session mid-use with no clear error message.
+RCON is a stateful TCP protocol. Every serverless function invocation (Vercel cold or warm) opens a new TCP connection to the Minecraft server, authenticates, sends the command, then discards the connection. At the Vercel Hobby plan's 60-second max duration, this is fine for a single command — but when the Minecraft server is unreachable (offline for maintenance, restarting after a crash), the TCP connect attempt blocks until the function times out. The payment is already confirmed by MercadoPago, but the rank/item was never delivered. There is no retry.
 
 **Why it happens:**
-Developers treat OAuth refresh tokens like static credentials. The Discord API issues rotating refresh tokens, meaning the old token is invalidated the moment a new one is issued. This is documented but easy to miss when adapting generic OAuth2 boilerplate.
+Developers treat RCON like a REST call. It is not. It is a raw TCP connection that assumes the target is always reachable. The purchase flow calls RCON synchronously during the payment webhook, so a 3-second server blip causes a 60-second hang and a failed delivery with no recovery path.
 
 **How to avoid:**
-After every token refresh call, immediately overwrite the stored refresh token with the new one returned in the response. Never reuse a refresh token. Use server-side session storage (not JWTs alone) to hold the current valid refresh token. Implement proactive refresh: check if the access token expires within 24 hours (tokens last 7 days / 604,800 seconds) and refresh before expiry, not after.
+Never call RCON synchronously inside the payment webhook. Decouple the payment confirmation from the command delivery using a persistent queue in the database:
+1. Webhook receives MercadoPago notification → immediately writes a `pending_delivery` row to Neon → returns 200 OK to MercadoPago within 500ms.
+2. A separate cron job (Vercel Cron, free on Hobby) polls `pending_delivery` every minute → attempts RCON → on success marks `delivered`; on failure increments `attempts` and retries up to N times.
+3. Alert admin when `attempts >= 5` (via Discord webhook, not bot) so manual intervention is possible.
+
+This architecture is already planned ("fila no banco") — the pitfall is not skipping it under time pressure.
 
 **Warning signs:**
-- Users report being randomly logged out after about a week
-- Auth errors appearing only for older accounts, not new ones
-- Logs showing `invalid_grant` on refresh attempts
+- Payment webhook calls `rconClient.connect()` before returning the HTTP response.
+- No `pending_delivery` table or equivalent queue exists in the schema.
+- RCON errors cause the webhook to return a non-2xx response (triggers MercadoPago's retry loop, resulting in double-delivery).
 
 **Phase to address:**
-Authentication phase — before any other feature that depends on user identity. Get the token lifecycle right before building profiles or rankings.
+Loja funcional phase — design the queue schema and cron processor before writing any RCON code. The queue must exist on day one of the shop.
 
 ---
 
-### Pitfall 2: Elo Rating Manipulation via Selective Abandonment
+### Pitfall 2: LuckPerms Commands Silently Fail Over RCON
 
 **What goes wrong:**
-Players discover they can protect their ranking by abandoning or going AFK in matches they are losing. Since the elo system only moves rating on recorded win/loss results, a forfeit or disconnect with no registered result acts as a free shield. High-rated players have strong incentive to do this to protect top-leaderboard positions.
+LuckPerms has a documented bug (Issue #2948) where RCON-sourced commands were silently ignored — the plugin received the command, printed no error, but made no changes. The root cause was improper permission checking for RCON-originated LP commands. The bug was introduced in build 5.3.3 and fixed later. If the server runs an affected version, the delivery queue will show commands as "executed" (RCON returned success) but the player's rank never changes. Players receive no VIP perks and raise support tickets.
 
 **Why it happens:**
-Classic elo implementations only process completed matches. The "avoid playing to protect rating" problem caused Magic: The Gathering to abandon the elo system entirely in 2012. It is a well-known failure mode for any game where participation is optional.
+RCON returns a success response based on whether the command string was received, not whether LuckPerms processed it. There is no "command failed" signal at the RCON protocol level for LP-specific failures. Automated delivery systems assume RCON success = LuckPerms success.
 
 **How to avoid:**
-Define a clear policy for abandoned/disconnected battles at the design stage:
-- Option A: Treat abandonment as a loss for the abandoning player.
-- Option B: Use a timeout — if no result is submitted within N minutes, auto-record as a loss for the initiating player.
-- Never leave the "match in progress" state unresolved. Every started match must produce a result record.
-Communicate the policy visibly to players so the expectation is set upfront.
+- Verify that the running LuckPerms version is not between 5.3.3 and the fix commit. The fix was merged; ensure the server runs a build after the fix.
+- After sending the LP command via RCON, send a follow-up verification command: `lp user <player> info` and check the response body for the expected rank string. If the rank is absent, mark the delivery as failed and retry.
+- Log the full RCON response for every LP command — never assume success from a non-error response.
 
 **Warning signs:**
-- Growing number of matches with no recorded outcome
-- Top-ranked players with suspiciously low total game counts
-- Community complaints about rank-dodging
+- Delivery queue shows commands as `delivered` but players report missing ranks.
+- RCON responses for `lp user X parent add VIP` are empty strings (normal for LP commands — no output is not confirmation of success).
+- Server running LuckPerms between major versions without checking changelogs.
 
 **Phase to address:**
-Ranking system design phase — the match lifecycle and result resolution rules must be designed before implementing the elo calculation logic.
+Loja funcional phase — include a verification step in the delivery worker before marking any rank delivery as complete.
 
 ---
 
-### Pitfall 3: No CSRF Protection on Discord OAuth State Parameter
+### Pitfall 3: MercadoPago Webhook Delivers Duplicate Notifications — No Idempotency Guard
 
 **What goes wrong:**
-The OAuth2 callback endpoint accepts authorization codes without verifying the `state` parameter. An attacker can craft a malicious link that, when clicked by a victim, logs the victim into the attacker's account (account takeover via OAuth CSRF). The user's Discord account becomes linked to the wrong site account.
+MercadoPago's retry policy sends the same webhook notification up to 8 times (at: 0min, 15min, 30min, 6h, 48h, 96h, 96h, 96h) if your endpoint doesn't return 200 quickly enough. On Vercel Hobby, a cold start + RCON connection attempt can easily exceed 500ms, causing MercadoPago to interpret the response as a failure and retry. Without idempotency checks, the same purchase is processed multiple times: the player receives duplicate ranks, duplicate items, or duplicate keys — and you lose revenue with no recourse.
 
 **Why it happens:**
-Tutorial-grade OAuth2 implementations omit the state parameter check to keep code simple. Discord's documentation requires it, but many copy-paste examples skip it.
+The webhook handler does not check if the payment ID has already been processed before running the delivery logic. The function takes too long (RCON + DB write) to respond within MercadoPago's tolerance window.
 
 **How to avoid:**
-Generate a cryptographically random `state` value per login attempt. Store it in the user's server-side session before redirecting to Discord. On callback, reject any request where the returned `state` does not match the stored value. Expire unverified states after 10 minutes.
+- Return 200 immediately after validating the `x-signature` header and writing the event to a `webhook_events` table with the MercadoPago `payment_id` as a unique key. Any duplicate notification with the same `payment_id` gets a 200 but no further processing.
+- Query the actual payment status from the MercadoPago API (not just trust the webhook payload) before confirming delivery — the webhook only signals that something happened; the payment status must be verified via `GET /v1/payments/{id}`.
+- The entire webhook handler must complete within 2-3 seconds. RCON goes in the queue, not here.
 
 **Warning signs:**
-- No `state` parameter being set in the OAuth redirect URL
-- Callback handler not comparing `state` before processing the code
+- Webhook handler calls RCON or complex DB logic before returning HTTP 200.
+- No `UNIQUE` constraint on `payment_id` in the events or orders table.
+- No validation of the `x-signature` header (means fraudulent notifications can trigger deliveries).
 
 **Phase to address:**
-Authentication phase — before launch, as a non-negotiable security requirement.
+Loja funcional phase — write the idempotency guard and signature validation as the first two lines of the webhook handler, before any business logic.
 
 ---
 
-### Pitfall 4: Hero Section Killing Mobile Performance
+### Pitfall 4: Discord Bot Requires Persistent WebSocket — Incompatible With Vercel Serverless
 
 **What goes wrong:**
-The provided reference image (high-resolution Minecraft/Pokémon panoramic scene) is used directly as the hero background. On mobile devices (which account for a large share of the Brazilian audience, especially younger Minecraft players), this creates a 3-8 second first paint on 4G connections. The site feels broken before it starts.
+A traditional Discord bot (discord.js with `client.login()`) requires a persistent WebSocket connection to the Discord Gateway. Vercel serverless functions terminate after the response is sent. The bot connects, registers as online, then immediately gets killed — it never processes events, never sends proactive notifications, and Discord eventually bans the application for repeated abnormal disconnects.
 
 **Why it happens:**
-Developers design on desktop with fast connections. The visually rich Minecraft + Pokémon aesthetic naturally leads to large background images. Without explicit image optimization, the original asset gets shipped as-is.
+Developers familiar with discord.js copy the standard bot template (`client.on('ready')`, `client.on('messageCreate')`) without realizing this pattern assumes a long-running Node.js process. Vercel's documentation explicitly states it does not support long-running servers.
 
 **How to avoid:**
-- Export the hero background at multiple sizes: 400px (mobile), 800px (tablet), 1600px (desktop)
-- Use `<picture>` with `srcset` or CSS `image-set()` to serve the right size
-- Compress to WebP format — typically 60-80% smaller than PNG/JPEG with no visible quality loss
-- Lazy-load everything below the fold
-- Set explicit `width` and `height` attributes on images to prevent layout shift (CLS)
+Use Discord Webhooks (not bots) for all proactive outbound notifications: purchases, new players, battle results. Incoming webhooks are simple HTTP POSTs to a channel URL — no connection, no state, no auth token, fully compatible with serverless.
+
+For interactive slash commands (if needed later), use Discord's Interactions Endpoint URL pattern — Discord sends POST requests to your Vercel function; respond within 3 seconds. This works on Vercel.
+
+The use cases described (purchase notifications, new player alerts, battle results) are all outbound-only. They need Discord webhooks, not a bot process.
 
 **Warning signs:**
-- Hero image file size above 500KB
-- Lighthouse mobile score below 50
-- No WebP variants in the assets folder
-- `<img src="background.png">` without srcset
+- `discord.js` listed as a production dependency with `client.login()` called inside a Vercel API route.
+- Bot shows as "online" in Discord for a few seconds after a deploy then goes offline.
+- `client.on('ready', ...)` event handler inside a serverless function.
 
 **Phase to address:**
-Landing page / hero phase — build image optimization into the asset pipeline from the start, not as an afterthought.
+Notificações Discord phase — architect around Discord webhooks from the start. Don't add discord.js as a dependency if the only use case is sending notifications.
 
 ---
 
-### Pitfall 5: Leaderboard That Feels "Frozen" or Untrustworthy
+### Pitfall 5: ELO Season Reset Destroys Historical Data — No Hall of Fame Recovery
 
 **What goes wrong:**
-The leaderboard shows ranks based on data that is stale by hours or days. Players check their rank, win a battle, refresh, and see no change. This destroys trust in the system and makes competitive play feel unrewarding. On the flip side, adding real-time WebSocket updates to the leaderboard for a small server adds infrastructure complexity without meaningful benefit.
+The season reset is implemented as a SQL `UPDATE players SET elo = 1000` (or similar). The top players at the end of the season are never recorded before the reset. The "hall da fama" feature requires knowing who held what rank at the end of each season — if you reset first and record second (or forget to record), the data is gone. Neon free tier has no point-in-time recovery on the free plan, so there is no fallback.
 
 **Why it happens:**
-Two failure modes pull in opposite directions: (1) caching rankings aggressively without showing when data was last updated, and (2) over-engineering real-time updates via WebSockets when simple periodic polling is sufficient.
+Season resets feel like a single operation, not a two-step process. Developers run the reset first, plan to add the hall of fame display later, and discover the data to populate it no longer exists.
 
 **How to avoid:**
-For the scale of a Brazilian modpack community server, use simple database queries with short-lived cache (60 seconds). Display a visible "last updated X seconds ago" timestamp on the leaderboard page. Invalidate the leaderboard cache immediately after any match result is recorded. This gives near-real-time results without WebSocket complexity. Add a manual "refresh" button as a fallback.
+The season reset must follow this exact order:
+1. Snapshot current top-N players into a `season_records` table (season number, player ID, final ELO, final rank position, snapshot timestamp).
+2. Only then reset ELO values.
+3. Mark the season as closed in a `seasons` table.
+These three steps must be wrapped in a single database transaction. If any step fails, the whole operation rolls back.
+
+Additionally, store per-player ELO history as append-only rows (not updates) — this enables the ELO evolution graph on the player dashboard without any extra effort.
 
 **Warning signs:**
-- Leaderboard has no timestamp indicating freshness
-- Ranked players report their elo not updating for hours after a match
-- Cache TTL set to 10+ minutes without visible staleness indicator
+- No `season_records` or `hall_of_fame` table in the database schema.
+- Season reset is a single `UPDATE` statement without a preceding snapshot.
+- ELO is stored as a mutable column that gets overwritten rather than computed from an event log.
 
 **Phase to address:**
-Leaderboard / ranking display phase — design the cache invalidation strategy alongside the ranking write path.
+Temporadas de ranking phase — design the `season_records` table and the transactional reset procedure before implementing any reset UI or admin button.
 
 ---
 
-### Pitfall 6: "Coming Soon" Store Page That Feels Abandoned
+### Pitfall 6: Chart Library Causes Hydration Mismatch in Next.js App Router
 
 **What goes wrong:**
-The store placeholder page ships as a blank page or a wall of text saying "em breve." Players click it from the navigation, land on nothing, and assume the project is dead or the team doesn't care. Worse, if the page stays in this state for months, it actively damages the brand.
+The ELO evolution graph on the player dashboard uses a chart library (Recharts, Chart.js, Tremor). These libraries read browser APIs (window dimensions, canvas context, ResizeObserver) during render. In Next.js App Router, components render on the server first. The server-rendered HTML shows no chart (or a broken placeholder); React on the client re-renders with the real chart. The two trees don't match, throwing a hydration error that either crashes the page or produces visible layout flicker. A confirmed bug report shows shadcn/ui chart components failing in Next.js 15 with this exact error.
 
 **Why it happens:**
-The store is deferred because it's not MVP. But the page still appears in navigation, so it gets a minimal placeholder with zero investment. The placeholder itself becomes a signal of project health.
+Chart libraries are designed for browser environments. SSR renders them without access to browser APIs. The component outputs different HTML server-side vs client-side, and React's hydration requires identical output.
 
 **How to avoid:**
-Make the "coming soon" page a first-class marketing asset:
-- Show mockup previews of what will be sold (cosmetic items, VIP ranks)
-- Include an email or Discord notification sign-up ("notify me when store opens")
-- Show a rough timeline (Q3 2026, etc.)
-- Reuse the vibrant design language — not a grey "em breve" box
+Import chart components with `dynamic(() => import('./EloChart'), { ssr: false })`. This prevents the component from being server-rendered entirely and renders it only after hydration. Add a skeleton/loading placeholder with matching dimensions to prevent layout shift while the chart loads.
+
+Do not use `suppressHydrationWarning` — it hides the error but doesn't fix it, and the chart will still flicker.
 
 **Warning signs:**
-- Store page is a single paragraph of text on a white background
-- No call to action on the placeholder
-- No link to the Discord server for updates
+- Chart component is a direct import in a Server Component file.
+- "Hydration failed" or "Text content does not match" errors in the browser console on the dashboard page.
+- Chart renders fine in dev but breaks in production build (SSR is more aggressive in production).
 
 **Phase to address:**
-Store placeholder phase — design the "coming soon" page with the same production quality as the rest of the site.
+Dashboard do jogador phase — use `dynamic` import with `ssr: false` for every chart component from the first implementation. Don't fix it later.
 
 ---
 
-### Pitfall 7: User Profile That Shows Nothing Until the Player Has Done Everything
+### Pitfall 7: Vercel Hobby Plan 60-Second Function Limit Affects Webhook + RCON Queue Processor
 
 **What goes wrong:**
-User profile pages are built assuming a player has: a rank, battle history, replays, and a win streak. New users or low-activity users see empty sections, broken tables with zero rows, and "no data" placeholders everywhere. This makes the profile feel broken and discourages continued play.
+The Vercel Hobby plan allows serverless functions to run for a maximum of 60 seconds (configurable from the default 10s up to 60s). The RCON delivery worker — which opens a TCP connection, authenticates, sends commands, reads responses, and updates the database — easily approaches this limit if the Minecraft server is slow to respond or the queue has many pending deliveries. When the function times out, the RCON connection is torn down mid-execution, possibly leaving commands in an ambiguous state: sent but not confirmed.
 
 **Why it happens:**
-Profiles are built against the "ideal" data state during development. Edge cases (new user, no battles played, no rank yet) are only discovered when real users complain.
+The cron worker tries to process all pending deliveries in a single invocation. Each delivery takes 1-5 seconds (TCP connect + RCON auth + command + verification). Ten pending deliveries = 10-50 seconds. The 60-second limit is closer than it appears.
 
 **How to avoid:**
-Design every profile section for the empty state explicitly:
-- "Você ainda não disputou batalhas. [Junte-se ao servidor]"
-- Show rank as "Não rankeado" with an explanation of how to start
-- Display a checklist of "next steps" for new players on their first profile visit
-Empty states should be encouraging, not just absent.
+- Configure the RCON worker function with `maxDuration: 60` in `vercel.json` to explicitly claim the full 60 seconds.
+- Process only N deliveries per invocation (e.g., 5 at a time) rather than all pending items. The next cron tick handles the rest.
+- Implement a `locked_at` timestamp on `pending_delivery` rows to prevent two concurrent invocations from processing the same delivery.
+- Set a generous RCON connection timeout (e.g., 5 seconds) rather than waiting indefinitely for an unresponsive server.
 
 **Warning signs:**
-- Profile page only tested with seeded data
-- No explicit empty state components in the UI code
-- Tables that render with zero rows and no message
+- Cron worker has no limit on how many rows it processes per run.
+- `pending_delivery` rows have no `locked_at` field.
+- Function duration in Vercel logs frequently approaches 55-60 seconds.
 
 **Phase to address:**
-User profile phase — write empty state UI for every dynamic section before considering the feature complete.
-
----
-
-### Pitfall 8: Replay System Format Left Undefined Until Build Time
-
-**What goes wrong:**
-Battle replays are listed as a feature but "format a definir" (format to be decided). If the replay format is designed after the battle system is already built, the result is either: (a) no structured data was stored during battles making replay impossible, or (b) a painful rewrite of the data model to add replay support retroactively.
-
-**Why it happens:**
-Replay feels like a display feature, so teams defer it. In reality, replay requires the battle system to emit structured event logs from the very first battle. Pokémon Showdown's replay system requires storing the entire team and full move log server-side — it cannot be reconstructed from a simple win/loss record.
-
-**How to avoid:**
-Decide the minimum replay data structure before writing any battle recording code. Even if the playback UI is deferred, the event log schema must be locked. At minimum: timestamp, player A/B Discord IDs, Pokémon used, moves per turn, outcome. Store as JSON in the database from battle one.
-
-**Warning signs:**
-- Battle records table only has: player_a, player_b, winner, timestamp
-- Replay page exists in the navigation before the data model is defined
-- "Format to be decided" is still unresolved when battle recording starts
-
-**Phase to address:**
-Battle system / replay phase — define replay data schema in the same phase as battle recording, not separately.
+Loja funcional phase — set the per-invocation batch limit and row locking before the first cron deployment.
 
 ---
 
@@ -196,12 +183,13 @@ Battle system / replay phase — define replay data schema in the same phase as 
 
 | Shortcut | Immediate Benefit | Long-term Cost | When Acceptable |
 |----------|-------------------|----------------|-----------------|
-| Storing Discord access token in a cookie (not server-side) | Simpler auth implementation | Token exposed to XSS; CSRF risk; rotation logic breaks | Never for production |
-| Skipping image optimization for the hero section | Faster initial development | Mobile users bounce; Lighthouse score tanks | Never — WebP conversion is a one-time 10-minute task |
-| Hardcoding elo K-factor without a config | Less code | Cannot tune balance without a redeploy | Acceptable in MVP if the config is a single env variable |
-| Single leaderboard table query with no caching | Simple to implement | Slow page loads under concurrent access | Acceptable until the server has >50 concurrent users |
-| Using Discord username as the display name directly | No extra UI needed | Discord usernames change; historical records break | Only if storing Discord ID (not name) as the canonical key |
-| No empty state design on profile pages | Faster to build | New users see broken-looking profiles | Never — takes 1 hour to add empty state copy |
+| Calling RCON synchronously in the webhook handler | Simpler code, no queue table | Every Minecraft server downtime causes failed deliveries with no retry | Never — the queue is non-negotiable |
+| Trusting the MercadoPago webhook payload status without re-querying the API | Saves an extra API call | Fraudulent or replayed notifications trigger deliveries | Never — always re-query payment status |
+| Skipping signature validation on the MercadoPago webhook | Faster to build | Anyone who knows your webhook URL can trigger fake deliveries | Never |
+| Using discord.js gateway bot on Vercel | Familiar API | Bot is dead on arrival — serverless kills the WebSocket | Never — use Discord webhook URLs for notifications |
+| Storing ELO as a mutable column only (no event log) | Simpler schema | Cannot build ELO evolution graph; cannot investigate disputes; season snapshots require separate logic | Only if player dashboard is explicitly out of scope |
+| Soft-deleting blog posts with a boolean flag | Simpler than archiving | Can't distinguish "draft" from "deleted" from "scheduled" | Acceptable if three states are merged into one (`published` boolean) from the start |
+| Rich text editor storing HTML instead of structured JSON | Easy to implement | XSS risk if not sanitized; hard to migrate format later | Never without DOMPurify sanitization on render |
 
 ---
 
@@ -209,13 +197,17 @@ Battle system / replay phase — define replay data schema in the same phase as 
 
 | Integration | Common Mistake | Correct Approach |
 |-------------|----------------|------------------|
-| Discord OAuth | Using `implicit` grant type (token in URL fragment) | Always use `authorization_code` grant — token never touches the browser URL |
-| Discord OAuth | Storing `access_token` in `localStorage` | Store server-side; use httpOnly session cookie for the session ID |
-| Discord OAuth | Not requesting the `identify` scope | `identify` is required to get the user's Discord ID, username, and avatar |
-| Discord OAuth | Reusing same refresh token after first refresh | Each refresh call returns a new refresh token — store the new one immediately |
-| Discord API | Fetching user data on every page request | Cache the Discord profile data in your DB; refresh only when the user actively logs in |
-| Discord API | Not handling `401` responses from the API | Access tokens expire; all API calls to Discord must handle token expiry and trigger refresh |
-| Minecraft Server Status | Polling the Minecraft server directly from the browser | Query server status server-side, cache result for 30 seconds, serve from your API |
+| MercadoPago Webhooks | Not validating `x-signature` header | Always validate HMAC-SHA256 of `id;request-id;ts` against the secret before processing |
+| MercadoPago Webhooks | Processing the webhook payload status directly | Webhook is only a trigger — call `GET /v1/payments/{id}` to confirm the actual status |
+| MercadoPago Webhooks | Returning non-200 because of RCON errors | RCON goes in a queue; the webhook handler always returns 200 after writing the event row |
+| MercadoPago Pix | Expecting instant confirmation | Pix can take minutes to confirm. Payment status will be `pending` then transition to `approved`. Webhook will fire again on transition. Handle both states. |
+| RCON (Minecraft) | Treating empty RCON response as success | LuckPerms commands return empty strings for both success and silent failure — verify with a follow-up query |
+| RCON (Minecraft) | Opening RCON connection without a timeout | Unresponsive server causes the function to hang until Vercel's 60-second kill; always set `timeout: 5000` in the RCON client config |
+| LuckPerms via RCON | Assuming current version works correctly | Check LuckPerms changelog and GitHub issues before deploying; Issue #2948 shows LP silently ignoring RCON commands in some builds |
+| Discord Notifications | Using discord.js `client.login()` in Vercel | Use Discord Incoming Webhook URLs (simple HTTP POST) — no library, no persistent connection, no auth token |
+| Discord Webhooks | Sending notification inside the payment webhook handler | Adds latency to the webhook response; queue the notification alongside the RCON delivery and send it from the worker |
+| Recharts / Chart.js | Importing directly in a Server Component | Use `next/dynamic` with `ssr: false`; render a skeleton until hydration completes |
+| Neon PostgreSQL | Using `new Pool()` without closing it in serverless | Each invocation that doesn't close the pool leaks a connection; use `neon()` HTTP driver from `@neondatabase/serverless` for stateless invocations |
 
 ---
 
@@ -223,11 +215,12 @@ Battle system / replay phase — define replay data schema in the same phase as 
 
 | Trap | Symptoms | Prevention | When It Breaks |
 |------|----------|------------|----------------|
-| Unoptimized hero image | 4-8 second first paint on mobile, high CLS score | Export to WebP, use srcset, add explicit dimensions | From day 1 on slow connections |
-| Leaderboard query scanning all battle records | Leaderboard page loads in 3+ seconds | Index on `elo_score DESC`, pre-aggregate top-N | Around 500+ battles stored |
-| Fetching Discord profile on every profile page load | Slow profiles, Discord API rate limits hit | Cache Discord avatar URL and username in your own DB | After ~50 concurrent users |
-| No database index on battle results by player | Player profile battle history is slow | Add compound index on `(player_id, created_at DESC)` | Around 1000+ battles stored |
-| Importing all Pokémon sprites as a single sprite sheet | Large upfront download even for pages with no Pokémon | Serve sprites individually, lazy-load on scroll | From first mobile page load |
+| ELO history as mutable column (no event log) | Can't render the ELO graph; N+1 queries to reconstruct history | Store each ELO change as an append-only `elo_events` row with timestamp | From the moment the dashboard graph is built |
+| Fetching all blog posts for the calendar without pagination | Calendar page loads slowly; Neon free tier query time spikes | Paginate or limit calendar queries to current month ± 1 month; index on `published_at` | Around 200+ blog posts |
+| Discord webhook calls inside request-response cycle | Purchase confirmation page takes 2+ seconds | Queue Discord notifications alongside RCON delivery; send from the worker | From the first slow Discord API response |
+| No index on `season_records(season_id, final_elo DESC)` | Hall of fame page is slow | Add the index when creating the table | Around 500+ season records |
+| Chart re-renders on every parent render | Dashboard flickers on any state change | Memoize chart data with `useMemo`; memoize chart component with `React.memo` | Noticeable from the first interactive session |
+| Blog post rich text stored as HTML, rendered with `dangerouslySetInnerHTML` without sanitization | XSS vulnerability via admin-inserted malicious content | Sanitize with DOMPurify on render; or store as structured JSON (BlockNote / Tiptap) | The moment any admin account is compromised |
 
 ---
 
@@ -235,12 +228,12 @@ Battle system / replay phase — define replay data schema in the same phase as 
 
 | Mistake | Risk | Prevention |
 |---------|------|------------|
-| No `state` parameter in OAuth2 flow | Account takeover via CSRF — attacker links their Discord to victim's site account | Generate random state per login, verify on callback |
-| Client secret in frontend code or public repo | Full OAuth application compromise | Store in environment variables, never in source code |
-| Trusting Discord username for identity matching | Username changes break identity, can be hijacked | Always use immutable Discord `id` (snowflake) as the canonical user key |
-| No rate limiting on the auth callback endpoint | Brute force / token stuffing | Rate-limit `/auth/callback` — max 10 requests per minute per IP |
-| Storing elo changes without an audit log | Impossible to investigate disputes or detect manipulation | Append-only `battle_results` table; never UPDATE elo directly, derive it from the log |
-| Exposing internal user IDs in API responses | Enumeration attacks on user profiles | Use Discord snowflake ID as the public-facing user identifier (already non-sequential) |
+| No `x-signature` validation on MercadoPago webhook | Anyone can POST to your webhook URL and trigger fake deliveries | Validate HMAC-SHA256 signature on every incoming notification before touching the DB |
+| Idempotency key not enforced on the orders table | Duplicate webhook fires create duplicate orders and deliveries | Add `UNIQUE` constraint on `mercadopago_payment_id` in the orders table |
+| RCON password stored in Vercel environment variable but logged | Server RCON access if logs are exposed | Never log the RCON password or the full RCON client config object |
+| Blog admin accessible to any `isAdmin` user without role scope | Any admin can publish to the blog, even if their admin role is scoped to leaderboard management | Check the specific permission scope (`blog_admin`) not just generic `isAdmin`; the existing granular permissions system must cover blog |
+| Season reset accessible via API without rate-limiting and double-confirmation | Accidental or malicious season reset destroys live ELO data | Require super-admin role; add a confirmation step (e.g., type season name); log the action in the audit trail |
+| Discord webhook URL stored in client-side code | Anyone can spam your Discord channel | Store Discord webhook URLs only in server-side environment variables, never in `NEXT_PUBLIC_` vars |
 
 ---
 
@@ -248,26 +241,30 @@ Battle system / replay phase — define replay data schema in the same phase as 
 
 | Pitfall | User Impact | Better Approach |
 |---------|-------------|-----------------|
-| Rank displayed as a raw number ("1847 elo") with no context | Players don't know if 1847 is good or bad | Show rank tier name + visual badge (Bronze/Silver/Gold/Diamond inspired by competitive games) |
-| Battle history table with no pagination | Profile pages freeze when a player has 200+ battles | Paginate or virtualise battle history lists from the start |
-| No Portuguese BR error messages on auth failure | Brazilian players see English error messages, assume the site is broken | All user-facing strings, including error states, must be in PT-BR |
-| Navigation shows "Loja" leading to an empty page | Players assume the site is unfinished | Either hide the store link until launch, or make the placeholder high-quality |
-| Leaderboard showing Discord avatars that have changed | Stale/broken avatar images from cached old URLs | Store avatar hash, not full URL; refresh on login; fallback to initials avatar |
-| Profile page accessible before the user is ranked | Confusing empty ranking section | Show a prominent "start competing" CTA for unranked users |
+| Purchase success page shown before delivery is confirmed | Player expects their rank immediately, logs into the server, has nothing | Show "Pagamento confirmado! Sua entrega será processada em até 5 minutos." — set honest expectations |
+| No delivery failure notification to the player | Player waits indefinitely without knowing something went wrong | If the delivery worker fails after N retries, send a Discord DM or email to the player with a support contact |
+| ELO graph with no data for new players | Empty chart looks like a broken page | Show a placeholder: "Jogue partidas para ver seu histórico de ELO aqui" with a link to join the server |
+| Hall of fame showing all-time top players instead of per-season champions | Doesn't reward seasonal achievement; always shows the same veteran players at top | Hall of fame is indexed by season; each season shows its own champions with season name and dates |
+| Blog post events calendar showing events in UTC | Brazilian players see wrong times for tournament start times | Store datetimes in UTC, display in `America/Sao_Paulo` using `Intl.DateTimeFormat` |
+| Season reset with no community announcement | Players log in to find their rank gone, assume the site is broken | Send Discord notification (webhook) before AND after the reset; blog post explaining the new season |
 
 ---
 
 ## "Looks Done But Isn't" Checklist
 
-- [ ] **Discord Login:** Verify that refresh tokens are rotated and stored after every use — not just that login works on first attempt
-- [ ] **Elo System:** Verify that abandoned/disconnected matches produce a defined outcome — not just that win/loss updates work
-- [ ] **Leaderboard:** Verify that the cache invalidates immediately after a battle result is recorded — not just that the page loads
-- [ ] **User Profiles:** Verify all sections render correctly when a player has zero battles, no rank, and no replays
-- [ ] **Hero Section:** Verify Lighthouse mobile score is above 70 and the hero image is WebP with srcset
-- [ ] **Battle Replays:** Verify that the replay data schema is stored from the first battle — not just that a replay UI page exists
-- [ ] **Store Placeholder:** Verify the page has a real CTA and matches the site's design language — not just placeholder text
-- [ ] **Banned Items Page:** Verify the page loads when the banned items list is empty (server just launched edge case)
-- [ ] **PT-BR:** Verify all error states, empty states, and auth failure messages are in Portuguese — not just main content
+- [ ] **Loja — Payment Flow:** Verify a completed Pix payment triggers the webhook, the delivery worker executes the RCON command, and the player has the rank in-game — not just that the UI shows "success."
+- [ ] **Loja — Idempotency:** Verify that sending the same MercadoPago webhook notification twice does not create two delivery records.
+- [ ] **Loja — Server Offline:** Verify that when the Minecraft server is unreachable, the pending delivery stays in the queue and is retried on the next cron tick — not silently lost.
+- [ ] **Loja — Signature Validation:** Verify the webhook rejects requests with invalid or missing `x-signature` headers with a 400 response.
+- [ ] **RCON — LuckPerms Verification:** Verify that after executing `lp user X parent add VIP`, a follow-up query confirms the rank was actually applied — not just that RCON returned without error.
+- [ ] **Discord Notifications:** Verify the bot notifications use Discord Incoming Webhooks (HTTP POST) and not a persistent discord.js gateway connection.
+- [ ] **Season Reset:** Verify the `season_records` snapshot is written before ELO values are reset — check by resetting in a staging environment and confirming the hall of fame populates.
+- [ ] **Season Reset — Transaction:** Verify that if the ELO reset step fails, the `season_records` snapshot is also rolled back (no partial state).
+- [ ] **Dashboard — ELO Graph:** Verify the chart component uses `dynamic` with `ssr: false` and renders a loading skeleton during hydration — not a blank space or hydration error.
+- [ ] **Dashboard — Empty State:** Verify the dashboard renders correctly for a player with zero battles and no ELO history — not a crashed page or empty white space.
+- [ ] **Blog — Rich Text XSS:** Verify that HTML stored from the rich text editor is sanitized before rendering with `dangerouslySetInnerHTML`.
+- [ ] **Blog — Events Calendar:** Verify that event times display in `America/Sao_Paulo` timezone, not UTC.
+- [ ] **Blog — Draft vs Published:** Verify that draft posts are not accessible via direct URL to non-admin users.
 
 ---
 
@@ -275,12 +272,13 @@ Battle system / replay phase — define replay data schema in the same phase as 
 
 | Pitfall | Recovery Cost | Recovery Steps |
 |---------|---------------|----------------|
-| Broken refresh token rotation | MEDIUM | Audit token storage logic; force all users to re-authenticate; fix rotation before re-enabling auth |
-| Elo manipulation via abandonment | HIGH | Retroactively void affected matches (requires audit log); redesign abandonment handling; announce policy change to community |
-| Missing CSRF state check on OAuth | HIGH | Patch immediately; audit session logs for suspicious account links; consider forcing re-auth for all users |
-| Unoptimized hero image causing high bounce | LOW | Compress to WebP + add srcset — this is a 2-hour fix that has immediate impact |
-| Replay data not stored from the start | HIGH | No recovery without replaying battles — replay feature must be scoped out until data collection is retrofitted |
-| Stale leaderboard destroying trust | LOW | Add cache invalidation trigger on battle result write + add "last updated" timestamp to UI |
+| RCON delivery without queue — lost deliveries | HIGH | Manually replay purchases by querying MercadoPago API for approved payments in the date range; execute RCON commands manually; implement the queue before re-opening the shop |
+| Duplicate delivery from missing idempotency | MEDIUM | Audit `delivery_log` vs `orders`; revoke duplicate ranks via RCON; add `UNIQUE` constraint; apologize to affected players |
+| Season reset without snapshot — hall of fame lost | HIGH | No recovery from Neon free tier (no PITR); must rebuild hall of fame from community screenshots/memory; add snapshot step before next reset |
+| Discord bot going offline on Vercel | LOW | Replace discord.js with Discord webhook HTTP calls — this is a rewrite of the notification module but not the whole system; estimate 1-2 hours |
+| Chart hydration errors in production | LOW | Add `dynamic(() => import('./Chart'), { ssr: false })` — this is a 5-minute fix per chart component |
+| LuckPerms silently ignoring RCON commands | MEDIUM | Identify affected deliveries from the queue (delivered but not verified); re-execute commands after confirming the LP version; add verification step to the worker |
+| Blog HTML with XSS — compromised content | HIGH | Purge the affected post; sanitize all existing HTML in the database with a migration script using DOMPurify; switch to structured JSON storage |
 
 ---
 
@@ -288,31 +286,37 @@ Battle system / replay phase — define replay data schema in the same phase as 
 
 | Pitfall | Prevention Phase | Verification |
 |---------|------------------|--------------|
-| Refresh token rotation | Auth phase | Integration test: perform 3 consecutive token refreshes; confirm all succeed |
-| OAuth CSRF state parameter | Auth phase | Code review: confirm state is set, stored, and validated on callback |
-| Elo abandonment manipulation | Ranking design phase | Design doc: every match lifecycle state (in-progress, completed, abandoned) maps to a defined outcome |
-| Leaderboard staleness | Leaderboard phase | Test: record a battle result, confirm leaderboard reflects it within 5 seconds |
-| Hero image performance | Landing page phase | Lighthouse mobile audit: score must be 70+ before phase is complete |
-| Profile empty states | User profile phase | Manual test: create fresh account with no battle history; verify all sections have graceful empty states |
-| Replay schema undefined | Battle system phase | Schema review: battle record must contain full event log fields before any battles are recorded |
-| Store placeholder quality | Store placeholder phase | Design review: placeholder must match site's design quality, include a CTA and a Discord link |
+| RCON without delivery queue | Loja funcional — schema design | DB schema review: `pending_delivery` table exists with `attempts`, `locked_at`, `delivered_at` before writing any shop code |
+| LuckPerms silent failure over RCON | Loja funcional — delivery worker | Integration test: execute LP rank command via RCON, confirm with follow-up query, check delivery log shows correct status |
+| MercadoPago webhook duplicate / missing idempotency | Loja funcional — webhook handler | Test: send same webhook payload twice; confirm only one order row created; confirm second call returns 200 immediately |
+| MercadoPago webhook signature not validated | Loja funcional — webhook handler | Test: send request without `x-signature`; confirm 400 response with no DB writes |
+| Vercel 60-second function limit on RCON worker | Loja funcional — cron worker | Load test: insert 20 pending deliveries; confirm cron processes first 5, leaves 15 for next tick; verify no timeout in Vercel logs |
+| Discord bot gateway on Vercel | Notificações Discord — architecture | Code review: zero uses of `client.login()` or `GatewayIntentBits`; notifications use `fetch()` to Discord webhook URL only |
+| Season reset without snapshot | Temporadas de ranking — reset procedure | Staging test: execute reset, confirm `season_records` populated before ELO is zeroed, confirm rollback if step 2 fails |
+| ELO graph hydration mismatch | Dashboard do jogador — chart implementation | Browser test: hard reload the dashboard page; confirm no hydration errors in console; confirm chart renders after 1-2 seconds with skeleton shown first |
+| Blog HTML XSS | Blog + Eventos — rich text storage | Code review: confirm sanitization applied on render or structured JSON (not raw HTML) stored; confirm draft posts inaccessible to non-admins |
+| Events in UTC timezone | Blog + Eventos — event calendar | Manual test: create event at 20:00 BRT; confirm calendar displays 20:00 not 23:00 UTC |
 
 ---
 
 ## Sources
 
-- Discord OAuth2 official documentation: https://docs.discord.com/developers/topics/oauth2
-- Discord refresh token rotation bug report confirming rotating token behavior: https://github.com/discord/discord-api-docs/issues/5942
-- Elo system limitations — Hacker News discussion: https://news.ycombinator.com/item?id=23908560
-- "Elo Rating Systems Are Terrible For MOBAs" — analysis of abandonment/avoidance incentive: https://mmos.com/editorials/elo-rating-systems-are-terrible-for-mobas
-- Pokémon Showdown replay data requirements (full team storage): https://www.smogon.com/forums/threads/full-information-replays-for-random-battles.3652886/
-- Building a Multiplayer Elo Rating System — Gautam Narula: https://gautamnarula.com/rating/
-- Player retention — Minecraft server community patterns: https://www.pixelmine.com/posts/player-retention-guide-for-your-minecraft-server
-- Cobblemon server community best practices: https://cobblemon.com/en/servers
-- Designing a Leaderboard System — Beamable: https://beamable.com/blog/designing-a-leaderboard-system
-- 5 Common Mistakes New Minecraft Server Owners Make: https://www.pixelmine.com/posts/5-common-mistakes-new-minecraft-server-owners-make-and-how-to-avoid-them
+- Vercel Hobby Plan official limits (function max duration 60s configurable): https://vercel.com/docs/plans/hobby
+- Vercel Function duration configuration: https://vercel.com/docs/functions/configuring-functions/duration
+- LuckPerms RCON silent failure bug (Issue #2948): https://github.com/LuckPerms/LuckPerms/issues/2948
+- MercadoPago webhook retry policy and notification schedule: https://www.mercadopago.com.br/developers/en/docs/your-integrations/notifications/webhooks
+- MercadoPago idempotency key mandatory from 2024: https://www.mercadopago.com.ar/developers/en/news/2023/01/04/Idempotency-key-usage-will-be-mandatory
+- MercadoPago x-signature validation (2024 update): https://www.mercadopago.com.br/developers/en/news/2024/02/27/Ensure-the-validity-of-notifications-sent-by-Mercado-Pago
+- Vercel official statement on Discord bots: https://vercel.com/kb/guide/can-i-deploy-discord-bots-to-vercel
+- Discord Interactions Endpoint (serverless-compatible bot pattern): https://discord.com/developers/docs/interactions/receiving-and-responding
+- shadcn/ui chart bug in Next.js 15 — hydration error: https://github.com/shadcn-ui/ui/issues/5661
+- Next.js hydration error documentation: https://nextjs.org/docs/messages/react-hydration-error
+- Neon serverless driver (HTTP vs TCP connection): https://neon.com/docs/serverless/serverless-driver
+- RCON protocol specification (TCP, stateful, fragmented responses): https://minecraft.wiki/w/RCON
+- MercadoPago webhook implementation (Node.js): https://github.com/lucasmmaidana/mercado-pago-test
+- Webhook idempotency guide: https://dev.to/ramapratheeba/how-to-handle-duplicate-webhook-events-in-aspnet-core-idempotency-guide-4kj6
+- Vercel function timeout troubleshooting: https://vercel.com/kb/guide/what-can-i-do-about-vercel-serverless-functions-timing-out
 
 ---
-
-*Pitfalls research for: CraftPro Brasil — Minecraft/Pokémon community website with competitive elo ranking, Discord OAuth, leaderboards, user profiles, battle replays*
-*Researched: 2026-03-18*
+*Pitfalls research for: CraftPro Brasil v2.0 — Loja (MercadoPago + RCON + LuckPerms), Blog/Eventos, Notificações Discord, Temporadas ELO, Dashboard do Jogador on Next.js + Vercel Hobby + Neon*
+*Researched: 2026-03-26*

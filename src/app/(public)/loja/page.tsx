@@ -1,45 +1,32 @@
 // src/app/(public)/loja/page.tsx
 export const dynamic = 'force-dynamic'
 import { Badge } from '@/components/ui/badge'
-import { ShoppingBag, Star, Shield, Zap, ArrowRight } from 'lucide-react'
-import { db } from '@/lib/db'
-import { shopItems } from '@/lib/db/schema'
+import { ShoppingBag, ArrowRight, PackageSearch } from 'lucide-react'
+import { getShopItems } from '@/lib/db/queries/shop'
+import { ShopItemCard } from '@/components/shop/ShopItemCard'
 
-const storeCategories = [
-  {
-    id: 'cosmeticos',
-    icon: Star,
-    name: 'Cosmeticos',
-    description: 'Skins exclusivas, particulas especiais e efeitos visuais unicos para seu personagem.',
-    color: 'text-brand-yellow',
-    bgColor: 'bg-brand-yellow/5',
-    borderColor: 'border-brand-yellow/15',
-    glowHover: 'hover:shadow-[0_0_30px_rgba(255,214,10,0.1)] hover:border-brand-yellow/30',
-  },
-  {
-    id: 'ranks-vip',
-    icon: Shield,
-    name: 'Ranks & VIP',
-    description: 'Acesso a servidores exclusivos, comandos especiais e badges de prestigio no chat.',
-    color: 'text-brand-accent',
-    bgColor: 'bg-brand-accent/5',
-    borderColor: 'border-brand-accent/15',
-    glowHover: 'hover:shadow-[0_0_30px_rgba(255,45,85,0.1)] hover:border-brand-accent/30',
-  },
-  {
-    id: 'itens-servidor',
-    icon: Zap,
-    name: 'Itens do Servidor',
-    description: 'Pokebolas especiais, itens de raridade, boosters de EXP e recursos exclusivos.',
-    color: 'text-brand-blue',
-    bgColor: 'bg-brand-blue/5',
-    borderColor: 'border-brand-blue/15',
-    glowHover: 'hover:shadow-[0_0_30px_rgba(0,212,255,0.1)] hover:border-brand-blue/30',
-  },
-]
+const CATEGORY_ORDER = ['cosmeticos', 'ranks-vip', 'itens-servidor']
+const CATEGORY_LABELS: Record<string, string> = {
+  cosmeticos: 'Cosméticos',
+  'ranks-vip': 'Ranks & VIP',
+  'itens-servidor': 'Itens do Servidor',
+}
 
 export default async function LojaPage() {
-  const previewItems = await db.select().from(shopItems)
+  const items = await getShopItems()
+
+  // Group items by category, maintaining defined order
+  const grouped: Record<string, typeof items> = {}
+  for (const item of items) {
+    if (!grouped[item.category]) grouped[item.category] = []
+    grouped[item.category].push(item)
+  }
+
+  // Categories in order, only those that have items
+  const orderedCategories = CATEGORY_ORDER.filter(cat => grouped[cat]?.length > 0)
+  // Include any categories not in the predefined order
+  const extraCategories = Object.keys(grouped).filter(cat => !CATEGORY_ORDER.includes(cat))
+  const allCategories = [...orderedCategories, ...extraCategories]
 
   return (
     <div className="min-h-screen bg-brand-primary grid-bg py-20 px-4 relative overflow-hidden">
@@ -64,49 +51,45 @@ export default async function LojaPage() {
           </div>
           <h1 className="font-display text-2xl sm:text-3xl text-white mb-4">Loja</h1>
           <p className="text-white/45 max-w-xl mx-auto text-sm leading-relaxed">
-            A loja do CraftPro Brasil esta chegando. Confira o que estara disponivel em breve.
+            A loja do CraftPro Brasil está chegando. Confira os itens que estarão disponíveis em breve.
           </p>
         </div>
 
-        {/* Category cards */}
-        <div
-          data-testid="store-category-cards"
-          className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-14"
-        >
-          {storeCategories.map((category) => {
-            const Icon = category.icon
-            return (
-              <div
-                key={category.id}
-                data-testid={`store-category-${category.id}`}
-                className={`rounded-2xl border ${category.borderColor} ${category.bgColor} p-7 text-center backdrop-blur-sm transition-all duration-400 ${category.glowHover} hover:-translate-y-1`}
-              >
-                <div className={`inline-flex items-center justify-center w-11 h-11 rounded-xl bg-white/5 mb-5 ${category.color}`}>
-                  <Icon className="h-5 w-5" />
-                </div>
-                <h3 className={`font-semibold text-base ${category.color} mb-2`}>{category.name}</h3>
-                <p className="text-sm text-white/45 leading-relaxed">{category.description}</p>
-              </div>
-            )
-          })}
-        </div>
-
-        {/* DB-backed preview items */}
-        {previewItems.length > 0 && (
-          <div className="mb-14">
-            <h2 className="text-lg font-semibold text-white mb-5 text-center">Itens em Destaque</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {previewItems.map((item) => (
+        {/* Product catalog */}
+        {items.length === 0 ? (
+          <div
+            data-testid="store-empty-state"
+            className="text-center py-20 text-white/40"
+          >
+            <PackageSearch className="w-12 h-12 mx-auto mb-4 opacity-40" />
+            <p className="text-sm">Nenhum item disponível ainda.</p>
+            <p className="text-xs mt-1 text-white/30">Volte em breve!</p>
+          </div>
+        ) : (
+          <div className="space-y-12 mb-14">
+            {allCategories.map((category) => (
+              <div key={category}>
+                <h2 className="text-base font-semibold text-white/70 mb-5 uppercase tracking-wider text-center">
+                  {CATEGORY_LABELS[category] ?? category}
+                </h2>
                 <div
-                  key={item.id}
-                  className="card-glow bg-brand-card/60 backdrop-blur-sm rounded-2xl p-5 border border-white/[0.06]"
+                  data-testid={`store-category-${category}`}
+                  className="grid grid-cols-1 md:grid-cols-3 gap-5"
                 >
-                  <h3 className="text-sm font-semibold text-white mb-1.5">{item.name}</h3>
-                  <p className="text-xs text-white/45 mb-3 leading-relaxed">{item.description}</p>
-                  <Badge variant="outline" className="text-xs border-white/15 text-white/50">{item.category}</Badge>
+                  {grouped[category].map((item) => (
+                    <ShopItemCard
+                      key={item.id}
+                      id={item.id}
+                      name={item.name}
+                      description={item.description}
+                      category={item.category}
+                      price={item.price}
+                      imageUrl={item.imageUrl}
+                    />
+                  ))}
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         )}
 

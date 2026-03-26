@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Autenticação** - Login via Discord com sessão persistente e logout de qualquer página (completed 2026-03-18)
 - [x] **Phase 3: Sistema Competitivo** - ELO, leaderboards, top-10, tiers visuais e perfis de usuário completos (completed 2026-03-18)
 - [x] **Phase 4: Painel Admin** - Rota /admin protegida com CRUD para itens banidos, servidores, loja e leaderboard, com permissões granulares e auditoria (completed 2026-03-18)
-- [ ] **Phase 5: Loja Funcional** - Loja real com produtos, preços em BRL, integração MercadoPago (Pix/cartão), entrega via RCON + fila no banco, ranks temporários via LuckPerms
+- [x] **Phase 5: Loja Funcional** - Loja real com produtos, preços em BRL, integração MercadoPago (Pix/cartão), entrega via RCON + fila no banco, ranks temporários via LuckPerms (completed 2026-03-26)
 
 ## Phase Details
 
@@ -99,7 +99,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. Autenticacao | 3/3 | Complete    | 2026-03-18 |
 | 3. Sistema Competitivo | 3/3 | Complete   | 2026-03-18 |
 | 4. Painel Admin | 4/4 | Complete   | 2026-03-18 |
-| 5. Loja Funcional | 1/? | In Progress | — |
+| 5. Loja Funcional | 4/4 | Complete   | 2026-03-26 |
 
 ### Phase 5: Loja Funcional
 **Goal**: Jogadores podem comprar itens, ranks e cosméticos via MercadoPago (Pix/cartão). Pedidos são processados automaticamente via fila no banco + entrega RCON no servidor NeoForge.

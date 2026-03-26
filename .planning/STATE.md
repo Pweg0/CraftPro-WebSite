@@ -1,16 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.0
-milestone_name: — Loja e Blog
+milestone: v1.0
+milestone_name: milestone
 status: executing
-stopped_at: Phase 5 UI-SPEC approved
-last_updated: "2026-03-26T15:00:27.002Z"
-last_activity: 2026-03-26 -- Phase 05 execution started
+stopped_at: Completed 05-03-PLAN.md
+last_updated: "2026-03-26T17:28:30.694Z"
+last_activity: 2026-03-26
 progress:
-  total_phases: 4
-  completed_phases: 0
-  total_plans: 4
-  completed_plans: 0
+  total_phases: 5
+  completed_phases: 5
+  total_plans: 17
+  completed_plans: 17
 ---
 
 # Project State
@@ -25,9 +25,9 @@ See: .planning/PROJECT.md (updated 2026-03-26)
 ## Current Position
 
 Phase: 05 (loja-funcional) — EXECUTING
-Plan: 1 of 4
-Status: Executing Phase 05
-Last activity: 2026-03-26 -- Phase 05 execution started
+Plan: 3 of 4
+Status: Ready to execute
+Last activity: 2026-03-26
 
 Progress bar: [░░░░░░░░░░░░░░░░░░░░] 0/4 phases complete
 
@@ -58,6 +58,7 @@ Progress bar: [░░░░░░░░░░░░░░░░░░░░] 0/4
 | 08-dashboard-do-jogador | 0/? | — | — |
 
 *Updated after each plan completion*
+| Phase 05-loja-funcional P03 | 8 | 2 tasks | 11 files |
 
 ## Accumulated Context
 
@@ -76,6 +77,9 @@ Recent decisions affecting v2.0:
 - [v2.0 stack]: mercadopago@2.12.0, rcon-client@4.2.5, recharts@3.8.0, react-markdown@9.x
 - [v2.0 roadmap]: Schema migration folded into Phase 5 (Loja) — coarse granularity, all new tables migrate together as first task of Phase 5
 - [v2.0 roadmap]: Notificações and Temporadas combined into Phase 7 — both small, both fire-and-forget or self-contained; coarse granularity justifies merge
+- [Phase 05-loja-funcional]: createCheckoutPreference Server Action wraps MP checkout logic from Plan 02 API route
+- [Phase 05-loja-funcional]: minecraftUuid exposed in session callback for conditional BuyButton rendering in ProductCard
+- [Phase 05-loja-funcional]: category used as type discriminator in ProductCard — schema lacks separate type column
 
 ### Roadmap Evolution
 
@@ -99,7 +103,7 @@ Recent decisions affecting v2.0:
 
 ## Session Continuity
 
-Last session: 2026-03-26T14:35:08.268Z
-Stopped at: Phase 5 UI-SPEC approved
-Resume file: .planning/phases/05-loja-funcional/05-UI-SPEC.md
+Last session: 2026-03-26T17:28:17.098Z
+Stopped at: Completed 05-03-PLAN.md
+Resume file: None
 Next action: /gsd:plan-phase 5

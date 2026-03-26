@@ -71,10 +71,10 @@ Requirements para milestone v2.0: Loja e Blog. Cada um mapeia para fases do road
 
 ### Loja (Store)
 
-- [ ] **SHOP-01**: Jogador pode navegar a loja e ver itens disponíveis (ranks, cosméticos, itens in-game, keys) com preços em BRL
-- [ ] **SHOP-02**: Jogador pode comprar item via Pix (MercadoPago Checkout Pro) e ver QR code/código para pagamento
+- [x] **SHOP-01**: Jogador pode navegar a loja e ver itens disponíveis (ranks, cosméticos, itens in-game, keys) com preços em BRL
+- [x] **SHOP-02**: Jogador pode comprar item via Pix (MercadoPago Checkout Pro) e ver QR code/código para pagamento
 - [ ] **SHOP-03**: Após pagamento confirmado, rank/item é entregue automaticamente no servidor via RCON + LuckPerms
-- [ ] **SHOP-04**: Jogador pode acompanhar status do pedido (pendente/entregue/falhou) em /loja/pedido/[id]
+- [x] **SHOP-04**: Jogador pode acompanhar status do pedido (pendente/entregue/falhou) em /loja/pedido/[id]
 - [ ] **SHOP-05**: Sistema de fila de entrega com retry automático quando servidor estava offline no momento da compra
 - [ ] **SHOP-06**: Webhook MercadoPago valida assinatura HMAC e garante idempotência (sem entrega duplicada)
 - [ ] **SHOP-07**: Admin pode ver todos os pedidos em /admin/pedidos, filtrar por status, e forçar retry manual
@@ -153,10 +153,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SHOP-01 | Phase 5 | Pending |
-| SHOP-02 | Phase 5 | Pending |
+| SHOP-01 | Phase 5 | Complete |
+| SHOP-02 | Phase 5 | Complete |
 | SHOP-03 | Phase 5 | Pending |
-| SHOP-04 | Phase 5 | Pending |
+| SHOP-04 | Phase 5 | Complete |
 | SHOP-05 | Phase 5 | Pending |
 | SHOP-06 | Phase 5 | Pending |
 | SHOP-07 | Phase 5 | Pending |

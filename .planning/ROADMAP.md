@@ -17,6 +17,9 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 3: Sistema Competitivo** - ELO, leaderboards, top-10, tiers visuais e perfis de usuário completos (completed 2026-03-18)
 - [x] **Phase 4: Painel Admin** - Rota /admin protegida com CRUD para itens banidos, servidores, loja e leaderboard, com permissões granulares e auditoria (completed 2026-03-18)
 - [x] **Phase 5: Loja Funcional** - Loja real com produtos, preços em BRL, integração MercadoPago (Pix/cartão), entrega via RCON + fila no banco, ranks temporários via LuckPerms (completed 2026-03-26)
+- [ ] **Phase 6: Blog e Eventos** - Admin publica posts e eventos; visitantes leem /blog e /eventos com calendário filtrado por tipo
+- [ ] **Phase 7: Notificações e Temporadas** - Discord webhooks em compras e novos jogadores + sistema de temporadas com reset ELO atômico e hall da fama
+- [ ] **Phase 8: Dashboard do Jogador** - Gráfico de evolução ELO e Pokémon mais usados no perfil, alimentados por histórico acumulado desde Phase 5
 
 ## Phase Details
 
@@ -115,6 +118,52 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 Plans:
 - [x] 05-01-PLAN.md — Schema foundation: shopItems extension (price, available, imageUrl), orders table, shop query module, ShopItemCard, /loja catalog page, admin CRUD update
+
+### Phase 6: Blog e Eventos
+**Goal**: Visitantes encontram notícias, patch notes e torneios no site — o servidor parece ativo e bem gerenciado
+**Depends on**: Phase 5 (schema migrations for blogPosts and events tables)
+**Requirements**: BLOG-01, BLOG-02, BLOG-03, BLOG-04, BLOG-05
+**Success Criteria** (what must be TRUE):
+  1. Admin acessa /admin/blog, cria um post em markdown com título e slug, e o post aparece imediatamente em /blog na listagem pública
+  2. Visitante acessa /blog/[slug] e lê o post completo renderizado em markdown com formatação correta
+  3. Admin fixa um post como importante e ele aparece no topo da listagem de /blog acima dos demais
+  4. Admin cria um evento em /admin/eventos com data, tipo e descrição; visitante acessa /eventos, vê o evento no calendário e consegue filtrar por tipo
+**Plans**: TBD
+**UI hint**: yes
+
+### Phase 7: Notificações e Temporadas
+**Goal**: A comunidade é notificada no Discord sobre eventos relevantes, e o admin pode encerrar temporadas competitivas com reset de ELO preservando o hall da fama
+**Depends on**: Phase 5 (purchase events), Phase 3 (ELO and arena_players tables)
+**Requirements**: NOTIF-01, NOTIF-02, NOTIF-03, SEASON-01, SEASON-02, SEASON-03
+**Success Criteria** (what must be TRUE):
+  1. Compra confirmada no MercadoPago dispara automaticamente um embed no canal #compras do Discord com nome do jogador, item e valor
+  2. Novo jogador que faz login pela primeira vez recebe boas-vindas no canal #novos-jogadores do Discord via embed
+  3. Admin clica em "Encerrar Temporada" no painel, o snapshot dos rankings é salvo, todos os ELOs resetam para 1000 via transação atômica, e uma nova temporada começa
+  4. Visitante acessa /temporadas e vê o hall da fama com o top ranking de cada temporada passada, identificada por número e data de encerramento
+**Plans**: TBD
+
+### Phase 8: Dashboard do Jogador
+**Goal**: Jogadores veem a evolução do seu desempenho competitivo ao longo do tempo — o perfil passa de stats estáticos para dashboard dinâmico
+**Depends on**: Phase 5 (eloHistory table recording from Phase 5 onward), Phase 3 (arena_matches)
+**Requirements**: DASH-01, DASH-02, DASH-03
+**Success Criteria** (what must be TRUE):
+  1. Perfil do jogador exibe gráfico de linha (Recharts) com a evolução do ELO ao longo do tempo, com pontos por partida e sem erro de hydration
+  2. Cada partida registrada no banco atualiza automaticamente o histórico de ELO do jogador, alimentando o gráfico sem intervenção manual
+  3. Perfil exibe lista dos Pokémon mais usados em batalhas ranqueadas com contagem de uso (condicional: disponível somente se o game server emite dados por Pokémon)
+**Plans**: TBD
+**UI hint**: yes
+
+## Progress
+
+**Execution Order:**
+v1.0 complete. v2.0 phases execute in numeric order: 5 → 6 → 7 → 8
+
+| Phase | Plans Complete | Status | Completed |
+|-------|----------------|--------|-----------|
+| 5. Loja Funcional | 6/6 | Complete | 2026-03-26 |
+| 6. Blog e Eventos | 0/? | Not started | - |
+| 7. Notificações e Temporadas | 0/? | Not started | - |
+| 8. Dashboard do Jogador | 0/? | Not started | - |
 
 ## Post-Phase Extras (implemented outside formal phases)
 

@@ -99,7 +99,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. Autenticacao | 3/3 | Complete    | 2026-03-18 |
 | 3. Sistema Competitivo | 3/3 | Complete   | 2026-03-18 |
 | 4. Painel Admin | 4/4 | Complete   | 2026-03-18 |
-| 5. Loja Funcional | 4/4 | Complete   | 2026-03-26 |
+| 5. Loja Funcional | 5/4 | Complete   | 2026-03-26 |
 
 ### Phase 5: Loja Funcional
 **Goal**: Jogadores podem comprar itens, ranks e cosméticos via MercadoPago (Pix/cartão). Pedidos são processados automaticamente via fila no banco + entrega RCON no servidor NeoForge.

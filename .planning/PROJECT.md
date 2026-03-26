@@ -22,7 +22,12 @@ Transmitir a fusão Minecraft + Pokémon de forma vibrante e colorida, sendo o p
 
 ### Active
 
-- (No active requirements — all v1 requirements validated)
+- Loja funcional com pagamento MercadoPago (Pix/boleto/cartão), entrega via RCON + fila no banco
+- Ranks/VIP temporários via LuckPerms, itens cosméticos, itens in-game, keys para caixas
+- Blog de notícias/patch notes com publicação admin + calendário de eventos/torneios
+- Notificações Discord via bot (compras, novos jogadores, resultados de batalhas)
+- Temporadas de ranking com reset de ELO e hall da fama
+- Dashboard do jogador com gráfico de evolução ELO e Pokémon mais usados
 
 ### Recently Validated
 
@@ -43,7 +48,6 @@ Transmitir a fusão Minecraft + Pokémon de forma vibrante e colorida, sendo o p
 ### Out of Scope
 
 - Login via email/senha ou Microsoft — login será exclusivamente via Discord
-- Loja funcional no v1 — será página "em breve" (planejada para v2.0)
 - App mobile nativo — web-first
 - Conteúdo em inglês — site apenas em PT-BR
 - ~~Sistema de replay com vídeo~~ — replay log do protocolo Showdown implementado (v1)
@@ -98,5 +102,33 @@ Transmitir a fusão Minecraft + Pokémon de forma vibrante e colorida, sendo o p
 - Auth.js v5 (Discord provider)
 - Vitest + Testing Library
 
+## Current Milestone: v2.0 Loja e Blog
+
+**Goal:** Tornar o CraftPro Brasil um hub funcional completo — loja com pagamento real, blog com eventos, notificações Discord, temporadas competitivas e dashboard do jogador.
+
+**Target features:**
+- Loja funcional — Ranks/VIP temporários (LuckPerms), itens cosméticos, itens in-game, keys. MercadoPago (Pix/boleto/cartão). Entrega via RCON + fila no banco.
+- Blog + Eventos — Admin publica notícias, patch notes, announcements. Calendário de eventos/torneios.
+- Notificações Discord — Bot notifica compras, novos jogadores, resultados de batalhas.
+- Temporadas de ranking — Reset de ELO por temporada, hall da fama dos campeões.
+- Dashboard do jogador — Gráfico de evolução ELO, Pokémon mais usados, stats detalhados.
+
+## Evolution
+
+This document evolves at phase transitions and milestone boundaries.
+
+**After each phase transition** (via `/gsd:transition`):
+1. Requirements invalidated? → Move to Out of Scope with reason
+2. Requirements validated? → Move to Validated with phase reference
+3. New requirements emerged? → Add to Active
+4. Decisions to log? → Add to Key Decisions
+5. "What This Is" still accurate? → Update if drifted
+
+**After each milestone** (via `/gsd:complete-milestone`):
+1. Full review of all sections
+2. Core Value check — still the right priority?
+3. Audit Out of Scope — reasons still valid?
+4. Update Context with current state
+
 ---
-*Last updated: 2026-03-19 — v1.0 complete, deployed to craftprobrasil.com.br. v2.0 planning started (loja, LuckPerms, MercadoPago).*
+*Last updated: 2026-03-26 — v2.0 milestone started (Loja, Blog, Notificações, Temporadas, Dashboard).*

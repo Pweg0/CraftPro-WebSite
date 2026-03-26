@@ -1,15 +1,15 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: milestone
-status: complete
-stopped_at: Milestone v1.0 complete — all 4 phases delivered
-last_updated: "2026-03-19T00:00:00.000Z"
+milestone: v2.0
+milestone_name: Loja e Blog
+status: defining_requirements
+stopped_at: Milestone v2.0 started — defining requirements
+last_updated: "2026-03-26T00:00:00.000Z"
 progress:
-  total_phases: 4
-  completed_phases: 4
-  total_plans: 13
-  completed_plans: 13
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
 ---
 
 # Project State
@@ -19,12 +19,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-19)
 
 **Core value:** Transmitir a fusão Minecraft + Pokémon de forma vibrante, sendo o hub central para jogadores do CraftPro Brasil
-**Current focus:** Milestone v1.0 COMPLETE — pronto para v2.0
+**Current focus:** Milestone v2.0 — Loja funcional, Blog, Notificações Discord, Temporadas, Dashboard
 
 ## Current Position
 
-Phase: ALL COMPLETE (4/4 phases, 13/13 plans)
-Milestone: v1.0 — DONE
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-03-26 — Milestone v2.0 started
 
 ## Performance Metrics
 
@@ -118,21 +120,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-19
-Stopped at: Milestone v1.0 complete. Post-milestone tweaks: banner URL support, "Ver Servidores" CTA navigation fix.
+Last session: 2026-03-26
+Stopped at: Milestone v2.0 started, defining requirements
 Resume file: None
-
-## v2.0 Planning Notes
-
-Discussed features for next milestone:
-- **Loja funcional** — MercadoPago (Pix/cartão), entrega via RCON + fila no banco, ranks temporários via LuckPerms
-- **Notificações Discord** — bot para compras, novos jogadores, resultados de batalhas
-- **Blog/notícias** — admin publica updates e eventos
-- **Temporadas de ranking** — reset de ELO, hall da fama
-- **Dashboard do jogador** — gráfico de evolução ELO, Pokémon mais usados
-
-Infrastructure decisions:
-- Servidor roda NeoForge (não suporta plugins, apenas mods)
-- RCON + fila no banco para entrega de itens da loja (sem mod extra)
-- LuckPerms será instalado para substituir FTB Ranks (melhor para ranks temporários + integra com FTB Chunks)
-- MercadoPago como gateway de pagamento (público brasileiro)

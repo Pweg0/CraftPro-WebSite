@@ -40,12 +40,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.id = user.id
         // Expose discordId for admin permission checks in middleware and Server Components
         const [dbUser] = await db
-          .select({ discordId: users.discordId })
+          .select({
+            discordId: users.discordId,
+            minecraftUuid: users.minecraftUuid,
+            minecraftName: users.minecraftName,
+          })
           .from(users)
           .where(eq(users.id, user.id))
           .limit(1)
         const discordId = dbUser?.discordId ?? null
         session.user.discordId = discordId
+        session.user.minecraftUuid = dbUser?.minecraftUuid ?? null
+        session.user.minecraftName = dbUser?.minecraftName ?? null
         // Embed isAdmin flag — checked against env vars server-side so no NEXT_PUBLIC_ exposure needed
         const superAdminId = process.env.SUPER_ADMIN_DISCORD_ID
         const adminIds = (process.env.ADMIN_DISCORD_IDS ?? '').split(',').map(s => s.trim()).filter(Boolean)

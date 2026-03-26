@@ -1,77 +1,54 @@
 'use client'
 // src/components/shop/BuyButton.tsx
 
-import { useState } from 'react'
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import { ShoppingCart, Loader2 } from 'lucide-react'
+import { useTransition } from 'react'
+import { Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
+import { createCheckoutPreference } from '@/lib/shop/actions'
 
 interface BuyButtonProps {
-  itemId: number
-  itemName: string
+  shopItemId: number
 }
 
-export function BuyButton({ itemId, itemName }: BuyButtonProps) {
-  const { data: session } = useSession()
-  const router = useRouter()
-  const [loading, setLoading] = useState(false)
+export function BuyButton({ shopItemId }: BuyButtonProps) {
+  const [isPending, startTransition] = useTransition()
 
-  // Show login CTA when not authenticated
-  if (!session) {
-    return (
-      <button
-        onClick={() => router.push('/login')}
-        className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-white/10 text-white/60 border border-white/20 hover:bg-white/15 hover:text-white/80 transition-all"
-      >
-        <ShoppingCart className="w-3.5 h-3.5" />
-        Login para comprar
-      </button>
-    )
-  }
-
-  const handleBuy = async () => {
-    setLoading(true)
-    try {
-      const res = await fetch('/api/loja/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ itemId }),
-      })
-
-      const data = await res.json()
-
-      if (!res.ok) {
-        toast.error(data.error ?? 'Erro ao iniciar compra')
-        return
+  const handleBuy = () => {
+    startTransition(async () => {
+      try {
+        const result = await createCheckoutPreference(shopItemId)
+        window.location.href = result.checkoutUrl
+      } catch (err) {
+        const message = err instanceof Error ? err.message : ''
+        if (message === 'NO_MINECRAFT_UUID') {
+          toast.error(
+            'Voce precisa vincular sua conta Minecraft antes de comprar. Fale com um admin no Discord.'
+          )
+        } else {
+          toast.error('Erro ao iniciar compra. Tente novamente.')
+        }
       }
-
-      if (data.initPoint) {
-        // Redirect to MercadoPago checkout page
-        window.location.href = data.initPoint
-      } else {
-        toast.error('Pagamentos temporariamente indisponíveis')
-      }
-    } catch {
-      toast.error('Erro de conexão. Tente novamente.')
-    } finally {
-      setLoading(false)
-    }
+    })
   }
 
   return (
     <button
       onClick={handleBuy}
-      disabled={loading}
-      className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-brand-accent text-white border border-brand-accent/30 hover:bg-brand-accent/90 disabled:opacity-60 disabled:cursor-not-allowed transition-all"
-      aria-label={`Comprar ${itemName}`}
+      disabled={isPending}
+      aria-disabled={isPending}
+      aria-label={isPending ? 'Processando compra' : 'Comprar'}
+      className={`w-full h-11 rounded-xl bg-brand-accent hover:bg-brand-accent/90 text-white font-semibold text-sm transition-all duration-200 flex items-center justify-center gap-2 ${
+        isPending ? 'opacity-70 pointer-events-none' : ''
+      }`}
     >
-      {loading ? (
-        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+      {isPending ? (
+        <>
+          <Loader2 className="w-4 h-4 animate-spin" />
+          Processando...
+        </>
       ) : (
-        <ShoppingCart className="w-3.5 h-3.5" />
+        'Comprar'
       )}
-      {loading ? 'Aguarde...' : 'Comprar'}
     </button>
   )
 }

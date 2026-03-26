@@ -6,6 +6,8 @@ declare module "next-auth" {
       id: string
       discordId: string | null
       isAdmin?: boolean
+      minecraftUuid: string | null
+      minecraftName: string | null
     } & DefaultSession["user"]
   }
 }

@@ -36,9 +36,12 @@ interface ShopItem {
   name: string
   description: string
   category: string
-  price: number
+  price: number | null
   imageUrl?: string | null
   available: number
+  type: string | null
+  duration: number | null
+  active: boolean | null
 }
 
 interface LojaCrudProps {
@@ -50,6 +53,21 @@ function formatBRL(cents: number): string {
     style: 'currency',
     currency: 'BRL',
   }).format(cents / 100)
+}
+
+function TypeBadge({ type }: { type: string | null }) {
+  if (!type) return <span className="text-white/30 text-sm">—</span>
+  const config: Record<string, { label: string; className: string }> = {
+    rank: { label: 'Rank', className: 'text-brand-accent border-brand-accent/30 bg-brand-accent/10 text-xs' },
+    key: { label: 'Key', className: 'text-brand-blue border-brand-blue/30 bg-brand-blue/10 text-xs' },
+    cosmetic: { label: 'Cosmetico', className: 'text-brand-yellow border-brand-yellow/30 bg-brand-yellow/10 text-xs' },
+  }
+  const cfg = config[type] ?? { label: type, className: 'text-white/60 border-white/20 bg-white/5 text-xs' }
+  return (
+    <Badge variant="outline" className={cfg.className}>
+      {cfg.label}
+    </Badge>
+  )
 }
 
 export function LojaCrud({ items }: LojaCrudProps) {
@@ -114,7 +132,9 @@ export function LojaCrud({ items }: LojaCrudProps) {
               <TableRow>
                 <TableHead>Nome</TableHead>
                 <TableHead>Categoria</TableHead>
-                <TableHead>Preço</TableHead>
+                <TableHead>Tipo</TableHead>
+                <TableHead>Preco</TableHead>
+                <TableHead>Ativo</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="w-12"></TableHead>
               </TableRow>
@@ -126,11 +146,25 @@ export function LojaCrud({ items }: LojaCrudProps) {
                     <div>
                       <p className="text-sm text-white/90 font-medium">{item.name}</p>
                       <p className="text-xs text-white/40 truncate max-w-xs">{item.description}</p>
+                      {item.duration && item.type === 'rank' && (
+                        <p className="text-xs text-white/30 mt-0.5">{item.duration} dias</p>
+                      )}
                     </div>
                   </TableCell>
                   <TableCell className="text-sm text-white/60">{item.category}</TableCell>
-                  <TableCell className="text-sm font-medium text-white/80">
-                    {item.price > 0 ? formatBRL(item.price) : <span className="text-white/30">—</span>}
+                  <TableCell>
+                    <TypeBadge type={item.type} />
+                  </TableCell>
+                  <TableCell className="text-sm font-medium text-brand-yellow">
+                    {item.price && item.price > 0 ? formatBRL(item.price) : <span className="text-white/30">—</span>}
+                  </TableCell>
+                  <TableCell>
+                    <span
+                      className={`inline-block w-2 h-2 rounded-full ${
+                        item.active ? 'bg-brand-online' : 'bg-brand-offline'
+                      }`}
+                      title={item.active ? 'Ativo' : 'Inativo'}
+                    />
                   </TableCell>
                   <TableCell>
                     <Badge

@@ -26,9 +26,12 @@ interface ShopItemFormProps {
     name: string
     description: string
     category: string
-    price: number
+    price: number | null
     imageUrl?: string | null
     available: number
+    type: string | null
+    duration: number | null
+    active: boolean | null
   }
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -40,16 +43,26 @@ const CATEGORY_OPTIONS = [
   { value: 'itens-servidor', label: 'Itens do Servidor' },
 ]
 
+const TYPE_OPTIONS = [
+  { value: 'rank', label: 'Rank' },
+  { value: 'key', label: 'Key' },
+  { value: 'cosmetic', label: 'Cosmetico' },
+]
+
 export function ShopItemForm({ item, open, onOpenChange }: ShopItemFormProps) {
   const [isPending, startTransition] = useTransition()
   const isEditing = !!item
   const [category, setCategory] = useState(item?.category ?? '')
   const [available, setAvailable] = useState(String(item?.available ?? 1))
+  const [type, setType] = useState(item?.type ?? '')
+  const [active, setActive] = useState(item?.active ?? true)
 
   async function handleSubmit(formData: FormData) {
     const priceReais = parseFloat(formData.get('price') as string || '0')
     const priceCents = Math.round(priceReais * 100)
-    const imageUrlRaw = (formData.get('imageUrl') as string).trim()
+    const imageUrlRaw = ((formData.get('imageUrl') as string) || '').trim()
+    const durationRaw = formData.get('duration') as string
+    const duration = durationRaw && durationRaw !== '' ? parseInt(durationRaw, 10) : null
 
     const data = {
       name: formData.get('name') as string,
@@ -58,6 +71,9 @@ export function ShopItemForm({ item, open, onOpenChange }: ShopItemFormProps) {
       price: priceCents,
       imageUrl: imageUrlRaw || null,
       available: parseInt(available, 10),
+      type,
+      duration: type === 'rank' ? duration : null,
+      active,
     }
 
     startTransition(async () => {
@@ -80,7 +96,7 @@ export function ShopItemForm({ item, open, onOpenChange }: ShopItemFormProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-brand-card text-white border-white/10">
+      <DialogContent className="bg-brand-card text-white border-white/10 max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-white">
             {isEditing ? 'Editar Item da Loja' : 'Adicionar Item da Loja'}
@@ -122,16 +138,46 @@ export function ShopItemForm({ item, open, onOpenChange }: ShopItemFormProps) {
             </Select>
           </div>
           <div>
+            <label className="text-sm text-white/70 block mb-1">Tipo</label>
+            <Select value={type} onValueChange={(v) => setType(v ?? '')}>
+              <SelectTrigger className="w-full bg-brand-surface border-white/20 text-white">
+                <SelectValue placeholder="Selecione o tipo" />
+              </SelectTrigger>
+              <SelectContent>
+                {TYPE_OPTIONS.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          {type === 'rank' && (
+            <div>
+              <label className="text-sm text-white/70 block mb-1">Duracao (dias)</label>
+              <Input
+                name="duration"
+                type="number"
+                min="1"
+                defaultValue={item?.duration ?? ''}
+                placeholder="Ex: 30"
+                className="bg-brand-surface border-white/20 text-white"
+              />
+              <p className="text-xs text-white/40 mt-1">Quantidade de dias de acesso ao rank</p>
+            </div>
+          )}
+          <div>
             <label className="text-sm text-white/70 block mb-1">
-              Preço (R$)
+              Preco (R$)
             </label>
             <Input
               name="price"
               type="number"
-              min="0"
+              min="0.01"
               step="0.01"
               defaultValue={defaultPriceValue}
               placeholder="0.00"
+              required
               className="bg-brand-surface border-white/20 text-white"
             />
             <p className="text-xs text-white/40 mt-1">Ex: 19.90 para R$19,90</p>
@@ -159,6 +205,18 @@ export function ShopItemForm({ item, open, onOpenChange }: ShopItemFormProps) {
                 <SelectItem value="0">Oculto</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+          <div className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              id="active"
+              checked={active}
+              onChange={(e) => setActive(e.target.checked)}
+              className="h-4 w-4 rounded border-white/20 bg-brand-surface accent-brand-accent cursor-pointer"
+            />
+            <label htmlFor="active" className="text-sm text-white/70 cursor-pointer">
+              Ativo <span className="text-white/40 text-xs">(disponível para compra)</span>
+            </label>
           </div>
           <div className="flex justify-end gap-2 pt-2">
             <Button

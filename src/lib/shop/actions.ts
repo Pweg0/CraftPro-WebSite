@@ -46,7 +46,7 @@ export async function createCheckoutPreference(
     throw new Error('PAYMENTS_UNAVAILABLE')
   }
 
-  // Create order in pending state
+  // Create order in pending state — snapshot minecraftUuid for delivery
   const [order] = await db
     .insert(orders)
     .values({
@@ -54,6 +54,7 @@ export async function createCheckoutPreference(
       shopItemId: item.id,
       status: 'pending',
       amountCents: item.price,
+      minecraftUuid: session.user.minecraftUuid,
     })
     .returning({ id: orders.id })
 

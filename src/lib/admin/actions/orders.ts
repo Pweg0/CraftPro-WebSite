@@ -88,10 +88,23 @@ export async function forceRetryDelivery(orderId: number): Promise<void> {
   if (!order) throw new Error('Pedido nao encontrado')
   if (order.status !== 'failed') throw new Error('Pedido nao esta em estado de falha')
 
-  // Reset order status to 'delivering' so the cron worker re-attempts
+  // Re-snapshot minecraftUuid in case it was missing or updated since purchase
+  const [userRow] = await db
+    .select({ minecraftUuid: users.minecraftUuid })
+    .from(users)
+    .where(eq(users.id, order.userId))
+    .limit(1)
+
+  // Reset order status to 'delivering' + reset retry counter so cron picks it up
   await db
     .update(orders)
-    .set({ status: 'delivering', updatedAt: new Date() })
+    .set({
+      status: 'delivering',
+      retryCount: 0,
+      nextRetryAt: null,
+      minecraftUuid: userRow?.minecraftUuid ?? order.minecraftUuid,
+      updatedAt: new Date(),
+    })
     .where(eq(orders.id, orderId))
 
   await logAudit(session!, 'FORCE_RETRY_ORDER', String(orderId))

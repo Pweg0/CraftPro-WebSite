@@ -128,8 +128,13 @@ Plans:
   2. Visitante acessa /blog/[slug] e lê o post completo renderizado em markdown com formatação correta
   3. Admin fixa um post como importante e ele aparece no topo da listagem de /blog acima dos demais
   4. Admin cria um evento em /admin/eventos com data, tipo e descrição; visitante acessa /eventos, vê o evento no calendário e consegue filtrar por tipo
-**Plans**: TBD
+**Plans**: 3 plans
 **UI hint**: yes
+
+Plans:
+- [ ] 06-01-PLAN.md — Schema (blogPosts + events tables), query modules, react-markdown install, permissions + sidebar + navbar updates
+- [ ] 06-02-PLAN.md — Blog admin CRUD (Server Actions + forms) + public /blog listing with cards + /blog/[slug] with react-markdown
+- [ ] 06-03-PLAN.md — Events admin CRUD (Server Actions + forms) + public /eventos calendar grid with type filters
 
 ### Phase 7: Notificações e Temporadas
 **Goal**: A comunidade é notificada no Discord sobre eventos relevantes, e o admin pode encerrar temporadas competitivas com reset de ELO preservando o hall da fama
@@ -161,7 +166,7 @@ v1.0 complete. v2.0 phases execute in numeric order: 5 → 6 → 7 → 8
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 5. Loja Funcional | 6/6 | Complete | 2026-03-26 |
-| 6. Blog e Eventos | 0/? | Not started | - |
+| 6. Blog e Eventos | 0/3 | Planned | - |
 | 7. Notificações e Temporadas | 0/? | Not started | - |
 | 8. Dashboard do Jogador | 0/? | Not started | - |
 

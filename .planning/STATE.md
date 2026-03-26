@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 05-03-PLAN.md
-last_updated: "2026-03-26T17:28:30.694Z"
+stopped_at: Completed 05-04-PLAN.md — admin shop CRUD extended + /admin/pedidos order management
+last_updated: "2026-03-26T17:28:49.250Z"
 last_activity: 2026-03-26
 progress:
   total_phases: 5
@@ -59,6 +59,7 @@ Progress bar: [░░░░░░░░░░░░░░░░░░░░] 0/4
 
 *Updated after each plan completion*
 | Phase 05-loja-funcional P03 | 8 | 2 tasks | 11 files |
+| Phase 05-loja-funcional P04 | 18 | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -80,6 +81,9 @@ Recent decisions affecting v2.0:
 - [Phase 05-loja-funcional]: createCheckoutPreference Server Action wraps MP checkout logic from Plan 02 API route
 - [Phase 05-loja-funcional]: minecraftUuid exposed in session callback for conditional BuyButton rendering in ProductCard
 - [Phase 05-loja-funcional]: category used as type discriminator in ProductCard — schema lacks separate type column
+- [Phase 05-loja-funcional]: rconTemplate set to null on admin create/update — system auto-generates command from type per D-03
+- [Phase 05-loja-funcional]: forceRetryDelivery resets order to 'delivering' (no deliveryQueue table in schema) — cron worker re-attempts
+- [Phase 05-loja-funcional]: pedidos added to AdminSection type with granular permission separate from loja section
 
 ### Roadmap Evolution
 
@@ -103,7 +107,7 @@ Recent decisions affecting v2.0:
 
 ## Session Continuity
 
-Last session: 2026-03-26T17:28:17.098Z
-Stopped at: Completed 05-03-PLAN.md
+Last session: 2026-03-26T17:28:49.213Z
+Stopped at: Completed 05-04-PLAN.md — admin shop CRUD extended + /admin/pedidos order management
 Resume file: None
 Next action: /gsd:plan-phase 5

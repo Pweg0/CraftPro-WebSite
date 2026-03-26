@@ -77,7 +77,7 @@ Requirements para milestone v2.0: Loja e Blog. Cada um mapeia para fases do road
 - [x] **SHOP-04**: Jogador pode acompanhar status do pedido (pendente/entregue/falhou) em /loja/pedido/[id]
 - [ ] **SHOP-05**: Sistema de fila de entrega com retry automático quando servidor estava offline no momento da compra
 - [ ] **SHOP-06**: Webhook MercadoPago valida assinatura HMAC e garante idempotência (sem entrega duplicada)
-- [ ] **SHOP-07**: Admin pode ver todos os pedidos em /admin/pedidos, filtrar por status, e forçar retry manual
+- [x] **SHOP-07**: Admin pode ver todos os pedidos em /admin/pedidos, filtrar por status, e forçar retry manual
 
 ### Blog + Eventos
 
@@ -159,7 +159,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SHOP-04 | Phase 5 | Complete |
 | SHOP-05 | Phase 5 | Pending |
 | SHOP-06 | Phase 5 | Pending |
-| SHOP-07 | Phase 5 | Pending |
+| SHOP-07 | Phase 5 | Complete |
 | BLOG-01 | Phase 6 | Pending |
 | BLOG-02 | Phase 6 | Pending |
 | BLOG-03 | Phase 6 | Pending |

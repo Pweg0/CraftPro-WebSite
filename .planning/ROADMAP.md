@@ -44,7 +44,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Após confirmação do webhook MercadoPago, o rank/item é entregue via RCON + LuckPerms no servidor Minecraft e o pedido muda para "entregue"
   4. Se o servidor Minecraft estava offline no momento da compra, o item é entregue automaticamente na próxima execução do cron sem intervenção manual
   5. Admin acessa /admin/pedidos, vê todos os pedidos com status, consegue filtrar por status e forçar retry manual de qualquer pedido com falha
-**Plans**: TBD
+**Plans:** 4 plans
+Plans:
+- [ ] 05-01-PLAN.md — Schema migration + types + permissions + RCON resolver (foundation)
+- [ ] 05-02-PLAN.md — Backend logic: checkout action + webhook + cron worker
+- [ ] 05-03-PLAN.md — Public store UI: /loja + /loja/pedido/[id] + /loja/meus-pedidos + navbar
+- [ ] 05-04-PLAN.md — Admin UI: /admin/loja extension + /admin/pedidos
 **UI hint**: yes
 
 ### Phase 6: Blog e Eventos
@@ -92,7 +97,7 @@ v1.0 complete. v2.0 phases execute in numeric order: 5 → 6 → 7 → 8
 | 2. Autenticação | 3/3 | Complete | 2026-03-18 |
 | 3. Sistema Competitivo | 3/3 | Complete | 2026-03-18 |
 | 4. Painel Admin | 4/4 | Complete | 2026-03-18 |
-| 5. Loja Funcional | 0/? | Not started | - |
+| 5. Loja Funcional | 0/4 | Not started | - |
 | 6. Blog e Eventos | 0/? | Not started | - |
 | 7. Notificações e Temporadas | 0/? | Not started | - |
 | 8. Dashboard do Jogador | 0/? | Not started | - |

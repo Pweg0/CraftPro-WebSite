@@ -11,6 +11,7 @@ export default auth((req) => {
 
   const isProtectedRoute =
     pathname.startsWith("/perfil") ||
+    pathname.startsWith("/pedidos") ||
     pathname.startsWith("/admin")
 
   if (!isLoggedIn && isProtectedRoute) {

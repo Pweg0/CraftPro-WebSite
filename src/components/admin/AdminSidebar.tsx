@@ -13,6 +13,7 @@ import {
   Users,
   Key,
   Menu,
+  ClipboardList,
 } from 'lucide-react'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import Image from 'next/image'
@@ -29,6 +30,7 @@ const navItems = [
   { href: '/admin/itens-banidos', label: 'Itens Banidos', icon: Ban, section: 'itens-banidos' },
   { href: '/admin/servidores', label: 'Servidores', icon: Server, section: 'servidores' },
   { href: '/admin/loja', label: 'Loja', icon: ShoppingBag, section: 'loja' },
+  { href: '/admin/pedidos', label: 'Pedidos', icon: ClipboardList, section: 'pedidos' },
   { href: '/admin/leaderboard', label: 'Leaderboard', icon: Trophy, section: 'leaderboard' },
   { href: '/admin/usuarios', label: 'Usuarios', icon: Users, section: 'leaderboard' },
   { href: '/admin/licencas', label: 'Licencas', icon: Key, section: 'licencas' },

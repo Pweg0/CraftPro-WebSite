@@ -149,22 +149,37 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ADMIN-01..10 | Phase 4 | Complete |
 | POST-01..04 | Post-Phase | Complete |
 
-### v2.0 (Pending — updated by roadmapper)
+### v2.0 (Roadmap created 2026-03-26)
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SHOP-01..07 | TBD | Pending |
-| BLOG-01..05 | TBD | Pending |
-| SEASON-01..03 | TBD | Pending |
-| DASH-01..03 | TBD | Pending |
-| NOTIF-01..03 | TBD | Pending |
+| SHOP-01 | Phase 5 | Pending |
+| SHOP-02 | Phase 5 | Pending |
+| SHOP-03 | Phase 5 | Pending |
+| SHOP-04 | Phase 5 | Pending |
+| SHOP-05 | Phase 5 | Pending |
+| SHOP-06 | Phase 5 | Pending |
+| SHOP-07 | Phase 5 | Pending |
+| BLOG-01 | Phase 6 | Pending |
+| BLOG-02 | Phase 6 | Pending |
+| BLOG-03 | Phase 6 | Pending |
+| BLOG-04 | Phase 6 | Pending |
+| BLOG-05 | Phase 6 | Pending |
+| NOTIF-01 | Phase 7 | Pending |
+| NOTIF-02 | Phase 7 | Pending |
+| NOTIF-03 | Phase 7 | Pending |
+| SEASON-01 | Phase 7 | Pending |
+| SEASON-02 | Phase 7 | Pending |
+| SEASON-03 | Phase 7 | Pending |
+| DASH-01 | Phase 8 | Pending |
+| DASH-02 | Phase 8 | Pending |
+| DASH-03 | Phase 8 | Pending |
 
 **Coverage:**
 - v1 requirements: 34 total — all complete
-- v2.0 requirements: 21 total — all pending
+- v2.0 requirements: 21 total — 21 mapped, 0 unmapped
 - Future (v3.0+): 3 remaining (REPL-02, PROF-03, PROF-04)
-- Unmapped: 21 (awaiting roadmap)
 
 ---
 *Requirements defined: 2026-03-18*
-*Last updated: 2026-03-26 — v2.0 requirements defined (Loja, Blog, Temporadas, Dashboard, Notificações)*
+*Last updated: 2026-03-26 — v2.0 roadmap created; all 21 requirements mapped to Phases 5-8*

@@ -1,15 +1,15 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: milestone
-status: complete
-stopped_at: Milestone v1.0 complete — all 4 phases delivered
-last_updated: "2026-03-19T00:00:00.000Z"
+milestone: v2.0
+milestone_name: loja-funcional
+status: in-progress
+stopped_at: "Phase 05-loja-funcional Plan 01 complete — shop schema foundation, orders table, ShopItemCard, /loja catalog"
+last_updated: "2026-03-26T15:12:00.000Z"
 progress:
-  total_phases: 4
+  total_phases: 5
   completed_phases: 4
-  total_plans: 13
-  completed_plans: 13
+  total_plans: 14
+  completed_plans: 14
 ---
 
 # Project State
@@ -19,31 +19,35 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-19)
 
 **Core value:** Transmitir a fusão Minecraft + Pokémon de forma vibrante, sendo o hub central para jogadores do CraftPro Brasil
-**Current focus:** Milestone v1.0 COMPLETE — pronto para v2.0
+**Current focus:** Phase 05-loja-funcional — loja funcional com MercadoPago, RCON, LuckPerms (v2.0)
 
 ## Current Position
 
-Phase: ALL COMPLETE (4/4 phases, 13/13 plans)
-Milestone: v1.0 — DONE
+Phase: 05-loja-funcional (Plan 01/? complete)
+Milestone: v2.0 — IN PROGRESS
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 1
-- Average duration: 18 min
-- Total execution time: 0.3 hours
+- Total plans completed: 14
+- Average duration: ~10 min
+- Total execution time: ~2.3 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-hub-p-blico | 1/3 | 18 min | 18 min |
+| 01-hub-p-blico | 3/3 | 45 min | 15 min |
+| 02-autentica-o | 3/3 | 42 min | 14 min |
+| 03-sistema-competitivo | 3/3 | 19 min | 6 min |
+| 04-painel-admin | 4/4 | 25 min | 6 min |
+| 05-loja-funcional | 1/? | 9 min | 9 min |
 
 **Recent Trend:**
 
-- Last 5 plans: 01-01 (18 min)
-- Trend: baseline
+- Last 5 plans: 03-01 (10 min), 03-02 (5 min), 03-03 (4 min), 04-01 (3 min), 04-02 (12 min)
+- Trend: steady
 
 *Updated after each plan completion*
 | Phase 01-hub-p-blico P01 | 18min | 2 tasks | 28 files |
@@ -59,6 +63,7 @@ Milestone: v1.0 — DONE
 | Phase 04-painel-admin P02 | 12 | 2 tasks | 10 files |
 | Phase 04-painel-admin P04 | 4 | 2 tasks | 8 files |
 | Phase 04-painel-admin P03 | 6 | 3 tasks | 18 files |
+| Phase 05-loja-funcional P01 | 9 | 3 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -101,25 +106,33 @@ Recent decisions affecting current work:
 - [Phase 04-painel-admin]: isSuperAdmin page-level guard in permissoes page — layout only checks isAdmin, page adds super-admin check and redirects to /403
 - [Phase 04-painel-admin]: Server slug for servers auto-generated from name via normalize+lowercase+replace; shown as disabled field on edit since it is the PK
 - [Phase 04-painel-admin]: loja.test.tsx updated to mock db and await async Server Component after migration from static to DB-backed page
+- [Phase 05-loja-funcional]: orders table uses integer cents for BRL price — avoids floating point rounding errors
+- [Phase 05-loja-funcional]: available column is integer 0/1 (not boolean) — consistent with existing banned column pattern
+- [Phase 05-loja-funcional]: getShopItems() filters available=1 and sorts by category+name — deterministic catalog order
+- [Phase 05-loja-funcional]: ShopItemCard buy button disabled — MercadoPago integration deferred to later Phase 5 plans
+- [Phase 05-loja-funcional]: loja.test.tsx updated to empty-state + item-card tests replacing static category card tests
 
 ### Roadmap Evolution
 
 - Phase 4 added: Painel Admin — rota /admin protegida para gerenciar itens banidos, servidores, loja e leaderboard
+- Phase 5 started: Loja Funcional — schema foundation (orders, price, available), ShopItemCard, catalog /loja page
 
 ### Pending Todos
 
 - Delete craftpro-temp scaffold directory at C:/Users/JoJo/Desktop/ALEMA/craftpro-temp
+- Run `npx drizzle-kit push` to sync new schema (orders table, price/available columns) to Neon database
 
 ### Blockers/Concerns
 
 - [Phase 3]: Formato exato do webhook do PixelmonShowdown plugin precisa ser verificado no servidor real antes de finalizar o contrato da /api/elo/update
 - [Phase 3]: Política de abandono de batalha (abandono = derrota?) precisa ser decidida pelo dono do projeto antes de escrever qualquer lógica ELO
 - [Phase 3]: Thresholds dos tiers (ELO para Bronze/Silver/Gold/Diamond) são decisão de design — definir antes de implementar badges
+- [Phase 5]: drizzle-kit push needed to apply schema changes (orders table + shopItems columns) to production Neon DB
 
 ## Session Continuity
 
-Last session: 2026-03-19
-Stopped at: Milestone v1.0 complete. Post-milestone tweaks: banner URL support, "Ver Servidores" CTA navigation fix.
+Last session: 2026-03-26
+Stopped at: Phase 05-loja-funcional Plan 01 complete. Schema foundation built. Next: MercadoPago integration (05-02).
 Resume file: None
 
 ## v2.0 Planning Notes

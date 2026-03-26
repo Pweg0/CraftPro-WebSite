@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 05-04-PLAN.md — admin shop CRUD extended + /admin/pedidos order management
-last_updated: "2026-03-26T17:28:49.250Z"
+stopped_at: Completed 05-05-PLAN.md — RCON delivery subsystem, cron worker, webhook HMAC validation
+last_updated: "2026-03-26T18:11:15.118Z"
 last_activity: 2026-03-26
 progress:
   total_phases: 5
   completed_phases: 5
   total_plans: 17
-  completed_plans: 17
+  completed_plans: 18
 ---
 
 # Project State
@@ -25,7 +25,7 @@ See: .planning/PROJECT.md (updated 2026-03-26)
 ## Current Position
 
 Phase: 05 (loja-funcional) — EXECUTING
-Plan: 3 of 4
+Plan: 4 of 4
 Status: Ready to execute
 Last activity: 2026-03-26
 
@@ -60,6 +60,7 @@ Progress bar: [░░░░░░░░░░░░░░░░░░░░] 0/4
 *Updated after each plan completion*
 | Phase 05-loja-funcional P03 | 8 | 2 tasks | 11 files |
 | Phase 05-loja-funcional P04 | 18 | 2 tasks | 10 files |
+| Phase 05-loja-funcional P05 | 12 | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -84,6 +85,9 @@ Recent decisions affecting v2.0:
 - [Phase 05-loja-funcional]: rconTemplate set to null on admin create/update — system auto-generates command from type per D-03
 - [Phase 05-loja-funcional]: forceRetryDelivery resets order to 'delivering' (no deliveryQueue table in schema) — cron worker re-attempts
 - [Phase 05-loja-funcional]: pedidos added to AdminSection type with granular permission separate from loja section
+- [Phase 05-loja-funcional]: RCON abstraction in src/lib/rcon/client.ts isolates rcon-client dependency — swappable if maintainer abandons
+- [Phase 05-loja-funcional]: mercadopagoPaymentId (UNIQUE) separate from mercadopagoId (preference ID) for clean idempotency
+- [Phase 05-loja-funcional]: RCON delivery worker uses orders table as queue (no separate deliveryQueue) — exponential backoff, max 10 retries (~48h)
 
 ### Roadmap Evolution
 
@@ -107,7 +111,7 @@ Recent decisions affecting v2.0:
 
 ## Session Continuity
 
-Last session: 2026-03-26T17:28:49.213Z
-Stopped at: Completed 05-04-PLAN.md — admin shop CRUD extended + /admin/pedidos order management
+Last session: 2026-03-26T18:11:15.052Z
+Stopped at: Completed 05-05-PLAN.md — RCON delivery subsystem, cron worker, webhook HMAC validation
 Resume file: None
 Next action: /gsd:plan-phase 5

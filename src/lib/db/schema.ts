@@ -133,14 +133,19 @@ export const orders = pgTable("orders", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   shopItemId: integer("shop_item_id").notNull().references(() => shopItems.id),
-  status: text("status").notNull().default("pending"), // pending | paid | delivered | failed | refunded
-  mercadopagoId: text("mercadopago_id"),               // MP payment ID (filled after checkout)
+  status: text("status").notNull().default("pending"), // pending | paid | delivering | delivered | failed | refunded
+  mercadopagoId: text("mercadopago_id"),               // MP preference ID (set at checkout creation)
+  mercadopagoPaymentId: text("mercadopago_payment_id").unique(), // MP payment ID — UNIQUE for idempotency (set by webhook)
   amountCents: integer("amount_cents").notNull(),       // snapshot of price at time of order
+  retryCount: integer("retry_count").notNull().default(0),           // how many RCON attempts have been made
+  nextRetryAt: timestamp("next_retry_at", { mode: "date" }),         // earliest time for next attempt (backoff)
+  minecraftUuid: text("minecraft_uuid"),                             // snapshot of player UUID at purchase time
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow(),
   updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow(),
 }, (table) => ({
   userIdx: index("idx_orders_user").on(table.userId),
   statusIdx: index("idx_orders_status").on(table.status),
+  mpPaymentIdIdx: index("idx_orders_mp_payment_id").on(table.mercadopagoPaymentId),
 }))
 
 export const adminPermissions = pgTable("admin_permissions", {

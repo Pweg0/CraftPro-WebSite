@@ -114,9 +114,30 @@ export const shopItems = pgTable("shop_items", {
   name: text("name").notNull(),
   description: text("description").notNull(),
   category: text("category").notNull(),
+  price: integer("price").notNull().default(0), // price in cents (BRL), e.g. 1990 = R$19,90
+  imageUrl: text("image_url"),                  // optional product image URL
+  available: integer("available").notNull().default(1), // 1 = visible in store, 0 = hidden
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow(),
   updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow(),
 })
+
+// ============================================================
+// Loja Funcional — Phase 5 tables
+// ============================================================
+
+export const orders = pgTable("orders", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  shopItemId: integer("shop_item_id").notNull().references(() => shopItems.id),
+  status: text("status").notNull().default("pending"), // pending | paid | delivered | failed | refunded
+  mercadopagoId: text("mercadopago_id"),               // MP payment ID (filled after checkout)
+  amountCents: integer("amount_cents").notNull(),       // snapshot of price at time of order
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow(),
+  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow(),
+}, (table) => ({
+  userIdx: index("idx_orders_user").on(table.userId),
+  statusIdx: index("idx_orders_status").on(table.status),
+}))
 
 export const adminPermissions = pgTable("admin_permissions", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),

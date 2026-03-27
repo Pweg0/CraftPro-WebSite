@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: verifying
-stopped_at: Completed 09-mod-neoforge-e-dashboard-de-beneficios-01-PLAN.md
-last_updated: "2026-03-27T22:15:24.931Z"
+stopped_at: Completed 09-02-PLAN.md
+last_updated: "2026-03-27T22:08:50.051Z"
 last_activity: 2026-03-27
 progress:
   total_phases: 8
@@ -61,7 +61,7 @@ Progress bar: [░░░░░░░░░░░░░░░░░░░░] 0/4
 | Phase 05-loja-funcional P03 | 8 | 2 tasks | 11 files |
 | Phase 05-loja-funcional P04 | 18 | 2 tasks | 10 files |
 | Phase 05-loja-funcional P05 | 12 | 2 tasks | 10 files |
-| Phase 09-mod-neoforge-e-dashboard-de-beneficios P01 | 18 | 2 tasks | 12 files |
+| Phase 09-mod-neoforge-e-dashboard-de-beneficios P02 | 4 | 2 tasks | 14 files |
 
 ## Accumulated Context
 
@@ -89,9 +89,8 @@ Recent decisions affecting v2.0:
 - [Phase 05-loja-funcional]: RCON abstraction in src/lib/rcon/client.ts isolates rcon-client dependency — swappable if maintainer abandons
 - [Phase 05-loja-funcional]: mercadopagoPaymentId (UNIQUE) separate from mercadopagoId (preference ID) for clean idempotency
 - [Phase 05-loja-funcional]: RCON delivery worker uses orders table as queue (no separate deliveryQueue) — exponential backoff, max 10 retries (~48h)
-- [Phase 09-mod-neoforge-e-dashboard-de-beneficios]: Mod-pull delivery model: mod polls /api/deliveries/pending instead of server pushing via RCON — simpler, NeoForge-compatible
-- [Phase 09-mod-neoforge-e-dashboard-de-beneficios]: forceRetryDelivery sets status 'paid' (not 'delivering') so mod picks it up via poll; also allows retry from legacy 'delivering'
-- [Phase 09-mod-neoforge-e-dashboard-de-beneficios]: MOD_API_KEY bearer token auth for all mod-facing delivery endpoints
+- [Phase 09-mod-neoforge-e-dashboard-de-beneficios]: FTB Ranks commands use player name (not UUID) in /ftbranks add/remove; rankSlug derived from itemName.toLowerCase().replace(' ', '_')
+- [Phase 09-mod-neoforge-e-dashboard-de-beneficios]: AtomicBoolean polling flag prevents concurrent API polls; default itemDuration is 30 days when null/zero
 
 ### Roadmap Evolution
 
@@ -115,7 +114,7 @@ Recent decisions affecting v2.0:
 
 ## Session Continuity
 
-Last session: 2026-03-27T22:15:24.876Z
-Stopped at: Completed 09-mod-neoforge-e-dashboard-de-beneficios-01-PLAN.md
+Last session: 2026-03-27T22:08:50.009Z
+Stopped at: Completed 09-02-PLAN.md
 Resume file: None
 Next action: /gsd:plan-phase 5

@@ -1,0 +1,27 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+license = "All Rights Reserved"
+
+[[mods]]
+modId = "craftpro"
+version = "${mod_version}"
+displayName = "CraftPro"
+authors = "CraftPro Brasil"
+description = '''
+Mod de entrega de beneficios e gerenciamento de ranks para a loja CraftPro Brasil.
+Faz polling da API do site, entrega ranks via FTB Ranks e gerencia expiracao automatica.
+'''
+
+[[dependencies.craftpro]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.1,)"
+ordering = "NONE"
+side = "SERVER"
+
+[[dependencies.craftpro]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.1,)"
+ordering = "NONE"
+side = "SERVER"

@@ -20,6 +20,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 6: Blog e Eventos** - Admin publica posts e eventos; visitantes leem /blog e /eventos com calendário filtrado por tipo
 - [ ] **Phase 7: Notificações e Temporadas** - Discord webhooks em compras e novos jogadores + sistema de temporadas com reset ELO atômico e hall da fama
 - [ ] **Phase 8: Dashboard do Jogador** - Gráfico de evolução ELO e Pokémon mais usados no perfil, alimentados por histórico acumulado desde Phase 5
+- [ ] **Phase 9: Mod NeoForge e Dashboard de Beneficios** - Mod NeoForge substitui RCON: polling da API, entrega via FTB Ranks, expiração automática; admin dashboard com benefícios ativos e log de vendas
 
 ## Phase Details
 
@@ -114,7 +115,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
   3. Após pagamento confirmado, pedido é adicionado à fila de entrega
   4. Sistema processa fila e envia comando RCON ao servidor para entregar o item
   5. Admin pode adicionar/editar/ocultar itens com preço e categoria via /admin/loja
-**Plans**: TBD (multiple plans)
+**Plans**: 3 plans (multiple plans)
 
 Plans:
 - [x] 05-01-PLAN.md — Schema foundation: shopItems extension (price, available, imageUrl), orders table, shop query module, ShopItemCard, /loja catalog page, admin CRUD update
@@ -145,7 +146,7 @@ Plans:
   2. Novo jogador que faz login pela primeira vez recebe boas-vindas no canal #novos-jogadores do Discord via embed
   3. Admin clica em "Encerrar Temporada" no painel, o snapshot dos rankings é salvo, todos os ELOs resetam para 1000 via transação atômica, e uma nova temporada começa
   4. Visitante acessa /temporadas e vê o hall da fama com o top ranking de cada temporada passada, identificada por número e data de encerramento
-**Plans**: TBD
+**Plans**: 3 plans
 
 ### Phase 8: Dashboard do Jogador
 **Goal**: Jogadores veem a evolução do seu desempenho competitivo ao longo do tempo — o perfil passa de stats estáticos para dashboard dinâmico
@@ -155,13 +156,13 @@ Plans:
   1. Perfil do jogador exibe gráfico de linha (Recharts) com a evolução do ELO ao longo do tempo, com pontos por partida e sem erro de hydration
   2. Cada partida registrada no banco atualiza automaticamente o histórico de ELO do jogador, alimentando o gráfico sem intervenção manual
   3. Perfil exibe lista dos Pokémon mais usados em batalhas ranqueadas com contagem de uso (condicional: disponível somente se o game server emite dados por Pokémon)
-**Plans**: TBD
+**Plans**: 3 plans
 **UI hint**: yes
 
 ## Progress
 
 **Execution Order:**
-v1.0 complete. v2.0 phases execute in numeric order: 5 → 6 → 7 → 8
+v1.0 complete. v2.0 phases execute in numeric order: 5 → 6 → 7 → 8 → 9
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -169,6 +170,7 @@ v1.0 complete. v2.0 phases execute in numeric order: 5 → 6 → 7 → 8
 | 6. Blog e Eventos | 0/3 | Planned | - |
 | 7. Notificações e Temporadas | 0/? | Not started | - |
 | 8. Dashboard do Jogador | 0/? | Not started | - |
+| 9. Mod NeoForge e Dashboard de Beneficios | 0/? | Not started | - |
 
 ## Post-Phase Extras (implemented outside formal phases)
 
@@ -181,3 +183,21 @@ v1.0 complete. v2.0 phases execute in numeric order: 5 → 6 → 7 → 8
 - [x] **Banner URL externa** — ServerCard aceita URLs externas (https://...) além de caminhos locais (/images/...), com unoptimized para domínios arbitrários
 - [x] **"Ver Servidores" CTA** — Botão na hero agora navega para /servidores em vez de smooth scroll para anchor
 - [x] **ServerForm label** — Campo de banner no admin atualizado para indicar URL ou caminho local
+
+### Phase 9: Mod NeoForge e Dashboard de Beneficios
+**Goal**: Substituir o sistema RCON por um mod NeoForge que faz polling da API do site para entregar itens/ranks via FTB Ranks, gerencia expiração local com timer (remove rank após N dias), e sincroniza status de volta ao site. No site, admin tem dashboard de benefícios ativos com countdown de expiração e log completo de vendas.
+**Depends on**: Phase 5
+**Requirements**: MOD-01, MOD-02, MOD-03, MOD-04
+**Success Criteria** (what must be TRUE):
+  1. Mod NeoForge faz polling do endpoint /api/deliveries/pending e entrega ranks/itens via /ftbranks add quando pedido está pago
+  2. Mod salva benefícios ativos em JSON local e remove automaticamente via /ftbranks remove quando o prazo expira
+  3. Mod confirma entrega e expiração pro site via POST, atualizando status do pedido
+  4. Admin acessa /admin/beneficios e vê tabela de benefícios ativos por player com countdown de dias restantes e indicador visual (verde/amarelo/vermelho)
+  5. Admin acessa /admin/vendas e vê log completo de todas as vendas com status de pagamento e entrega
+  6. Sistema RCON antigo (rcon-client, cron worker) removido do site
+**Plans**: 3 plans
+
+Plans:
+- [ ] 09-01-PLAN.md — Schema migration + API endpoints + permissions + sidebar + RCON removal
+- [ ] 09-02-PLAN.md — NeoForge mod (Java project: polling, delivery, expiration, commands)
+- [ ] 09-03-PLAN.md — Admin dashboard pages (/admin/beneficios + /admin/vendas)

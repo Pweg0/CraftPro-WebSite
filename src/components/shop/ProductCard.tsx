@@ -1,22 +1,23 @@
+'use client'
 // src/components/shop/ProductCard.tsx
-import Link from 'next/link'
+import { useState } from 'react'
+import Image from 'next/image'
 import { Badge } from '@/components/ui/badge'
-import { BuyButton } from '@/components/shop/BuyButton'
-import { NoMinecraftWarning } from '@/components/shop/NoMinecraftWarning'
-import type { Session } from 'next-auth'
+import { ProductDetailSheet } from '@/components/shop/ProductDetailSheet'
 
-interface ProductCardProps {
-  item: {
-    id: number
-    name: string
-    description: string
-    category: string
-    price: number  // in cents (BRL)
-  }
-  session: Session | null
+export interface ProductCardItem {
+  id: number
+  name: string
+  description: string
+  category: string
+  price: number  // in cents (BRL)
+  imageUrl: string | null
 }
 
-// Map category → brand color token suffix and badge label
+interface ProductCardProps {
+  item: ProductCardItem
+}
+
 const TYPE_MAP: Record<string, { color: string; label: string }> = {
   'ranks-vip':      { color: 'brand-accent',  label: 'Rank' },
   rank:             { color: 'brand-accent',  label: 'Rank' },
@@ -30,7 +31,8 @@ function getTypeInfo(category: string) {
   return TYPE_MAP[category] ?? { color: 'brand-blue', label: category }
 }
 
-export function ProductCard({ item, session }: ProductCardProps) {
+export function ProductCard({ item }: ProductCardProps) {
+  const [open, setOpen] = useState(false)
   const { color, label } = getTypeInfo(item.category)
   const priceFormatted = (item.price / 100).toLocaleString('pt-BR', {
     minimumFractionDigits: 2,
@@ -52,42 +54,48 @@ export function ProductCard({ item, session }: ProductCardProps) {
       : 'text-brand-yellow border-brand-yellow/30 bg-brand-yellow/10'
 
   return (
-    <div
-      className={`bg-brand-card/60 rounded-2xl border border-white/[0.06] p-5 backdrop-blur-sm transition-all duration-300 ${hoverBorderClass} hover:-translate-y-1 flex flex-col`}
-    >
-      {/* Type badge */}
-      <div className="mb-3">
-        <Badge variant="outline" className={`text-xs ${badgeColorClass}`}>
-          {label}
-        </Badge>
-      </div>
-
-      {/* Item name */}
-      <h3 className="text-sm font-semibold text-white mb-2">{item.name}</h3>
-
-      {/* Description */}
-      <p className="text-xs text-white/45 leading-relaxed flex-1">{item.description}</p>
-
-      {/* Price */}
-      <div className="mt-4">
-        <span className="text-lg font-semibold text-brand-yellow">R$ {priceFormatted}</span>
-      </div>
-
-      {/* Action area */}
-      <div className="mt-4 w-full">
-        {!session ? (
-          <Link
-            href="/login?callbackUrl=/loja"
-            className="flex items-center justify-center w-full h-11 rounded-xl bg-brand-accent hover:bg-brand-accent/90 text-white font-semibold text-sm transition-all duration-200"
-          >
-            Entrar para Comprar
-          </Link>
-        ) : !session.user.minecraftUuid ? (
-          <NoMinecraftWarning />
-        ) : (
-          <BuyButton shopItemId={item.id} />
+    <>
+      <div
+        className={`bg-brand-card/60 rounded-2xl border border-white/[0.06] p-5 backdrop-blur-sm transition-all duration-300 ${hoverBorderClass} hover:-translate-y-1 flex flex-col`}
+      >
+        {/* Image */}
+        {item.imageUrl && (
+          <div className="relative w-full aspect-square rounded-xl overflow-hidden mb-4 bg-white/5">
+            <Image
+              src={item.imageUrl}
+              alt={item.name}
+              fill
+              className="object-cover"
+              unoptimized={item.imageUrl.startsWith('http')}
+            />
+          </div>
         )}
+
+        {/* Type badge */}
+        <div className="mb-3">
+          <Badge variant="outline" className={`text-xs ${badgeColorClass}`}>
+            {label}
+          </Badge>
+        </div>
+
+        {/* Item name */}
+        <h3 className="text-sm font-semibold text-white mb-2">{item.name}</h3>
+
+        {/* Price */}
+        <div className="mt-auto pt-4">
+          <span className="text-lg font-semibold text-brand-yellow">R$ {priceFormatted}</span>
+        </div>
+
+        {/* Action */}
+        <button
+          onClick={() => setOpen(true)}
+          className="mt-4 w-full h-11 rounded-xl bg-white/10 hover:bg-white/15 text-white font-semibold text-sm transition-all duration-200 flex items-center justify-center"
+        >
+          Mais Detalhes
+        </button>
       </div>
-    </div>
+
+      <ProductDetailSheet item={item} open={open} onOpenChange={setOpen} />
+    </>
   )
 }

@@ -3,14 +3,10 @@ export const dynamic = 'force-dynamic'
 import { ShoppingBag } from 'lucide-react'
 import { db } from '@/lib/db'
 import { shopItems } from '@/lib/db/schema'
-import { eq } from 'drizzle-orm'
-import { asc } from 'drizzle-orm'
-import { auth } from '@/lib/auth'
-import { ProductCard } from '@/components/shop/ProductCard'
+import { eq, asc } from 'drizzle-orm'
+import { LojaClient } from '@/components/shop/LojaClient'
 
 export default async function LojaPage() {
-  const session = await auth()
-
   const items = await db
     .select()
     .from(shopItems)
@@ -43,21 +39,16 @@ export default async function LojaPage() {
             <p className="text-sm text-white/45">Novos itens serao adicionados em breve.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {items.map((item) => (
-              <ProductCard
-                key={item.id}
-                item={{
-                  id: item.id,
-                  name: item.name,
-                  description: item.description,
-                  category: item.category,
-                  price: item.price,
-                }}
-                session={session}
-              />
-            ))}
-          </div>
+          <LojaClient
+            items={items.map((item) => ({
+              id: item.id,
+              name: item.name,
+              description: item.description,
+              category: item.category,
+              price: item.price,
+              imageUrl: item.imageUrl,
+            }))}
+          />
         )}
       </div>
     </div>

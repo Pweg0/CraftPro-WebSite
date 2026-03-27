@@ -131,8 +131,9 @@ export const shopItems = pgTable("shop_items", {
 
 export const orders = pgTable("orders", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
-  userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  userId: text("user_id").references(() => users.id, { onDelete: "cascade" }),  // nullable — guest checkout allowed
   shopItemId: integer("shop_item_id").notNull().references(() => shopItems.id),
+  minecraftName: text("minecraft_name"),                                       // name entered at checkout (for guest orders)
   status: text("status").notNull().default("pending"), // pending | paid | delivering | delivered | failed | refunded | revoked | expired
   mercadopagoId: text("mercadopago_id"),               // MP preference ID (set at checkout creation)
   mercadopagoPaymentId: text("mercadopago_payment_id").unique(), // MP payment ID — UNIQUE for idempotency (set by webhook)

@@ -5,7 +5,7 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { orders, shopItems, users } from '@/lib/db/schema'
-import { eq, and, isNotNull } from 'drizzle-orm'
+import { eq, and, isNotNull, sql } from 'drizzle-orm'
 
 function verifyModApiKey(req: Request): boolean {
   const authHeader = req.headers.get('authorization')
@@ -20,11 +20,12 @@ export async function GET(req: Request) {
   }
 
   // Query paid orders — mod needs to deliver these
+  // Use orders.minecraftName (guest checkout) with fallback to users.minecraftName (logged-in)
   const pendingOrders = await db
     .select({
       orderId: orders.id,
       minecraftUuid: orders.minecraftUuid,
-      minecraftName: users.minecraftName,
+      minecraftName: sql<string>`COALESCE(${orders.minecraftName}, ${users.minecraftName})`.as('minecraft_name'),
       itemName: shopItems.name,
       itemType: shopItems.type,
       itemDuration: shopItems.duration,
@@ -40,7 +41,7 @@ export async function GET(req: Request) {
     .select({
       orderId: orders.id,
       minecraftUuid: orders.minecraftUuid,
-      minecraftName: users.minecraftName,
+      minecraftName: sql<string>`COALESCE(${orders.minecraftName}, ${users.minecraftName})`.as('minecraft_name'),
       itemName: shopItems.name,
       itemType: shopItems.type,
     })

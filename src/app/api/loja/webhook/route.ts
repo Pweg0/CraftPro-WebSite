@@ -10,7 +10,7 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { orders, users } from '@/lib/db/schema'
-import { eq } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 import { createHmac, timingSafeEqual } from 'crypto'
 
 export const runtime = 'nodejs'
@@ -169,7 +169,7 @@ export async function POST(req: Request) {
       const [userRow] = await db
         .select({ minecraftUuid: users.minecraftUuid })
         .from(users)
-        .where(eq(users.id, orderRow.userId))
+        .where(orderRow.userId ? eq(users.id, orderRow.userId) : sql`false`)
         .limit(1)
 
       minecraftUuid = userRow?.minecraftUuid ?? undefined

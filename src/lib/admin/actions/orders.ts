@@ -93,7 +93,7 @@ export async function forceRetryDelivery(orderId: number): Promise<void> {
   const [userRow] = await db
     .select({ minecraftUuid: users.minecraftUuid })
     .from(users)
-    .where(eq(users.id, order.userId))
+    .where(order.userId ? eq(users.id, order.userId) : sql`false`)
     .limit(1)
 
   // Reset order status to 'paid' so the mod can pick it up via /api/deliveries/pending

@@ -1,0 +1,90 @@
+{
+    default: {
+        name: "Membro"
+        power: 1
+        condition: ""
+        display_name: "&7Membro"
+        permissions: {
+            "ftbchunks.max_claimed": 25
+            "ftbchunks.max_force_loaded": 3
+            "ftbessentials.home.max": 2
+            "ftbessentials.back": true
+            "ftbessentials.back.warmup": "3"
+            "ftbessentials.home.warmup": "3"
+            "ftbessentials.tpa.warmup": "3"
+            "ftbessentials.rtp.warmup": "3"
+            "ftbessentials.spawn.warmup": "3"
+            "ftbessentials.warp.warmup": "3"
+        }
+    }
+    vip_allthemodium: {
+        name: "Allthemodium"
+        power: 10
+        condition: ""
+        display_name: "&e[Allthemodium]"
+        permissions: {
+            "ftbchunks.max_claimed": 50
+            "ftbchunks.max_force_loaded": 6
+            "ftbessentials.home.max": 4
+            "ftbessentials.back": true
+            "ftbessentials.hat": true
+            "ftbessentials.rtp.cooldown": "300"
+            "ftbessentials.tpa.cooldown": "60"
+        }
+    }
+    vip_vibranium: {
+        name: "Vibranium"
+        power: 20
+        condition: ""
+        display_name: "&a[Vibranium]"
+        permissions: {
+            "ftbchunks.max_claimed": 80
+            "ftbchunks.max_force_loaded": 10
+            "ftbessentials.home.max": 6
+            "ftbessentials.back": true
+            "ftbessentials.hat": true
+            "ftbessentials.workbench": true
+            "ftbessentials.enderchest": true
+            "ftbessentials.rtp.cooldown": "180"
+            "ftbessentials.tpa.cooldown": "30"
+        }
+    }
+    vip_unobtanium: {
+        name: "Unobtanium"
+        power: 30
+        condition: ""
+        display_name: "&5[Unobtanium]"
+        permissions: {
+            "ftbchunks.max_claimed": 120
+            "ftbchunks.max_force_loaded": 15
+            "ftbessentials.home.max": 10
+            "ftbessentials.back": true
+            "ftbessentials.hat": true
+            "ftbessentials.workbench": true
+            "ftbessentials.enderchest": true
+            "ftbessentials.anvil": true
+            "ftbessentials.rtp.cooldown": "60"
+            "ftbessentials.tpa.cooldown": "10"
+        }
+    }
+    vip_apex: {
+        name: "Apex"
+        power: 40
+        condition: ""
+        display_name: "&d[Apex]"
+        permissions: {
+            "ftbchunks.max_claimed": 200
+            "ftbchunks.max_force_loaded": 25
+            "ftbessentials.home.max": 15
+            "ftbessentials.back": true
+            "ftbessentials.hat": true
+            "ftbessentials.workbench": true
+            "ftbessentials.enderchest": true
+            "ftbessentials.anvil": true
+            "ftbessentials.nickname": true
+            "ftbchunks.chunk_load_offline": true
+            "ftbessentials.rtp.cooldown": "30"
+            "ftbessentials.tpa.cooldown": "5"
+        }
+    }
+}

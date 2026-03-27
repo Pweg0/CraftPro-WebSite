@@ -86,7 +86,8 @@ export async function forceRetryDelivery(orderId: number): Promise<void> {
     .limit(1)
 
   if (!order) throw new Error('Pedido nao encontrado')
-  if (order.status !== 'failed') throw new Error('Pedido nao esta em estado de falha')
+  // Allow retry from 'failed' or legacy 'delivering' status
+  if (order.status !== 'failed' && order.status !== 'delivering') throw new Error('Pedido nao esta em estado de falha')
 
   // Re-snapshot minecraftUuid in case it was missing or updated since purchase
   const [userRow] = await db
@@ -95,11 +96,12 @@ export async function forceRetryDelivery(orderId: number): Promise<void> {
     .where(eq(users.id, order.userId))
     .limit(1)
 
-  // Reset order status to 'delivering' + reset retry counter so cron picks it up
+  // Reset order status to 'paid' so the mod can pick it up via /api/deliveries/pending
+  // (RCON cron removed — mod polls and delivers directly)
   await db
     .update(orders)
     .set({
-      status: 'delivering',
+      status: 'paid',
       retryCount: 0,
       nextRetryAt: null,
       minecraftUuid: userRow?.minecraftUuid ?? order.minecraftUuid,

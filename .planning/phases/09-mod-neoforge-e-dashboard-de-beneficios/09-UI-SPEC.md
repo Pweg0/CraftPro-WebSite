@@ -67,7 +67,7 @@ Notes:
 - Table header cells use `text-xs` (12px weight 400) — existing pattern from `PedidosCrud.tsx` `TableHead className="text-xs"`.
 - Page-level headings use `text-xl font-semibold text-white` — existing pattern `h1 className="text-xl font-semibold text-white"`.
 - Body copy (empty states, descriptions) uses `text-sm text-white/60`.
-- Countdown badge values use `text-xs font-medium` for compact display inside table cells.
+- Countdown badge values use `text-xs` for compact display inside table cells. Size distinction alone (text-xs) provides sufficient visual hierarchy without a third weight.
 - Press Start 2P is NOT used in admin panel — it is reserved for public-facing hero and section headings only. Admin uses Sora throughout.
 
 Source: `PedidosCrud.tsx` observed patterns + `globals.css`.
@@ -189,6 +189,7 @@ Source: D-13 through D-19 from CONTEXT.md + PedidosCrud.tsx copy patterns.
 - If 7–14 days: yellow Badge — `text-brand-yellow border-brand-yellow/30 bg-brand-yellow/10` + AlertTriangle icon
 - If < 7 days: red Badge — `text-brand-accent border-brand-accent/30 bg-brand-accent/10` + AlertTriangle icon
 - Copy: "{N} dias restantes" (computed from now to expiresAt)
+- Typography: `text-xs` (weight 400, inherited from body)
 
 **Revogar flow:**
 1. Admin clicks DropdownMenuItem "Revogar Benefício"

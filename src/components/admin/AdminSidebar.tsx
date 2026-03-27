@@ -14,6 +14,8 @@ import {
   Key,
   Menu,
   ClipboardList,
+  DollarSign,
+  Gift,
 } from 'lucide-react'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import Image from 'next/image'
@@ -31,6 +33,8 @@ const navItems = [
   { href: '/admin/servidores', label: 'Servidores', icon: Server, section: 'servidores' },
   { href: '/admin/loja', label: 'Loja', icon: ShoppingBag, section: 'loja' },
   { href: '/admin/pedidos', label: 'Pedidos', icon: ClipboardList, section: 'pedidos' },
+  { href: '/admin/beneficios', label: 'Beneficios', icon: Gift, section: 'beneficios' },
+  { href: '/admin/vendas', label: 'Vendas', icon: DollarSign, section: 'vendas' },
   { href: '/admin/leaderboard', label: 'Leaderboard', icon: Trophy, section: 'leaderboard' },
   { href: '/admin/usuarios', label: 'Usuarios', icon: Users, section: 'leaderboard' },
   { href: '/admin/licencas', label: 'Licencas', icon: Key, section: 'licencas' },

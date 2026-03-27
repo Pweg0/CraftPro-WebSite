@@ -133,13 +133,16 @@ export const orders = pgTable("orders", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   shopItemId: integer("shop_item_id").notNull().references(() => shopItems.id),
-  status: text("status").notNull().default("pending"), // pending | paid | delivering | delivered | failed | refunded
+  status: text("status").notNull().default("pending"), // pending | paid | delivering | delivered | failed | refunded | revoked | expired
   mercadopagoId: text("mercadopago_id"),               // MP preference ID (set at checkout creation)
   mercadopagoPaymentId: text("mercadopago_payment_id").unique(), // MP payment ID — UNIQUE for idempotency (set by webhook)
   amountCents: integer("amount_cents").notNull(),       // snapshot of price at time of order
   retryCount: integer("retry_count").notNull().default(0),           // how many RCON attempts have been made
   nextRetryAt: timestamp("next_retry_at", { mode: "date" }),         // earliest time for next attempt (backoff)
   minecraftUuid: text("minecraft_uuid"),                             // snapshot of player UUID at purchase time
+  deliveredAt: timestamp("delivered_at", { mode: "date" }),          // when mod confirmed delivery
+  expiresAt: timestamp("expires_at", { mode: "date" }),              // when rank/benefit expires (set by mod on confirm)
+  revokedAt: timestamp("revoked_at", { mode: "date" }),              // when admin revoked the benefit
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow(),
   updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow(),
 }, (table) => ({

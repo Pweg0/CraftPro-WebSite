@@ -45,7 +45,7 @@ Declared values (must be multiples of 4):
 | 3xl | 64px | Page-level top padding |
 
 Exceptions:
-- Touch targets for action buttons (Revogar) minimum 44px height on mobile — sourced from WCAG 2.5.5.
+- Touch targets for action buttons (Revogar): `min-height: 44px` on mobile — applied exclusively as `min-height`, not as padding or gap value. Sourced from WCAG 2.5.5.
 - Admin layout main content: `lg:p-6 p-4` (24px desktop / 16px mobile) — existing pattern from `(admin)/layout.tsx`.
 - Empty-state card: `p-12` (48px all sides) — existing pattern from `PedidosCrud.tsx`.
 
@@ -60,9 +60,10 @@ Source: Existing `PedidosCrud.tsx` + admin layout.
 | Body | 14px (text-sm) | 400 (regular) | 1.5 |
 | Label | 12px (text-xs) | 400 (regular) | 1.4 |
 | Heading | 20px (text-xl) | 600 (semibold) | 1.2 |
-| Display | 16px (text-base) | 700 (bold) | 1.2 |
+| Display | 16px (text-base) | 600 (semibold) | 1.2 |
 
 Notes:
+- Exactly 2 weights in use: `400` (regular) and `600` (semibold). Display and Heading are differentiated by size (16px vs 20px), not weight.
 - Table header cells use `text-xs` (12px weight 400) — existing pattern from `PedidosCrud.tsx` `TableHead className="text-xs"`.
 - Page-level headings use `text-xl font-semibold text-white` — existing pattern `h1 className="text-xl font-semibold text-white"`.
 - Body copy (empty states, descriptions) uses `text-sm text-white/60`.
@@ -172,6 +173,9 @@ Source: D-13 through D-19 from CONTEXT.md + PedidosCrud.tsx copy patterns.
 5. Expira em — CountdownBadge component (green/yellow/red per D-14)
 6. Status do servidor — DeliveryStatusBadge (Entregue / Pendente)
 7. Actions — DropdownMenu with "Revogar Benefício" item (only if status != expired/revoked)
+
+**DropdownMenu trigger accessibility:**
+- The `DropdownMenuTrigger` wrapping `MoreHorizontal` must include `aria-label="Ações do benefício"` so screen readers announce the button purpose. Example: `<DropdownMenuTrigger asChild><Button variant="ghost" size="icon" aria-label="Ações do benefício"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>`
 
 **Filters (D-15):**
 - Input: text search by player name (debounced 300ms, client-side or URL param)

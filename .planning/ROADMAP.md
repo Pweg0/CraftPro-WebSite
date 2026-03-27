@@ -20,7 +20,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 6: Blog e Eventos** - Admin publica posts e eventos; visitantes leem /blog e /eventos com calendário filtrado por tipo
 - [ ] **Phase 7: Notificações e Temporadas** - Discord webhooks em compras e novos jogadores + sistema de temporadas com reset ELO atômico e hall da fama
 - [ ] **Phase 8: Dashboard do Jogador** - Gráfico de evolução ELO e Pokémon mais usados no perfil, alimentados por histórico acumulado desde Phase 5
-- [ ] **Phase 9: Mod NeoForge e Dashboard de Beneficios** - Mod NeoForge substitui RCON: polling da API, entrega via FTB Ranks, expiração automática; admin dashboard com benefícios ativos e log de vendas
+- [x] **Phase 9: Mod NeoForge e Dashboard de Beneficios** - Mod NeoForge substitui RCON: polling da API, entrega via FTB Ranks, expiração automática; admin dashboard com benefícios ativos e log de vendas (completed 2026-03-27)
 
 ## Phase Details
 
@@ -170,7 +170,7 @@ v1.0 complete. v2.0 phases execute in numeric order: 5 → 6 → 7 → 8 → 9
 | 6. Blog e Eventos | 0/3 | Planned | - |
 | 7. Notificações e Temporadas | 0/? | Not started | - |
 | 8. Dashboard do Jogador | 0/? | Not started | - |
-| 9. Mod NeoForge e Dashboard de Beneficios | 0/? | Not started | - |
+| 9. Mod NeoForge e Dashboard de Beneficios | 3/3 | Complete   | 2026-03-27 |
 
 ## Post-Phase Extras (implemented outside formal phases)
 
@@ -198,6 +198,6 @@ v1.0 complete. v2.0 phases execute in numeric order: 5 → 6 → 7 → 8 → 9
 **Plans**: 3 plans
 
 Plans:
-- [ ] 09-01-PLAN.md — Schema migration + API endpoints + permissions + sidebar + RCON removal
-- [ ] 09-02-PLAN.md — NeoForge mod (Java project: polling, delivery, expiration, commands)
-- [ ] 09-03-PLAN.md — Admin dashboard pages (/admin/beneficios + /admin/vendas)
+- [x] 09-01-PLAN.md — Schema migration + API endpoints + permissions + sidebar + RCON removal
+- [x] 09-02-PLAN.md — NeoForge mod (Java project: polling, delivery, expiration, commands)
+- [x] 09-03-PLAN.md — Admin dashboard pages (/admin/beneficios + /admin/vendas)

@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: verifying
-stopped_at: Completed 09-02-PLAN.md
-last_updated: "2026-03-27T22:08:50.051Z"
+stopped_at: "Completed 09-03-PLAN.md — checkpoint:human-verify pending"
+last_updated: "2026-03-27T22:27:37.345Z"
 last_activity: 2026-03-27
 progress:
-  total_phases: 8
-  completed_phases: 5
-  total_plans: 19
-  completed_plans: 19
+  total_phases: 9
+  completed_phases: 6
+  total_plans: 25
+  completed_plans: 22
 ---
 
 # Project State
@@ -62,6 +62,7 @@ Progress bar: [░░░░░░░░░░░░░░░░░░░░] 0/4
 | Phase 05-loja-funcional P04 | 18 | 2 tasks | 10 files |
 | Phase 05-loja-funcional P05 | 12 | 2 tasks | 10 files |
 | Phase 09-mod-neoforge-e-dashboard-de-beneficios P02 | 4 | 2 tasks | 14 files |
+| Phase 09-mod-neoforge-e-dashboard-de-beneficios P03 | 8 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -91,6 +92,8 @@ Recent decisions affecting v2.0:
 - [Phase 05-loja-funcional]: RCON delivery worker uses orders table as queue (no separate deliveryQueue) — exponential backoff, max 10 retries (~48h)
 - [Phase 09-mod-neoforge-e-dashboard-de-beneficios]: FTB Ranks commands use player name (not UUID) in /ftbranks add/remove; rankSlug derived from itemName.toLowerCase().replace(' ', '_')
 - [Phase 09-mod-neoforge-e-dashboard-de-beneficios]: AtomicBoolean polling flag prevents concurrent API polls; default itemDuration is 30 days when null/zero
+- [Phase 09-mod-neoforge-e-dashboard-de-beneficios]: BeneficiosCrud hides DropdownMenu entirely for expired/revoked rows
+- [Phase 09-mod-neoforge-e-dashboard-de-beneficios]: VendasCrud uses DeliveryStatusBadge based on deliveredAt/revokedAt fields, separate from payment StatusBadge
 
 ### Roadmap Evolution
 
@@ -114,7 +117,7 @@ Recent decisions affecting v2.0:
 
 ## Session Continuity
 
-Last session: 2026-03-27T22:08:50.009Z
-Stopped at: Completed 09-02-PLAN.md
+Last session: 2026-03-27T22:27:37.271Z
+Stopped at: Completed 09-03-PLAN.md — checkpoint:human-verify pending
 Resume file: None
 Next action: /gsd:plan-phase 5

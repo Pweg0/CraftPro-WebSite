@@ -285,15 +285,11 @@ export function BeneficiosCrud({
                     <TableCell>
                       {b.status !== 'expired' && b.status !== 'revoked' && (
                         <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              aria-label="Acoes do beneficio"
-                              className="h-7 w-7 text-white/60 hover:text-white hover:bg-white/10"
-                            >
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
+                          <DropdownMenuTrigger
+                            className="inline-flex items-center justify-center h-7 w-7 rounded-md text-white/60 hover:text-white hover:bg-white/10 transition-colors"
+                            aria-label="Acoes do beneficio"
+                          >
+                            <MoreHorizontal className="h-4 w-4" />
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem

@@ -1,0 +1,134 @@
+{
+  "integration": {
+    "description": "O mod Minecraft (CobblemonArena) envia dados automaticamente via HTTP POST após cada duelo ranked",
+    "endpoint": "POST /api/replays",
+    "auth": "Bearer token no header Authorization (ARENA_API_KEY)",
+    "frequency": "A cada duelo ranked finalizado + retry automático a cada 30s em caso de falha"
+  },
+  "payload_format": {
+    "schema_version": 1,
+    "match_id": "uuid-da-batalha (string, unique — chave de idempotencia)",
+    "arena_name": "nome-da-arena (string)",
+    "match_type": "RANKED",
+    "reason": "VICTORY | TIMEOUT | DISCONNECT | FLEE | DRAW",
+    "started_at": 1710432000,
+    "duration_ms": 185000,
+    "winner_uuid": "uuid-minecraft-do-vencedor",
+    "winner_name": "NomeDoVencedor",
+    "loser_uuid": "uuid-minecraft-do-perdedor",
+    "loser_name": "NomeDoPerdedor",
+    "winner_elo_before": 1024,
+    "winner_elo_after": 1039,
+    "winner_delta": 15,
+    "loser_elo_before": 988,
+    "loser_elo_after": 973,
+    "loser_delta": -15,
+    "winner_division": "PLATINUM",
+    "loser_division": "GOLD",
+    "replay_log": [
+      "|player|p1|NomeDoVencedor||",
+      "|player|p2|NomeDoPerdedor||",
+      "|start",
+      "|turn|1",
+      "|move|p1a: Charizard|Flamethrower|p2a: Blastoise",
+      "|-damage|p2a: Blastoise|45/140",
+      "|turn|2",
+      "|faint|p2a: Blastoise",
+      "|win|NomeDoVencedor"
+    ],
+    "ranking_snapshot": [
+      {
+        "uuid": "uuid-minecraft",
+        "name": "NomeJogador",
+        "elo": 1039,
+        "wins": 42,
+        "losses": 18,
+        "division": "PLATINUM",
+        "placement_complete": true
+      }
+    ]
+  },
+  "database_schema": {
+    "arena_players": {
+      "uuid": "text PRIMARY KEY — UUID do Minecraft",
+      "name": "text — nome in-game",
+      "elo": "integer DEFAULT 800 — rating ELO",
+      "wins": "integer DEFAULT 0",
+      "losses": "integer DEFAULT 0",
+      "division": "text — UNRANKED | BRONZE | SILVER | GOLD | PLATINUM | DIAMOND | MASTER",
+      "placement_complete": "integer — 0 (em classificacao) ou 1 (classificado)",
+      "updated_at": "timestamp"
+    },
+    "arena_matches": {
+      "id": "integer auto-increment PRIMARY KEY",
+      "match_id": "text UNIQUE — UUID da batalha",
+      "arena_name": "text",
+      "match_type": "text",
+      "reason": "text — VICTORY/TIMEOUT/DISCONNECT/FLEE/DRAW",
+      "started_at": "bigint — epoch seconds",
+      "duration_ms": "bigint",
+      "winner_uuid": "text",
+      "winner_name": "text",
+      "loser_uuid": "text",
+      "loser_name": "text",
+      "winner_elo_before": "integer",
+      "winner_elo_after": "integer",
+      "winner_delta": "integer",
+      "loser_elo_before": "integer",
+      "loser_elo_after": "integer",
+      "loser_delta": "integer",
+      "winner_division": "text",
+      "loser_division": "text",
+      "replay_log": "jsonb — array de linhas do protocolo Pokemon Showdown",
+      "created_at": "timestamp"
+    }
+  },
+  "divisions": {
+    "order": ["UNRANKED", "BRONZE", "SILVER", "GOLD", "PLATINUM", "DIAMOND", "MASTER"],
+    "elo_thresholds": {
+      "UNRANKED": "< placement completo",
+      "BRONZE": "0-999",
+      "SILVER": "1000-1199",
+      "GOLD": "1200-1399",
+      "PLATINUM": "1400-1599",
+      "DIAMOND": "1600-1799",
+      "MASTER": "1800+"
+    },
+    "colors": {
+      "UNRANKED": "#888888",
+      "BRONZE": "#cd7f32",
+      "SILVER": "#c0c0c0",
+      "GOLD": "#f59e0b",
+      "PLATINUM": "#00d4ff",
+      "DIAMOND": "#b9f2ff",
+      "MASTER": "#ff4444"
+    }
+  },
+  "placement_system": {
+    "matches_required": 10,
+    "deadline_days": 7,
+    "starting_elo": 800,
+    "description": "Jogador precisa completar 10 partidas em 7 dias para revelar sua divisao"
+  },
+  "queries_uteis": {
+    "leaderboard": "SELECT * FROM arena_players ORDER BY elo DESC",
+    "player_profile": "SELECT * FROM arena_players WHERE uuid = ?",
+    "player_matches": "SELECT * FROM arena_matches WHERE winner_uuid = ? OR loser_uuid = ? ORDER BY started_at DESC LIMIT 20",
+    "recent_matches": "SELECT * FROM arena_matches ORDER BY started_at DESC LIMIT 10",
+    "replay_data": "SELECT * FROM arena_matches WHERE match_id = ?"
+  },
+  "api_routes_existentes": {
+    "POST /api/replays": "Recebe dados do mod (autenticado com Bearer token)",
+    "GET /api/replays?id=<match_id>": "Retorna dados de uma partida especifica"
+  },
+  "api_routes_sugeridas": {
+    "GET /api/ranking": "Retorna leaderboard completo ordenado por ELO",
+    "GET /api/player/[uuid]": "Retorna perfil + historico de partidas",
+    "GET /api/matches": "Lista partidas recentes com paginacao"
+  },
+  "skin_avatars": {
+    "head_24px": "https://mc-heads.net/avatar/{uuid}/24",
+    "head_48px": "https://mc-heads.net/avatar/{uuid}/48",
+    "body_render": "https://crafatar.com/renders/body/{uuid}?size=200"
+  }
+}

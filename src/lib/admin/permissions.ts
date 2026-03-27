@@ -2,7 +2,7 @@
 // Admin permission utilities — used in middleware, layouts, and Server Actions
 import type { Session } from 'next-auth'
 
-export type AdminSection = 'itens-banidos' | 'servidores' | 'loja' | 'leaderboard' | 'licencas' | 'permissoes' | 'pedidos'
+export type AdminSection = 'itens-banidos' | 'servidores' | 'loja' | 'leaderboard' | 'licencas' | 'permissoes' | 'pedidos' | 'beneficios' | 'vendas'
 
 export function isSuperAdmin(session: Session | null): boolean {
   const superAdminId = process.env.SUPER_ADMIN_DISCORD_ID

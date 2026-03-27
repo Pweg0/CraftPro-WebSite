@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Phase 9 UI-SPEC approved
-last_updated: "2026-03-27T21:43:00.828Z"
-last_activity: 2026-03-26 -- Phase 06 execution started
+status: verifying
+stopped_at: Completed 09-mod-neoforge-e-dashboard-de-beneficios-01-PLAN.md
+last_updated: "2026-03-27T22:15:24.931Z"
+last_activity: 2026-03-27
 progress:
-  total_phases: 9
+  total_phases: 8
   completed_phases: 5
-  total_plans: 22
+  total_plans: 19
   completed_plans: 19
 ---
 
@@ -20,14 +20,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-26)
 
 **Core value:** Transmitir a fusão Minecraft + Pokémon de forma vibrante, sendo o hub central para jogadores do CraftPro Brasil
-**Current focus:** Phase 06 — blog-e-eventos
+**Current focus:** Phase 05 — loja-funcional
 
 ## Current Position
 
-Phase: 06 (blog-e-eventos) — EXECUTING
-Plan: 1 of 3
-Status: Executing Phase 06
-Last activity: 2026-03-26 -- Phase 06 execution started
+Phase: 05 (loja-funcional) — EXECUTING
+Plan: 4 of 4
+Status: Phase complete — ready for verification
+Last activity: 2026-03-27
 
 Progress bar: [░░░░░░░░░░░░░░░░░░░░] 0/4 phases complete
 
@@ -61,6 +61,7 @@ Progress bar: [░░░░░░░░░░░░░░░░░░░░] 0/4
 | Phase 05-loja-funcional P03 | 8 | 2 tasks | 11 files |
 | Phase 05-loja-funcional P04 | 18 | 2 tasks | 10 files |
 | Phase 05-loja-funcional P05 | 12 | 2 tasks | 10 files |
+| Phase 09-mod-neoforge-e-dashboard-de-beneficios P01 | 18 | 2 tasks | 12 files |
 
 ## Accumulated Context
 
@@ -88,12 +89,14 @@ Recent decisions affecting v2.0:
 - [Phase 05-loja-funcional]: RCON abstraction in src/lib/rcon/client.ts isolates rcon-client dependency — swappable if maintainer abandons
 - [Phase 05-loja-funcional]: mercadopagoPaymentId (UNIQUE) separate from mercadopagoId (preference ID) for clean idempotency
 - [Phase 05-loja-funcional]: RCON delivery worker uses orders table as queue (no separate deliveryQueue) — exponential backoff, max 10 retries (~48h)
+- [Phase 09-mod-neoforge-e-dashboard-de-beneficios]: Mod-pull delivery model: mod polls /api/deliveries/pending instead of server pushing via RCON — simpler, NeoForge-compatible
+- [Phase 09-mod-neoforge-e-dashboard-de-beneficios]: forceRetryDelivery sets status 'paid' (not 'delivering') so mod picks it up via poll; also allows retry from legacy 'delivering'
+- [Phase 09-mod-neoforge-e-dashboard-de-beneficios]: MOD_API_KEY bearer token auth for all mod-facing delivery endpoints
 
 ### Roadmap Evolution
 
 - v1.0 Phases 1-4: Complete (deployed to craftprobrasil.com.br 2026-03-18)
 - v2.0 Phases 5-8: Roadmap created 2026-03-26
-- Phase 9 added: Mod NeoForge e Dashboard de Beneficios — substitui RCON por mod + admin dashboard (2026-03-27)
 
 ### Pending Todos
 
@@ -112,7 +115,7 @@ Recent decisions affecting v2.0:
 
 ## Session Continuity
 
-Last session: 2026-03-27T21:43:00.737Z
-Stopped at: Phase 9 UI-SPEC approved
-Resume file: .planning/phases/09-mod-neoforge-e-dashboard-de-beneficios/09-UI-SPEC.md
+Last session: 2026-03-27T22:15:24.876Z
+Stopped at: Completed 09-mod-neoforge-e-dashboard-de-beneficios-01-PLAN.md
+Resume file: None
 Next action: /gsd:plan-phase 5

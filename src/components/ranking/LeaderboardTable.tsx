@@ -78,13 +78,13 @@ export function LeaderboardTable({ ranked, unranked, top10Wins }: LeaderboardTab
         <Table>
           <TableHeader>
             <TableRow className="border-white/[0.06] hover:bg-transparent">
-              <TableHead className="text-white/40 text-xs uppercase tracking-wider">#</TableHead>
-              <TableHead className="text-white/40 text-xs uppercase tracking-wider w-10"></TableHead>
-              <TableHead className="text-white/40 text-xs uppercase tracking-wider">Jogador</TableHead>
-              <TableHead className="text-white/40 text-xs uppercase tracking-wider">ELO</TableHead>
-              <TableHead className="text-white/40 text-xs uppercase tracking-wider">Divisao</TableHead>
-              <TableHead className="text-white/40 text-xs uppercase tracking-wider">W/L</TableHead>
-              <TableHead className="text-white/40 text-xs uppercase tracking-wider">Win Rate</TableHead>
+              <TableHead className="text-white/55 text-xs uppercase tracking-wider">#</TableHead>
+              <TableHead className="text-white/55 text-xs uppercase tracking-wider w-10"></TableHead>
+              <TableHead className="text-white/55 text-xs uppercase tracking-wider">Jogador</TableHead>
+              <TableHead className="text-white/55 text-xs uppercase tracking-wider">ELO</TableHead>
+              <TableHead className="text-white/55 text-xs uppercase tracking-wider">Divisao</TableHead>
+              <TableHead className="text-white/55 text-xs uppercase tracking-wider">W/L</TableHead>
+              <TableHead className="text-white/55 text-xs uppercase tracking-wider">Win Rate</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

@@ -32,6 +32,7 @@ interface ShopItemFormProps {
     type: string | null
     duration: number | null
     active: boolean | null
+    server: string | null
   }
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -49,6 +50,11 @@ const TYPE_OPTIONS = [
   { value: 'cosmetic', label: 'Cosmetico' },
 ]
 
+const SERVER_OPTIONS = [
+  { value: 'all-the-moons', label: 'All The Moons' },
+  { value: 'all-the-mods', label: 'All The Mods' },
+]
+
 export function ShopItemForm({ item, open, onOpenChange }: ShopItemFormProps) {
   const [isPending, startTransition] = useTransition()
   const isEditing = !!item
@@ -56,6 +62,7 @@ export function ShopItemForm({ item, open, onOpenChange }: ShopItemFormProps) {
   const [available, setAvailable] = useState(String(item?.available ?? 1))
   const [type, setType] = useState(item?.type ?? '')
   const [active, setActive] = useState(item?.active ?? true)
+  const [server, setServer] = useState(item?.server ?? '')
 
   async function handleSubmit(formData: FormData) {
     const priceReais = parseFloat(formData.get('price') as string || '0')
@@ -74,6 +81,7 @@ export function ShopItemForm({ item, open, onOpenChange }: ShopItemFormProps) {
       type,
       duration: type === 'rank' ? duration : null,
       active,
+      server: server || null,
     }
 
     startTransition(async () => {
@@ -121,6 +129,21 @@ export function ShopItemForm({ item, open, onOpenChange }: ShopItemFormProps) {
               rows={3}
               className="bg-brand-surface border-white/20 text-white resize-none"
             />
+          </div>
+          <div>
+            <label className="text-sm text-white/70 block mb-1">Servidor</label>
+            <Select value={server} onValueChange={(v) => setServer(v ?? '')}>
+              <SelectTrigger className="w-full bg-brand-surface border-white/20 text-white">
+                <SelectValue placeholder="Selecione o servidor" />
+              </SelectTrigger>
+              <SelectContent>
+                {SERVER_OPTIONS.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div>
             <label className="text-sm text-white/70 block mb-1">Categoria</label>

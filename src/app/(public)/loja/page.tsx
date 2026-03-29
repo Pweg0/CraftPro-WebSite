@@ -47,6 +47,7 @@ export default async function LojaPage() {
               category: item.category,
               price: item.price,
               imageUrl: item.imageUrl,
+              server: item.server,
             }))}
           />
         )}

@@ -42,6 +42,7 @@ interface ShopItem {
   type: string | null
   duration: number | null
   active: boolean | null
+  server: string | null
 }
 
 interface LojaCrudProps {
@@ -131,6 +132,7 @@ export function LojaCrud({ items }: LojaCrudProps) {
             <TableHeader>
               <TableRow>
                 <TableHead>Nome</TableHead>
+                <TableHead>Servidor</TableHead>
                 <TableHead>Categoria</TableHead>
                 <TableHead>Tipo</TableHead>
                 <TableHead>Preco</TableHead>
@@ -150,6 +152,9 @@ export function LojaCrud({ items }: LojaCrudProps) {
                         <p className="text-xs text-white/30 mt-0.5">{item.duration} dias</p>
                       )}
                     </div>
+                  </TableCell>
+                  <TableCell className="text-sm text-white/60">
+                    {item.server === 'all-the-moons' ? 'All The Moons' : item.server === 'all-the-mods' ? 'All The Mods' : '—'}
                   </TableCell>
                   <TableCell className="text-sm text-white/60">{item.category}</TableCell>
                   <TableCell>

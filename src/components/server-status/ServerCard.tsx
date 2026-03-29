@@ -59,12 +59,12 @@ export function ServerCard({ server, status }: ServerCardProps) {
       {/* Card content */}
       <div className="p-6 space-y-4">
         <h3 className="font-display text-xs text-white tracking-wide">{server.name}</h3>
-        <p className="text-sm text-white/45 leading-relaxed">{server.description}</p>
+        <p className="text-sm text-white/60 leading-relaxed">{server.description}</p>
 
         <div className="flex items-center justify-between gap-2 pt-2 border-t border-white/[0.06]">
           <span
             data-testid={`player-count-${server.id}`}
-            className="text-xs text-white/40"
+            className="text-xs text-white/55"
           >
             {status.online
               ? `${status.playersOnline} / ${status.playersMax} jogadores`

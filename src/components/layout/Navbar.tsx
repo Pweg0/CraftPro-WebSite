@@ -46,7 +46,7 @@ export function Navbar() {
                   className={`relative text-sm px-3.5 py-2 rounded-lg transition-all duration-200 ${
                     isActive
                       ? 'text-white bg-white/[0.08]'
-                      : 'text-white/50 hover:text-white hover:bg-white/[0.04]'
+                      : 'text-white/60 hover:text-white hover:bg-white/[0.04]'
                   }`}
                 >
                   {link.label}
@@ -61,10 +61,10 @@ export function Navbar() {
             <li>
               <Link
                 href="/loja/meus-pedidos"
-                className={`relative text-sm px-3.5 py-2 rounded-lg transition-all duration-200 ${
+                className={`relative text-sm px-3.5 py-2 rounded-lg transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accent ${
                   pathname.startsWith('/loja/meus-pedidos')
                     ? 'text-white bg-white/[0.08]'
-                    : 'text-white/50 hover:text-white hover:bg-white/[0.04]'
+                    : 'text-white/60 hover:text-white hover:bg-white/[0.04]'
                 }`}
               >
                 Meus Pedidos
@@ -111,7 +111,7 @@ export function Navbar() {
                     className={`text-base px-4 py-3 rounded-xl transition-all duration-200 ${
                       isActive
                         ? 'text-white bg-white/[0.08] border-l-2 border-brand-accent'
-                        : 'text-white/50 hover:text-white hover:bg-white/[0.04]'
+                        : 'text-white/60 hover:text-white hover:bg-white/[0.04]'
                     }`}
                   >
                     {link.label}
@@ -124,7 +124,7 @@ export function Navbar() {
                   className={`text-base px-4 py-3 rounded-xl transition-all duration-200 ${
                     pathname.startsWith('/loja/meus-pedidos')
                       ? 'text-white bg-white/[0.08] border-l-2 border-brand-accent'
-                      : 'text-white/50 hover:text-white hover:bg-white/[0.04]'
+                      : 'text-white/60 hover:text-white hover:bg-white/[0.04]'
                   }`}
                 >
                   Meus Pedidos

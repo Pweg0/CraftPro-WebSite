@@ -141,6 +141,26 @@
   --color-brand-purple: #a855f7;
   --color-brand-glow: #ff2d5540;
 
+  /* Minecraft themed colors */
+  --color-mc-diamond: #4ee8e8;
+  --color-mc-emerald: #17dd62;
+  --color-mc-redstone: #ff2d55;
+  --color-mc-gold: #ffaa00;
+  --color-mc-grass: #5B8731;
+  --color-mc-dirt: #866043;
+  --color-mc-ender: #0d2818;
+  --color-mc-creeper: #4CAF50;
+
+  /* Pokemon themed colors */
+  --color-pk-red: #ff2d55;
+  --color-pk-blue: #3B82F6;
+  --color-pk-yellow: #ffd60a;
+  --color-pk-grass: #4CAF50;
+  --color-pk-fire: #ff6b35;
+  --color-pk-water: #00d4ff;
+  --color-pk-electric: #ffd60a;
+  --color-pk-psychic: #a855f7;
+
   /* Typography — Press Start 2P for headings, Sora for body */
   --font-display: var(--font-press-start), monospace;
   --font-body: var(--font-sora), sans-serif;
@@ -345,4 +365,101 @@
 ::selection {
   background: rgba(255, 45, 85, 0.3);
   color: white;
+}
+
+/* ============================================
+   ACCESSIBILITY — focus-visible for keyboard navigation
+   ============================================ */
+:focus-visible {
+  outline: 2px solid #00d4ff;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid #00d4ff;
+  outline-offset: 2px;
+}
+
+/* ============================================
+   MINECRAFT PIXEL DECORATIONS
+   ============================================ */
+@keyframes pixel-float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-8px) rotate(2deg); }
+  75% { transform: translateY(4px) rotate(-2deg); }
+}
+
+@keyframes pokeball-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes pokeball-bounce {
+  0%, 100% { transform: translateY(0) rotate(-12deg); }
+  50% { transform: translateY(-12px) rotate(12deg); }
+}
+
+.animate-pixel-float {
+  animation: pixel-float 6s ease-in-out infinite;
+}
+
+.animate-pokeball-bounce {
+  animation: pokeball-bounce 4s ease-in-out infinite;
+}
+
+/* Pixel-art rendering for themed SVGs */
+.pixel-art {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+}
+
+/* ============================================
+   GRADIENT TEXT — additional themed gradients
+   ============================================ */
+.text-gradient-minecraft {
+  background: linear-gradient(135deg, #4ee8e8, #17dd62, #4ee8e8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-pokemon {
+  background: linear-gradient(135deg, #ff2d55, #ffd60a, #ff2d55);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-fire {
+  background: linear-gradient(135deg, #ff6b35, #ffd60a, #ff6b35);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ============================================
+   THEMED CARD VARIANTS
+   ============================================ */
+.card-minecraft {
+  position: relative;
+  border: 1px solid rgba(78, 232, 232, 0.1);
+  background: linear-gradient(135deg, rgba(78, 232, 232, 0.03), transparent);
+}
+
+.card-minecraft:hover {
+  border-color: rgba(78, 232, 232, 0.25);
+  box-shadow: 0 0 30px rgba(78, 232, 232, 0.08);
+}
+
+.card-pokemon {
+  position: relative;
+  border: 1px solid rgba(255, 45, 85, 0.1);
+  background: linear-gradient(135deg, rgba(255, 45, 85, 0.03), transparent);
+}
+
+.card-pokemon:hover {
+  border-color: rgba(255, 45, 85, 0.25);
+  box-shadow: 0 0 30px rgba(255, 45, 85, 0.08);
 }

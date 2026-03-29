@@ -9,7 +9,14 @@ interface ServerCardProps {
   status: ServerStatus;
 }
 
+function isValidImageSrc(src: string | null | undefined): src is string {
+  if (!src) return false;
+  return src.startsWith('/') || src.startsWith('http://') || src.startsWith('https://');
+}
+
 export function ServerCard({ server, status }: ServerCardProps) {
+  const hasBanner = isValidImageSrc(server.bannerPath);
+
   return (
     <div
       data-testid={`server-card-${server.id}`}
@@ -22,14 +29,14 @@ export function ServerCard({ server, status }: ServerCardProps) {
     >
       {/* Server banner */}
       <div className="relative h-44 bg-brand-surface overflow-hidden">
-        {server.bannerPath ? (
+        {hasBanner ? (
           <Image
-            src={server.bannerPath}
+            src={server.bannerPath!}
             alt={`Banner do servidor ${server.name}`}
             fill
             sizes="(max-width: 768px) 100vw, 33vw"
             className="object-cover transition-transform duration-700 group-hover:scale-105"
-            {...(server.bannerPath.startsWith('http') ? { unoptimized: true } : {})}
+            unoptimized={server.bannerPath!.startsWith('http')}
           />
         ) : (
           <div className="flex h-full items-center justify-center grid-bg">

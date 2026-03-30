@@ -15,7 +15,10 @@ export default async function ServidoresPage() {
     name: s.name,
     ip: s.ip,
     description: s.description,
-    bannerPath: s.bannerPath,
+    bannerPath:
+      s.bannerPath && (s.bannerPath.startsWith('/') || s.bannerPath.startsWith('http'))
+        ? s.bannerPath
+        : undefined,
   }))
 
   const statuses = await Promise.all(

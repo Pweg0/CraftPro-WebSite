@@ -10,7 +10,7 @@ interface ServerCardProps {
 }
 
 function isValidImageSrc(src: string | null | undefined): src is string {
-  if (!src) return false;
+  if (!src || src.trim().length === 0) return false;
   return src.startsWith('/') || src.startsWith('http://') || src.startsWith('https://');
 }
 

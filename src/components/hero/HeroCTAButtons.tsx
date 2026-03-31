@@ -22,7 +22,7 @@ export function HeroCTAButtons() {
   return (
     <div
       data-testid="hero-cta-buttons"
-      className="flex flex-wrap justify-center gap-3 mt-10"
+      className="flex flex-wrap justify-center lg:justify-start gap-3 mt-10"
     >
       {/* CTA 1: Jogar Agora — copies server IP */}
       <button
